@@ -1,0 +1,14 @@
+{
+  "ExpandedNodes": [
+    "",
+    "\\CollegeSystem.API",
+    "\\CollegeSystem.API\\Controllers",
+    "\\CollegeSystem.BL",
+    "\\CollegeSystem.BL\\DTOs",
+    "\\CollegeSystem.BL\\Managers",
+    "\\CollegeSystem.DAL",
+    "\\CollegeSystem.DAL\\Models"
+  ],
+  "SelectedNode": "\\CollegeSystem.API\\Controllers",
+  "PreviewInSolutionExplorer": false
+}

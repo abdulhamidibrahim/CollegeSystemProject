@@ -1,0 +1,174 @@
+{
+  "format": 1,
+  "restore": {
+    "/Users/abdulhamid/Documents/GitHub/CollegeSystemRecovery/CollegeSystem/CollegeSystem.BL/CollegeSystem.BL.csproj": {}
+  },
+  "projects": {
+    "/Users/abdulhamid/Documents/GitHub/CollegeSystemRecovery/CollegeSystem/CollegeSystem.BL/CollegeSystem.BL.csproj": {
+      "version": "1.0.0",
+      "restore": {
+        "projectUniqueName": "/Users/abdulhamid/Documents/GitHub/CollegeSystemRecovery/CollegeSystem/CollegeSystem.BL/CollegeSystem.BL.csproj",
+        "projectName": "CollegeSystem.BL",
+        "projectPath": "/Users/abdulhamid/Documents/GitHub/CollegeSystemRecovery/CollegeSystem/CollegeSystem.BL/CollegeSystem.BL.csproj",
+        "packagesPath": "/Users/abdulhamid/.nuget/packages/",
+        "outputPath": "/Users/abdulhamid/Documents/GitHub/CollegeSystemRecovery/CollegeSystem/CollegeSystem.BL/obj/",
+        "projectStyle": "PackageReference",
+        "configFilePaths": [
+          "/Users/abdulhamid/.nuget/NuGet/NuGet.Config"
+        ],
+        "originalTargetFrameworks": [
+          "net7.0"
+        ],
+        "sources": {
+          "https://api.nuget.org/v3/index.json": {}
+        },
+        "frameworks": {
+          "net7.0": {
+            "targetAlias": "net7.0",
+            "projectReferences": {
+              "/Users/abdulhamid/Documents/GitHub/CollegeSystemRecovery/CollegeSystem/CollegeSystem.DAL/CollegeSystem.DAL.csproj": {
+                "projectPath": "/Users/abdulhamid/Documents/GitHub/CollegeSystemRecovery/CollegeSystem/CollegeSystem.DAL/CollegeSystem.DAL.csproj"
+              }
+            }
+          }
+        },
+        "warningProperties": {
+          "warnAsError": [
+            "NU1605"
+          ]
+        }
+      },
+      "frameworks": {
+        "net7.0": {
+          "targetAlias": "net7.0",
+          "dependencies": {
+            "Microsoft.AspNetCore.Authentication.JwtBearer": {
+              "target": "Package",
+              "version": "[7.0.13, )"
+            },
+            "Microsoft.AspNetCore.Identity.EntityFrameworkCore": {
+              "target": "Package",
+              "version": "[7.0.13, )"
+            }
+          },
+          "imports": [
+            "net461",
+            "net462",
+            "net47",
+            "net471",
+            "net472",
+            "net48",
+            "net481"
+          ],
+          "assetTargetFallback": true,
+          "warn": true,
+          "downloadDependencies": [
+            {
+              "name": "Microsoft.AspNetCore.App.Ref",
+              "version": "[7.0.14, 7.0.14]"
+            },
+            {
+              "name": "Microsoft.NETCore.App.Ref",
+              "version": "[7.0.14, 7.0.14]"
+            }
+          ],
+          "frameworkReferences": {
+            "Microsoft.NETCore.App": {
+              "privateAssets": "all"
+            }
+          },
+          "runtimeIdentifierGraphPath": "/usr/local/share/dotnet/sdk/8.0.100/RuntimeIdentifierGraph.json"
+        }
+      }
+    },
+    "/Users/abdulhamid/Documents/GitHub/CollegeSystemRecovery/CollegeSystem/CollegeSystem.DAL/CollegeSystem.DAL.csproj": {
+      "version": "1.0.0",
+      "restore": {
+        "projectUniqueName": "/Users/abdulhamid/Documents/GitHub/CollegeSystemRecovery/CollegeSystem/CollegeSystem.DAL/CollegeSystem.DAL.csproj",
+        "projectName": "CollegeSystem.DAL",
+        "projectPath": "/Users/abdulhamid/Documents/GitHub/CollegeSystemRecovery/CollegeSystem/CollegeSystem.DAL/CollegeSystem.DAL.csproj",
+        "packagesPath": "/Users/abdulhamid/.nuget/packages/",
+        "outputPath": "/Users/abdulhamid/Documents/GitHub/CollegeSystemRecovery/CollegeSystem/CollegeSystem.DAL/obj/",
+        "projectStyle": "PackageReference",
+        "configFilePaths": [
+          "/Users/abdulhamid/.nuget/NuGet/NuGet.Config"
+        ],
+        "originalTargetFrameworks": [
+          "net7.0"
+        ],
+        "sources": {
+          "https://api.nuget.org/v3/index.json": {}
+        },
+        "frameworks": {
+          "net7.0": {
+            "targetAlias": "net7.0",
+            "projectReferences": {}
+          }
+        },
+        "warningProperties": {
+          "warnAsError": [
+            "NU1605"
+          ]
+        }
+      },
+      "frameworks": {
+        "net7.0": {
+          "targetAlias": "net7.0",
+          "dependencies": {
+            "Microsoft.AspNetCore.Authentication.JwtBearer": {
+              "target": "Package",
+              "version": "[7.0.13, )"
+            },
+            "Microsoft.AspNetCore.Identity.EntityFrameworkCore": {
+              "target": "Package",
+              "version": "[7.0.13, )"
+            },
+            "Microsoft.EntityFrameworkCore.Design": {
+              "include": "Runtime, Build, Native, ContentFiles, Analyzers, BuildTransitive",
+              "suppressParent": "All",
+              "target": "Package",
+              "version": "[7.0.13, )"
+            },
+            "Microsoft.EntityFrameworkCore.SqlServer": {
+              "target": "Package",
+              "version": "[7.0.13, )"
+            },
+            "Microsoft.EntityFrameworkCore.Tools": {
+              "include": "Runtime, Build, Native, ContentFiles, Analyzers, BuildTransitive",
+              "suppressParent": "All",
+              "target": "Package",
+              "version": "[7.0.13, )"
+            }
+          },
+          "imports": [
+            "net461",
+            "net462",
+            "net47",
+            "net471",
+            "net472",
+            "net48",
+            "net481"
+          ],
+          "assetTargetFallback": true,
+          "warn": true,
+          "downloadDependencies": [
+            {
+              "name": "Microsoft.AspNetCore.App.Ref",
+              "version": "[7.0.14, 7.0.14]"
+            },
+            {
+              "name": "Microsoft.NETCore.App.Ref",
+              "version": "[7.0.14, 7.0.14]"
+            }
+          ],
+          "frameworkReferences": {
+            "Microsoft.NETCore.App": {
+              "privateAssets": "all"
+            }
+          },
+          "runtimeIdentifierGraphPath": "/usr/local/share/dotnet/sdk/8.0.100/RuntimeIdentifierGraph.json"
+        }
+      }
+    }
+  }
+}

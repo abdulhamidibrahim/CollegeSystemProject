@@ -1,0 +1,58 @@
+﻿using CollegeSystem.DAL.Models;
+using CollegeSystem.DL;
+using FCISystem.DAL;
+using Microsoft.AspNetCore.Mvc;
+
+namespace CollegeSystem.API.Controllers;
+
+[Route("api/[controller]")]
+[ApiController]
+public class AllQuizController : ControllerBase
+{
+    private readonly IAllQuizManager _allQuizManager;
+
+    public AllQuizController(IAllQuizManager allQuizManager)
+    {
+        _allQuizManager = allQuizManager;
+    }
+
+    [HttpGet]
+    public ActionResult<List<AllQuizReadDto>> GetAll()
+    {
+        return _allQuizManager.GetAll();
+    }
+
+    [HttpGet("{id}")]
+    public ActionResult<AllQuizReadDto?> Get(long id)
+    {
+        var user = _allQuizManager.Get(id);
+
+        if (user == null)
+        {
+            return NotFound();
+        }
+
+        return user;
+    }
+    [HttpPost]
+    public ActionResult Add(AllQuizAddDto allQuizAddDto)
+    {
+        _allQuizManager.Add(allQuizAddDto);
+        return Ok();
+    }
+
+    [HttpPut]
+    public ActionResult Update(AllQuizUpdateDto allQuizUpdateDto)
+    {
+        _allQuizManager.Update(allQuizUpdateDto);
+        return Ok();
+    }
+
+    [HttpDelete]
+    public ActionResult Delete(AllQuizDeleteDto allQuizDeleteeDto)
+    {
+        _allQuizManager.Delete(allQuizDeleteeDto);
+        return Ok();
+    }
+}
+
