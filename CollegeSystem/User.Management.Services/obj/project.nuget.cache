@@ -1,8 +1,20 @@
 {
   "version": 2,
-  "dgSpecHash": "pR2bG4R7LXHO3Q1PwyyhzVIoMSgEc421JQ/DODJ8VPTMdvKLrEQfN2m7g7gKxmcUOn6WSygyYXCbAEwtjj9lGQ==",
+  "dgSpecHash": "nbs8AblMRCW2OQ5ZMOCQsGlGq/Tp+3MAErfOy8bMahjRt8dBMde78TqElIJUykd7OHYProZpOb+V1/bHojiKDA==",
   "success": true,
-  "projectFilePath": "/Users/abdulhamid/Documents/GitHub/CollegeSystemRecovery/CollegeSystem/User.Management.Services/User.Management.Services.csproj",
-  "expectedPackageFiles": [],
+  "projectFilePath": "/Users/abdulhamid/Documents/GitHub/CollegeSystemProject/CollegeSystem/User.Management.Services/User.Management.Services.csproj",
+  "expectedPackageFiles": [
+    "/Users/abdulhamid/.nuget/packages/mailkit/3.2.0/mailkit.3.2.0.nupkg.sha512",
+    "/Users/abdulhamid/.nuget/packages/microsoft.extensions.dependencyinjection/6.0.0/microsoft.extensions.dependencyinjection.6.0.0.nupkg.sha512",
+    "/Users/abdulhamid/.nuget/packages/microsoft.extensions.dependencyinjection.abstractions/6.0.0/microsoft.extensions.dependencyinjection.abstractions.6.0.0.nupkg.sha512",
+    "/Users/abdulhamid/.nuget/packages/mimekit/3.2.0/mimekit.3.2.0.nupkg.sha512",
+    "/Users/abdulhamid/.nuget/packages/netcore.mailkit/2.1.0/netcore.mailkit.2.1.0.nupkg.sha512",
+    "/Users/abdulhamid/.nuget/packages/portable.bouncycastle/1.9.0/portable.bouncycastle.1.9.0.nupkg.sha512",
+    "/Users/abdulhamid/.nuget/packages/system.formats.asn1/6.0.0/system.formats.asn1.6.0.0.nupkg.sha512",
+    "/Users/abdulhamid/.nuget/packages/system.runtime.compilerservices.unsafe/6.0.0/system.runtime.compilerservices.unsafe.6.0.0.nupkg.sha512",
+    "/Users/abdulhamid/.nuget/packages/system.security.cryptography.pkcs/6.0.0/system.security.cryptography.pkcs.6.0.0.nupkg.sha512",
+    "/Users/abdulhamid/.nuget/packages/microsoft.netcore.app.ref/7.0.14/microsoft.netcore.app.ref.7.0.14.nupkg.sha512",
+    "/Users/abdulhamid/.nuget/packages/microsoft.aspnetcore.app.ref/7.0.14/microsoft.aspnetcore.app.ref.7.0.14.nupkg.sha512"
+  ],
   "logs": []
 }

@@ -374,7 +374,6 @@ public partial class CollegeSystemDbContext : IdentityDbContext<ApplicationUser,
         
         modelBuilder.Entity<Parent>(entity =>
         {
-            entity.Property(e => e.Id).HasColumnName("parent_id");
             entity.Property(e => e.Email)
                 .HasMaxLength(100)
                 .HasColumnName("email");

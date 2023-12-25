@@ -1,0 +1,13 @@
+/Users/abdulhamid/Documents/GitHub/CollegeSystemProject/CollegeSystem/User.Management.Services/bin/Debug/net7.0/User.Management.Services.deps.json
+/Users/abdulhamid/Documents/GitHub/CollegeSystemProject/CollegeSystem/User.Management.Services/bin/Debug/net7.0/User.Management.Services.dll
+/Users/abdulhamid/Documents/GitHub/CollegeSystemProject/CollegeSystem/User.Management.Services/bin/Debug/net7.0/User.Management.Services.pdb
+/Users/abdulhamid/Documents/GitHub/CollegeSystemProject/CollegeSystem/User.Management.Services/obj/Debug/net7.0/User.Management.Services.csproj.AssemblyReference.cache
+/Users/abdulhamid/Documents/GitHub/CollegeSystemProject/CollegeSystem/User.Management.Services/obj/Debug/net7.0/User.Management.Services.GeneratedMSBuildEditorConfig.editorconfig
+/Users/abdulhamid/Documents/GitHub/CollegeSystemProject/CollegeSystem/User.Management.Services/obj/Debug/net7.0/User.Management.Services.AssemblyInfoInputs.cache
+/Users/abdulhamid/Documents/GitHub/CollegeSystemProject/CollegeSystem/User.Management.Services/obj/Debug/net7.0/User.Management.Services.AssemblyInfo.cs
+/Users/abdulhamid/Documents/GitHub/CollegeSystemProject/CollegeSystem/User.Management.Services/obj/Debug/net7.0/User.Management.Services.csproj.CoreCompileInputs.cache
+/Users/abdulhamid/Documents/GitHub/CollegeSystemProject/CollegeSystem/User.Management.Services/obj/Debug/net7.0/User.Management.Services.sourcelink.json
+/Users/abdulhamid/Documents/GitHub/CollegeSystemProject/CollegeSystem/User.Management.Services/obj/Debug/net7.0/User.Management.Services.dll
+/Users/abdulhamid/Documents/GitHub/CollegeSystemProject/CollegeSystem/User.Management.Services/obj/Debug/net7.0/refint/User.Management.Services.dll
+/Users/abdulhamid/Documents/GitHub/CollegeSystemProject/CollegeSystem/User.Management.Services/obj/Debug/net7.0/User.Management.Services.pdb
+/Users/abdulhamid/Documents/GitHub/CollegeSystemProject/CollegeSystem/User.Management.Services/obj/Debug/net7.0/ref/User.Management.Services.dll

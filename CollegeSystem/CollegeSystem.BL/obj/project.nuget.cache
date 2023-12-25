@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "rGh11QXMfM4SyI3lyFCQQDBN7P5DNMljbfwR7QqgeMIIeqxh+IrIuiu3OlDYIKnoXyOy5qU75HyvQ9EuEhw+QQ==",
+  "dgSpecHash": "VE8jQA9HgMkUoObShUdXyvzxIfYnmBvvaUZz7BJuOZnff1mIP9/Bg5byJ1FfrYJKbIdktkc0LnZQJxgOtBkuwQ==",
   "success": true,
-  "projectFilePath": "/Users/abdulhamid/Documents/GitHub/CollegeSystemRecovery/CollegeSystem/CollegeSystem.BL/CollegeSystem.BL.csproj",
+  "projectFilePath": "/Users/abdulhamid/Documents/GitHub/CollegeSystemProject/CollegeSystem/CollegeSystem.BL/CollegeSystem.BL.csproj",
   "expectedPackageFiles": [
     "/Users/abdulhamid/.nuget/packages/azure.core/1.25.0/azure.core.1.25.0.nupkg.sha512",
     "/Users/abdulhamid/.nuget/packages/azure.identity/1.7.0/azure.identity.1.7.0.nupkg.sha512",

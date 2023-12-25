@@ -8,6 +8,8 @@ namespace CollegeSystem.DAL.Models;
 [Table("Student")]
 public partial class Student : ApplicationUser
 {
+    [Key()]
+    public override required long Id { get; set; }
     
     [RegularExpression(@"^[0-9\u0600-\u06FF\s]+$", 
         ErrorMessage ="Enter Arabic characters and Numeric")]

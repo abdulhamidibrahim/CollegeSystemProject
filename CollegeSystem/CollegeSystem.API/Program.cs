@@ -8,6 +8,8 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
+using User.Management.Services.Models;
+using User.Management.Services.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -135,6 +137,14 @@ builder.Services.AddScoped<ITempAttendanceRepo, TempAttendanceRepo>();
 
 #endregion
 
+//add Email Configuration from appsettings.json to EmailConfiguration class
+var emailConfig = builder.Configuration
+    .GetSection("EmailConfiguration")
+    .Get<EmailConfiguration>();
+
+builder.Services.AddSingleton(emailConfig);
+
+builder.Services.AddSingleton<IEmailService, EmailService>();
 
 // builder.Services.AddHostedService<SeedData>();
 
