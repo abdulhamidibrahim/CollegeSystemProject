@@ -16,6 +16,7 @@ public class StudentManager:IStudentManager
     {
         var user = new Student()
         {
+             Id = studentAddDto.StudentCode,
              ArabicName = studentAddDto.Name,
              Email = studentAddDto.Email,
              UniversityEmail = studentAddDto.UniversityEmail,

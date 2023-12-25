@@ -234,8 +234,7 @@ namespace CollegeSystem.DAL.Migrations
                 {
                     b.Property<long>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("bigint")
-                        .HasColumnName("parent_id");
+                        .HasColumnType("bigint");
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("Id"));
 
@@ -675,17 +674,12 @@ namespace CollegeSystem.DAL.Migrations
                         .HasColumnType("nvarchar(50)")
                         .HasColumnName("img");
 
-                    b.Property<long?>("StudentId")
-                        .HasColumnType("bigint");
-
                     b.Property<string>("Title")
                         .HasMaxLength(50)
                         .HasColumnType("nvarchar(50)")
                         .HasColumnName("title");
 
                     b.HasKey("PostId");
-
-                    b.HasIndex("StudentId");
 
                     b.ToTable("Posts");
                 });
@@ -1437,13 +1431,6 @@ namespace CollegeSystem.DAL.Migrations
                     b.Navigation("Student");
                 });
 
-            modelBuilder.Entity("CollegeSystem.DAL.Models.Post", b =>
-                {
-                    b.HasOne("CollegeSystem.DAL.Models.Student", null)
-                        .WithMany("Posts")
-                        .HasForeignKey("StudentId");
-                });
-
             modelBuilder.Entity("CollegeSystem.DAL.Models.PostUser", b =>
                 {
                     b.HasOne("CollegeSystem.DAL.Models.Post", "Post")
@@ -1641,7 +1628,8 @@ namespace CollegeSystem.DAL.Migrations
                 {
                     b.HasOne("CollegeSystem.DAL.Models.Department", "Dept")
                         .WithMany("Users")
-                        .HasForeignKey("DeptId");
+                        .HasForeignKey("DeptId")
+                        .HasConstraintName("FK_Users_Departments");
 
                     b.HasOne("CollegeSystem.DAL.Models.ApplicationUser", null)
                         .WithOne()
@@ -1757,8 +1745,6 @@ namespace CollegeSystem.DAL.Migrations
                     b.Navigation("PermAttendances");
 
                     b.Navigation("PostUsers");
-
-                    b.Navigation("Posts");
 
                     b.Navigation("Replies");
 

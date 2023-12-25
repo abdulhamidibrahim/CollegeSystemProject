@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "/Users/abdulhamid/Documents/GitHub/CollegeSystemRecovery/CollegeSystem/CollegeSystem.API/CollegeSystem.API.csproj": {}
+    "/Users/abdulhamid/Documents/GitHub/CollegeSystemProject/CollegeSystem/CollegeSystem.API/CollegeSystem.API.csproj": {}
   },
   "projects": {
-    "/Users/abdulhamid/Documents/GitHub/CollegeSystemRecovery/CollegeSystem/CollegeSystem.API/CollegeSystem.API.csproj": {
+    "/Users/abdulhamid/Documents/GitHub/CollegeSystemProject/CollegeSystem/CollegeSystem.API/CollegeSystem.API.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "/Users/abdulhamid/Documents/GitHub/CollegeSystemRecovery/CollegeSystem/CollegeSystem.API/CollegeSystem.API.csproj",
+        "projectUniqueName": "/Users/abdulhamid/Documents/GitHub/CollegeSystemProject/CollegeSystem/CollegeSystem.API/CollegeSystem.API.csproj",
         "projectName": "CollegeSystem.API",
-        "projectPath": "/Users/abdulhamid/Documents/GitHub/CollegeSystemRecovery/CollegeSystem/CollegeSystem.API/CollegeSystem.API.csproj",
+        "projectPath": "/Users/abdulhamid/Documents/GitHub/CollegeSystemProject/CollegeSystem/CollegeSystem.API/CollegeSystem.API.csproj",
         "packagesPath": "/Users/abdulhamid/.nuget/packages/",
-        "outputPath": "/Users/abdulhamid/Documents/GitHub/CollegeSystemRecovery/CollegeSystem/CollegeSystem.API/obj/",
+        "outputPath": "/Users/abdulhamid/Documents/GitHub/CollegeSystemProject/CollegeSystem/CollegeSystem.API/obj/",
         "projectStyle": "PackageReference",
         "configFilePaths": [
           "/Users/abdulhamid/.nuget/NuGet/NuGet.Config"
@@ -26,8 +26,11 @@
           "net7.0": {
             "targetAlias": "net7.0",
             "projectReferences": {
-              "/Users/abdulhamid/Documents/GitHub/CollegeSystemRecovery/CollegeSystem/CollegeSystem.BL/CollegeSystem.BL.csproj": {
-                "projectPath": "/Users/abdulhamid/Documents/GitHub/CollegeSystemRecovery/CollegeSystem/CollegeSystem.BL/CollegeSystem.BL.csproj"
+              "/Users/abdulhamid/Documents/GitHub/CollegeSystemProject/CollegeSystem/CollegeSystem.BL/CollegeSystem.BL.csproj": {
+                "projectPath": "/Users/abdulhamid/Documents/GitHub/CollegeSystemProject/CollegeSystem/CollegeSystem.BL/CollegeSystem.BL.csproj"
+              },
+              "/Users/abdulhamid/Documents/GitHub/CollegeSystemProject/CollegeSystem/User.Management.Services/User.Management.Services.csproj": {
+                "projectPath": "/Users/abdulhamid/Documents/GitHub/CollegeSystemProject/CollegeSystem/User.Management.Services/User.Management.Services.csproj"
               }
             }
           }
@@ -59,6 +62,10 @@
               "suppressParent": "All",
               "target": "Package",
               "version": "[7.0.13, )"
+            },
+            "NETCore.MailKit": {
+              "target": "Package",
+              "version": "[2.1.0, )"
             },
             "Swashbuckle.AspNetCore": {
               "target": "Package",
@@ -102,14 +109,14 @@
         }
       }
     },
-    "/Users/abdulhamid/Documents/GitHub/CollegeSystemRecovery/CollegeSystem/CollegeSystem.BL/CollegeSystem.BL.csproj": {
+    "/Users/abdulhamid/Documents/GitHub/CollegeSystemProject/CollegeSystem/CollegeSystem.BL/CollegeSystem.BL.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "/Users/abdulhamid/Documents/GitHub/CollegeSystemRecovery/CollegeSystem/CollegeSystem.BL/CollegeSystem.BL.csproj",
+        "projectUniqueName": "/Users/abdulhamid/Documents/GitHub/CollegeSystemProject/CollegeSystem/CollegeSystem.BL/CollegeSystem.BL.csproj",
         "projectName": "CollegeSystem.BL",
-        "projectPath": "/Users/abdulhamid/Documents/GitHub/CollegeSystemRecovery/CollegeSystem/CollegeSystem.BL/CollegeSystem.BL.csproj",
+        "projectPath": "/Users/abdulhamid/Documents/GitHub/CollegeSystemProject/CollegeSystem/CollegeSystem.BL/CollegeSystem.BL.csproj",
         "packagesPath": "/Users/abdulhamid/.nuget/packages/",
-        "outputPath": "/Users/abdulhamid/Documents/GitHub/CollegeSystemRecovery/CollegeSystem/CollegeSystem.BL/obj/",
+        "outputPath": "/Users/abdulhamid/Documents/GitHub/CollegeSystemProject/CollegeSystem/CollegeSystem.BL/obj/",
         "projectStyle": "PackageReference",
         "configFilePaths": [
           "/Users/abdulhamid/.nuget/NuGet/NuGet.Config"
@@ -124,8 +131,8 @@
           "net7.0": {
             "targetAlias": "net7.0",
             "projectReferences": {
-              "/Users/abdulhamid/Documents/GitHub/CollegeSystemRecovery/CollegeSystem/CollegeSystem.DAL/CollegeSystem.DAL.csproj": {
-                "projectPath": "/Users/abdulhamid/Documents/GitHub/CollegeSystemRecovery/CollegeSystem/CollegeSystem.DAL/CollegeSystem.DAL.csproj"
+              "/Users/abdulhamid/Documents/GitHub/CollegeSystemProject/CollegeSystem/CollegeSystem.DAL/CollegeSystem.DAL.csproj": {
+                "projectPath": "/Users/abdulhamid/Documents/GitHub/CollegeSystemProject/CollegeSystem/CollegeSystem.DAL/CollegeSystem.DAL.csproj"
               }
             }
           }
@@ -179,14 +186,14 @@
         }
       }
     },
-    "/Users/abdulhamid/Documents/GitHub/CollegeSystemRecovery/CollegeSystem/CollegeSystem.DAL/CollegeSystem.DAL.csproj": {
+    "/Users/abdulhamid/Documents/GitHub/CollegeSystemProject/CollegeSystem/CollegeSystem.DAL/CollegeSystem.DAL.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "/Users/abdulhamid/Documents/GitHub/CollegeSystemRecovery/CollegeSystem/CollegeSystem.DAL/CollegeSystem.DAL.csproj",
+        "projectUniqueName": "/Users/abdulhamid/Documents/GitHub/CollegeSystemProject/CollegeSystem/CollegeSystem.DAL/CollegeSystem.DAL.csproj",
         "projectName": "CollegeSystem.DAL",
-        "projectPath": "/Users/abdulhamid/Documents/GitHub/CollegeSystemRecovery/CollegeSystem/CollegeSystem.DAL/CollegeSystem.DAL.csproj",
+        "projectPath": "/Users/abdulhamid/Documents/GitHub/CollegeSystemProject/CollegeSystem/CollegeSystem.DAL/CollegeSystem.DAL.csproj",
         "packagesPath": "/Users/abdulhamid/.nuget/packages/",
-        "outputPath": "/Users/abdulhamid/Documents/GitHub/CollegeSystemRecovery/CollegeSystem/CollegeSystem.DAL/obj/",
+        "outputPath": "/Users/abdulhamid/Documents/GitHub/CollegeSystemProject/CollegeSystem/CollegeSystem.DAL/obj/",
         "projectStyle": "PackageReference",
         "configFilePaths": [
           "/Users/abdulhamid/.nuget/NuGet/NuGet.Config"
@@ -236,6 +243,75 @@
               "suppressParent": "All",
               "target": "Package",
               "version": "[7.0.13, )"
+            }
+          },
+          "imports": [
+            "net461",
+            "net462",
+            "net47",
+            "net471",
+            "net472",
+            "net48",
+            "net481"
+          ],
+          "assetTargetFallback": true,
+          "warn": true,
+          "downloadDependencies": [
+            {
+              "name": "Microsoft.AspNetCore.App.Ref",
+              "version": "[7.0.14, 7.0.14]"
+            },
+            {
+              "name": "Microsoft.NETCore.App.Ref",
+              "version": "[7.0.14, 7.0.14]"
+            }
+          ],
+          "frameworkReferences": {
+            "Microsoft.NETCore.App": {
+              "privateAssets": "all"
+            }
+          },
+          "runtimeIdentifierGraphPath": "/usr/local/share/dotnet/sdk/8.0.100/RuntimeIdentifierGraph.json"
+        }
+      }
+    },
+    "/Users/abdulhamid/Documents/GitHub/CollegeSystemProject/CollegeSystem/User.Management.Services/User.Management.Services.csproj": {
+      "version": "1.0.0",
+      "restore": {
+        "projectUniqueName": "/Users/abdulhamid/Documents/GitHub/CollegeSystemProject/CollegeSystem/User.Management.Services/User.Management.Services.csproj",
+        "projectName": "User.Management.Services",
+        "projectPath": "/Users/abdulhamid/Documents/GitHub/CollegeSystemProject/CollegeSystem/User.Management.Services/User.Management.Services.csproj",
+        "packagesPath": "/Users/abdulhamid/.nuget/packages/",
+        "outputPath": "/Users/abdulhamid/Documents/GitHub/CollegeSystemProject/CollegeSystem/User.Management.Services/obj/",
+        "projectStyle": "PackageReference",
+        "configFilePaths": [
+          "/Users/abdulhamid/.nuget/NuGet/NuGet.Config"
+        ],
+        "originalTargetFrameworks": [
+          "net7.0"
+        ],
+        "sources": {
+          "https://api.nuget.org/v3/index.json": {}
+        },
+        "frameworks": {
+          "net7.0": {
+            "targetAlias": "net7.0",
+            "projectReferences": {}
+          }
+        },
+        "warningProperties": {
+          "warnAsError": [
+            "NU1605"
+          ]
+        }
+      },
+      "frameworks": {
+        "net7.0": {
+          "targetAlias": "net7.0",
+          "dependencies": {
+            "NETCore.MailKit": {
+              "target": "Package",
+              "version": "[2.1.0, )"
             }
           },
           "imports": [

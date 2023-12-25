@@ -4,6 +4,8 @@ namespace CollegeSystem.DL;
 
 public class StudentRegisterDto
 {
+    [Required] 
+    public long StudentCode { get; set; } 
     [Required]
     public string UserName { get; set; } = string.Empty;
     [Required]

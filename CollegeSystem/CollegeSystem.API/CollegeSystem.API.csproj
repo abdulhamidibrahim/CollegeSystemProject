@@ -16,11 +16,13 @@
           <PrivateAssets>all</PrivateAssets>
           <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
         </PackageReference>
+        <PackageReference Include="NETCore.MailKit" Version="2.1.0" />
         <PackageReference Include="Swashbuckle.AspNetCore" Version="6.5.0" />
     </ItemGroup>
 
     <ItemGroup>
       <ProjectReference Include="..\CollegeSystem.BL\CollegeSystem.BL.csproj" />
+      <ProjectReference Include="..\User.Management.Services\User.Management.Services.csproj" />
     </ItemGroup>
 
 </Project>

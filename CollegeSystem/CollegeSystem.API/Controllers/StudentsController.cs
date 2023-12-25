@@ -36,6 +36,7 @@ public class StudentsController: ControllerBase
         {
             var student = new Student()
             {
+                Id = studentRegisterDto.StudentCode,
                 UserName  = studentRegisterDto.UserName,
                 Email = studentRegisterDto.Email,
                 ArabicName = studentRegisterDto.Name,
