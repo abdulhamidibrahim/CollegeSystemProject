@@ -63,8 +63,22 @@ builder.Services.Configure<IdentityOptions>(options =>
     options.Password.RequireLowercase = false;
     options.Password.RequireNonAlphanumeric = false;
     options.Password.RequireUppercase = false;
+    
+    
+    options.Lockout.MaxFailedAccessAttempts = 5;
+    
+    // Default inactivity timeout is 5 minutes
+    options.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromMinutes(5);
+    
+    // Add Config for Email required  
+    // options.User.RequireUniqueEmail = true;
+    options.SignIn.RequireConfirmedEmail = true;
 });
 
+builder.Services.Configure<DataProtectionTokenProviderOptions>(options =>
+{
+    options.TokenLifespan = TimeSpan.FromHours(2);
+});
 
 #region Resolving Managers Services
 
