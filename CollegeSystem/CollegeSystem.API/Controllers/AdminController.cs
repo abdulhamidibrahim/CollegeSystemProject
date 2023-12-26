@@ -1,13 +1,13 @@
-using System.Diagnostics;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
+using CollegeSystem.BL.DTOs;
 using CollegeSystem.BL.DTOs.User;
 using CollegeSystem.DAL.Models;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
-using NETCore.MailKit.Core;
 using User.Management.Services.Models;
 using IEmailService = User.Management.Services.Services.IEmailService;
 
@@ -21,7 +21,7 @@ public class AdminController : ControllerBase
     private readonly IEmailService _emailService;
     private readonly IConfiguration _config;
 
-    public AdminController(UserManager<ApplicationUser> userManager,IEmailService emailService, IConfiguration config)
+    public AdminController(UserManager<ApplicationUser> userManager, IEmailService emailService, IConfiguration config)
     {
         _userManager = userManager;
         _emailService = emailService;
@@ -40,7 +40,7 @@ public class AdminController : ControllerBase
                 Name = adminRegisterDto.Name,
                 Phone = adminRegisterDto.Phone,
                 EmailConfirmed = false,
-
+                TwoFactorEnabled = true
             };
 
             IdentityResult result = await _userManager.CreateAsync(user, adminRegisterDto.Password);
@@ -55,7 +55,7 @@ public class AdminController : ControllerBase
             var confirmationLink = Url.Action(nameof(ConfirmEmail), "Admin", new { token, email = user.Email },
                 Request.Scheme);
             var message = new Message(new[] { user.Email }, "Confirmation email link", confirmationLink!);
-            
+
             _emailService.SendEmail(message);
             return Ok(
                 "Account created successfully, we have sent a confirmation email, please click the link to confirm your email");
@@ -137,50 +137,58 @@ public class AdminController : ControllerBase
         {
             return BadRequest("Invalid token");
         }
+
         return Ok("Email confirmed successfully");
     }
     
+    [HttpPost("forgotPassword")]
+    public async Task<ActionResult> ForgotPassword(string email)
+    {
+        var user = await _userManager.FindByEmailAsync(email);
+        if (user == null) return BadRequest("User not found");
+        var token = await _userManager.GenerateUserTokenAsync(user, "Email","ResetFactor");
+        var passwordResetLink = Url.Action(nameof(ResetPassword), "Admin", new { token, email = user.Email },Request.Scheme);
+        var message = new Message(new[] { user.Email }!, "Reset password link", passwordResetLink!);
+        _emailService.SendEmail(message);
+        return Ok("Password reset link sent successfully");
+    }
+    
+    [HttpGet("resetPassword")]
+    public ActionResult ResetPassword(string token, string email)
+    {
+        if (string.IsNullOrWhiteSpace(token) || string.IsNullOrWhiteSpace(email))
+        {
+            return NotFound("Invalid token or Email");
+        }
 
-// [HttpPost("createRole")]
-    // // [Authorize(Roles = "Admin")]
-    // public async Task CreateRoles(IServiceProvider serviceProvider,string role)
-    // {
-    //     //initializing custom roles 
-    //
-    //     string[] roleNames = { "Admin", "Staff", "Student","Parent" };
-    //     var allRoles = roleNames.Append(role);
-    //
-    //     foreach (var roleName in allRoles)
-    //     {
-    //         var roleExist = await _roleManager.RoleExistsAsync(roleName);
-    //         if (!roleExist)
-    //         {
-    //             //create the roles and seed them to the database: Question 1
-    //             await _roleManager.CreateAsync(new IdentityRole(roleName));
-    //         }
-    //     }
-    //
-    //     //Here you could create a super user who will maintain the web app
-    //     var powerUser = new Admin
-    //     {
-    //
-    //         UserName = _config["AppSettings:UserName"],
-    //         Email = _config["AppSettings:UserEmail"],
-    //     };
-    //     //Ensure you have these values in your appsettings.json file
-    //     string? userPwd = _config["AppSettings:UserPassword"];
-    //     var user = await _userManager.FindByEmailAsync(_config["AppSettings:AdminUserEmail"]!);
-    //
-    //     if (user == null)
-    //     {
-    //         Debug.Assert(userPwd != null, nameof(userPwd) + " != null");
-    //         var createPowerUser = await _userManager.CreateAsync(powerUser, userPwd);
-    //         if (createPowerUser.Succeeded)
-    //         {
-    //             //here we tie the new user to the role
-    //             await _userManager.AddToRoleAsync(powerUser, "Admin");
-    //
-    //         }
-    //     }
-    // }
-}
+        return Ok(new ResetPasswordDto { Token = token, Email = email });
+    }
+    
+    //reset password
+    [HttpPost("resetPassword")]
+    public async Task<ActionResult> ResetPassword(ResetPasswordDto resetPasswordDto)
+    {
+        if (ModelState.IsValid)
+        {
+            var user = await _userManager.FindByEmailAsync(resetPasswordDto.Email);
+            if (user == null) return NotFound("User not found");
+            var validateOTP = await _userManager.VerifyUserTokenAsync(user,"Email","ResetFactor", resetPasswordDto.Token);
+            if (!validateOTP)
+            {
+                return BadRequest("Invalid OTP");
+            }
+            var token = await _userManager.GeneratePasswordResetTokenAsync(user);
+            var result = await _userManager.ResetPasswordAsync(user ,token,resetPasswordDto.Password);
+            if (!result.Succeeded)
+            {
+                return BadRequest("Invalid token or password");
+            }
+
+            return Ok("Password reset successfully");
+        }
+
+        return BadRequest("Invalid payload");
+    }
+    
+    
+ }
