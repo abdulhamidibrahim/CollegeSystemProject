@@ -5,9 +5,9 @@ public class AssignmentUpdateDto
     public string? Title { get; set; }
 
     public string? Description { get; set; }
-
-    public string? File { get; set; }
-
-    public long? CourseId { get; set; }
+    
+    public string FileName { get; set; } = string.Empty;
+    public byte[] FileContent { get; set; } = Array.Empty<byte>();
+    public string FileExtension { get; set; } = string.Empty;
 }
 

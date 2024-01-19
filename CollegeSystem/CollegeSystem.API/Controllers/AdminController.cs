@@ -17,11 +17,14 @@ namespace CollegeSystem.API.Controllers;
 [Route("api/[controller]")]
 public class AdminController : ControllerBase
 {
-    private readonly UserManager<ApplicationUser> _userManager;
+    private readonly UserManager<Admin> _userManager;
     private readonly IEmailService _emailService;
     private readonly IConfiguration _config;
 
-    public AdminController(UserManager<ApplicationUser> userManager, IEmailService emailService, IConfiguration config)
+    public AdminController(
+        UserManager<Admin> userManager,
+        IEmailService emailService, 
+        IConfiguration config)
     {
         _userManager = userManager;
         _emailService = emailService;
@@ -72,7 +75,7 @@ public class AdminController : ControllerBase
     {
         if (ModelState.IsValid)
         {
-            ApplicationUser? user = await _userManager.FindByNameAsync(adminLoginDto.UserName);
+            Admin? user = await _userManager.FindByNameAsync(adminLoginDto.UserName);
             if (user != null)
             {
                 bool found = await _userManager.CheckPasswordAsync(user, adminLoginDto.Password);

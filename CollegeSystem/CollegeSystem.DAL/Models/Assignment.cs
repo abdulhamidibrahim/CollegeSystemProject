@@ -11,11 +11,14 @@ public partial class Assignment
 
     public string? Description { get; set; }
 
-    public string? File { get; set; }
+    public string FileName { get; set; } = string.Empty;
+    public byte[] FileContent { get; set; } = Array.Empty<byte>();
+    public string FileExtension { get; set; } = string.Empty;
 
-    public long? CourseId { get; set; }
+    public Section? Section { get; set; } 
+    public long? SectionId { get; set; }
+    public virtual  ICollection<AssignmentAnswer> AssignmentAnswers { get; set; } = new List<AssignmentAnswer>();
 
-    public virtual ICollection<AssignmentAnswer> AssignmentAnswers { get; set; } = new List<AssignmentAnswer>();
-
-    public virtual Course? Course { get; set; }
+    public Lecture? Lecture { get; set; } 
+    public long? LectureId { get; set; }
 }

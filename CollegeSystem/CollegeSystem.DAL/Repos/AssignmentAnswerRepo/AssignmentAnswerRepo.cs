@@ -13,4 +13,12 @@ public class AssignmentAnswerRepo :GenericRepo<AssignmentAnswer>,IAssignmentAnsw
         _context = context;
     }
     
+    public AssignmentAnswer? GetByAssignmentAndStudentId(long assignmentId, long studentId)
+    {
+        return _context.AssignmentAnswers?
+            .FirstOrDefault
+                (a => a.AssignmentId == assignmentId 
+                      && a.StudentId==studentId);
+    }
+    
 }

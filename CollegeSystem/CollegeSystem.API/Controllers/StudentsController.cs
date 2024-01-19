@@ -1,10 +1,10 @@
-using System.Diagnostics;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
 using CollegeSystem.BL.DTOs;
 using CollegeSystem.DAL.Models;
 using CollegeSystem.DL;
+using FileUploadingWebAPI.Filter;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
@@ -26,7 +26,8 @@ public class StudentsController: ControllerBase
         IStudentManager studentManager,
         UserManager<Student> userManager,
         IEmailService emailService,
-        IConfiguration config)
+        IConfiguration config
+        )
     {
         _config = config;
         _studentManager = studentManager;
@@ -42,15 +43,9 @@ public class StudentsController: ControllerBase
         {
             var student = new Student()
             {
-                Id = studentRegisterDto.StudentCode,
                 UserName  = studentRegisterDto.UserName,
                 Email = studentRegisterDto.Email,
                 ArabicName = studentRegisterDto.Name,
-                Phone = studentRegisterDto.Phone,
-                UniversityEmail = studentRegisterDto.UniversityEmail,
-                ParentEmail = studentRegisterDto.ParentEmail,
-                ParentPhone = studentRegisterDto.ParentPhone,
-                Ssn = studentRegisterDto.Ssn,
                 EmailConfirmed = false,
             };
             
@@ -79,14 +74,14 @@ public class StudentsController: ControllerBase
     
     [HttpPost]
     [Route("login")]
-    public async Task<ActionResult> Login(StudentRegisterDto studentRegisterDto)
+    public async Task<ActionResult> Login(StudentLoginDto studentLoginDto)
     {
         if (ModelState.IsValid)
         {
-           Student? student=await _userManager.FindByNameAsync(studentRegisterDto.UserName);
+           Student? student=await _userManager.FindByNameAsync(studentLoginDto.UserName);
            if (student != null)
            {
-              bool found= await _userManager.CheckPasswordAsync(student, studentRegisterDto.Password);
+              bool found= await _userManager.CheckPasswordAsync(student, studentLoginDto.Password);
               if (found)
               {
                   // create tokens 
@@ -203,9 +198,41 @@ public class StudentsController: ControllerBase
     
     
     
+    [HttpPost("uploadImage/{id}")]
+    [ImageValidator]
+    public IActionResult UploadImage(IFormFile iamge,long id)
+    {
+         _studentManager.AddImageAsync(iamge,id);
+        return Ok("Image Uploaded Successfully");
+    }
     
     
-    [HttpGet]
+    [HttpPut("{id}")]
+    public IActionResult UpdateImage(int id, IFormFile file)
+    {
+       _studentManager.UpdateImageAsync(id, file);
+
+        return Ok("Image Updated Successfully");
+    }
+    
+    [HttpGet("getImage/{id}")]
+    public  IActionResult  GetImage(int id)
+    {
+        _studentManager.GetImage(id);
+
+        return Ok();
+    }
+    
+    [HttpDelete("{id}")]
+    public IActionResult DeleteImage(int id)
+    {
+       _studentManager.DeleteImage(id);
+
+        return Ok("Image deleted Successfully");
+    }
+
+
+    [HttpGet("GetAll")]
     public ActionResult<List<StudentReadDto>> GetAll()
     {
         return _studentManager.GetAll();

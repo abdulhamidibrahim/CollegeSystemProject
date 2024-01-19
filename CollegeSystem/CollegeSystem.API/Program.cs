@@ -55,6 +55,27 @@ builder.Services.AddIdentity<ApplicationUser, IdentityRole<long>>()
     .AddDefaultTokenProviders();
     
 
+builder.Services.AddIdentityCore<Admin>()
+    .AddRoles<IdentityRole<long>>()
+    .AddEntityFrameworkStores<CollegeSystemDbContext>()
+    .AddDefaultTokenProviders();
+
+builder.Services.AddIdentityCore<Student>()
+    .AddRoles<IdentityRole<long>>()
+    .AddEntityFrameworkStores<CollegeSystemDbContext>()
+    .AddDefaultTokenProviders();
+
+// builder.Services.AddIdentityCore<Parent>()
+//     .AddRoles<IdentityRole<long>>()
+//     .AddEntityFrameworkStores<CollegeSystemDbContext>()
+//     .AddDefaultTokenProviders();
+//
+// builder.Services.AddIdentityCore<Staff>()
+//     .AddRoles<IdentityRole<long>>()
+//     .AddEntityFrameworkStores<CollegeSystemDbContext>()
+//     .AddDefaultTokenProviders();
+
+
 
 builder.Services.Configure<IdentityOptions>(options =>
 {
@@ -105,12 +126,9 @@ builder.Services.AddScoped<ICourseManager, CourseManager>();
 builder.Services.AddScoped<ICourseManager, CourseManager>();
 builder.Services.AddScoped<ICourseStaffManager, CourseStaffManager>();
 builder.Services.AddScoped<ICourseUserManager, CourseUserManager>();
-builder.Services.AddScoped<ILectureAssignmentManager, LectureAssignmentManager>();
-builder.Services.AddScoped<ILectureAssignmentAnswerManager, LectureAssignmentAnswerManager>();
 builder.Services.AddScoped<IParentCallManager, ParentCallManager>();
 builder.Services.AddScoped<IPermAttendanceManager, PermAttendanceManager>();
 builder.Services.AddScoped<IQuizManager, QuizManager>();
-builder.Services.AddScoped<ISectionAssignmentAnswerManager, SectionAssignmentAnswerManager>();
 builder.Services.AddScoped<ITempAttendanceManager, TempAttendanceManager>();
 
 
@@ -139,14 +157,11 @@ builder.Services.AddScoped<IAssignmentAnswerRepo, AssignmentAnswerRepo>();
 builder.Services.AddScoped<IReplyRepo, ReplyRepo>();
 builder.Services.AddScoped<ICourseStaffRepo, CourseStaffRepo>();
 builder.Services.AddScoped<ICourseUserRepo, CourseUserRepo>();
-builder.Services.AddScoped<ILectureAssignmentRepo, LectureAssignmentRepo>();
-builder.Services.AddScoped<ILectureAssignmentAnswerRepo, LectureAssignmentAnswerRepo>();
 builder.Services.AddScoped<IParentCallRepo, ParentCallRepo>();
 builder.Services.AddScoped<IPermAttendanceRepo, PermAttendanceRepo>();
 builder.Services.AddScoped<IQuizRepo, QuizRepo>();
-builder.Services.AddScoped<ISectionAssignmentRepo, SectionAssignmentRepo>();
-builder.Services.AddScoped<ISectionAssignmentAnswerRepo, SectionAssignmentAnswerRepo>();
 builder.Services.AddScoped<ITempAttendanceRepo, TempAttendanceRepo>();
+builder.Services.AddScoped<IFileRepo, FileRepo>();
 
 
 #endregion

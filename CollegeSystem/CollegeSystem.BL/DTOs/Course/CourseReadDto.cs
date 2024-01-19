@@ -13,7 +13,5 @@ public class CourseReadDto
     public string? Code { get; set; }
 
     public string? Link { get; set; }
-
-    public string? Img { get; set; }
-
+    
 }

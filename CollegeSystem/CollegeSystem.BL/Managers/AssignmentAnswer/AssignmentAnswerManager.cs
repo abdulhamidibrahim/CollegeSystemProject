@@ -1,5 +1,7 @@
 ﻿using CollegeSystem.DAL.Models;
 using FCISystem.DAL;
+using Microsoft.AspNetCore.Http;
+using File = CollegeSystem.DAL.Models.File;
 
 namespace CollegeSystem.DL;
 
@@ -11,61 +13,77 @@ public class AssignmentAnswerManager : IAssignmentAnswerManager
     {
         _assignmentAnswerRepo = assignmentAnswerRepo;
     }
-
-    public void Add(AssignmentAnswerAddDto assignmentAnswerAddDto)
+    
+    
+    public void UpdateFileAsync(long assignmentId,long studentId, IFormFile file)
     {
-        var assignmentAnswer = new AssignmentAnswer()
+        var fileModel = _assignmentAnswerRepo
+            .GetByAssignmentAndStudentId(assignmentId,studentId);
+        if (fileModel == null)
+            throw new InvalidDataException("File Not Found");
+        fileModel.FileName = file.FileName;
+        using (var ms = new MemoryStream()) 
         {
-            
-            AssignmentId = assignmentAnswerAddDto.AssignmentId,
-            File = assignmentAnswerAddDto.File,
-            
-
-        };
-        _assignmentAnswerRepo.Add(assignmentAnswer);
+            file.CopyToAsync(ms);
+            fileModel.FileContent = ms.ToArray();
+        }
+        
+        _assignmentAnswerRepo.Update(fileModel);
     }
 
-    public void Update(AssignmentAnswerUpdateDto assignmentAnswerUpdateDto)
+    public void DeleteFile(long assignmentId, long studentId)
     {
-        var assignmentAnswer = _assignmentAnswerRepo.GetById(assignmentAnswerUpdateDto.AssignmentAnswerId);
-        if (assignmentAnswer == null) return;
-        assignmentAnswer.AssignmentId = assignmentAnswerUpdateDto.AssignmentId;
-        assignmentAnswer.File = assignmentAnswerUpdateDto.File;
-
-
-
-        _assignmentAnswerRepo.Update(assignmentAnswer);
+        var fileModel = _assignmentAnswerRepo
+            .GetByAssignmentAndStudentId(assignmentId,studentId);
+        
+        if (fileModel == null)
+            throw new InvalidDataException("File Not Found");
+        _assignmentAnswerRepo.Delete(fileModel);
     }
 
-    public void Delete(AssignmentAnswerDeleteDto assignmentAnswerDeleteDto)
+    public UploadAssignmentFileDto? GetFile(long assignmentId, long studentId)
     {
-        var assignmentAnswer = _assignmentAnswerRepo.GetById(assignmentAnswerDeleteDto.Id);
-        if (assignmentAnswer == null) return;
-        _assignmentAnswerRepo.Delete(assignmentAnswer);
-    }
-
-    public AssignmentAnswerReadDto? Get(long id)
-    {
-        var assignmentAnswer = _assignmentAnswerRepo.GetById(id);
-        if (assignmentAnswer == null) return null;
-        return new AssignmentAnswerReadDto()
+        var fileModel = _assignmentAnswerRepo
+            .GetByAssignmentAndStudentId(assignmentId, studentId);
+        
+        if (fileModel == null)
+            return null;
+        return new UploadAssignmentFileDto()
         {
-            AssignmentId = assignmentAnswer.AssignmentId,
-            File = assignmentAnswer.File,
-            
-
+            Name = fileModel.FileName,
+            Content = fileModel.FileContent,
+            Extension = fileModel.FileExtension
         };
     }
 
-    public List<AssignmentAnswerReadDto> GetAll()
+    public List<UploadAssignmentFileDto>? GetAllFiles()
     {
-        var assignmentAnswer = _assignmentAnswerRepo.GetAll();
-        return assignmentAnswer.Select(assignmentAnswer => new AssignmentAnswerReadDto()
+        var fileModels = _assignmentAnswerRepo.GetAll();
+        
+        return fileModels.Select(fileModel => new UploadAssignmentFileDto()
         {
-           
-            File = assignmentAnswer.File,
-            AssignmentId= assignmentAnswer.AssignmentId,
+            Name = fileModel.FileName,
+            Content = fileModel.FileContent,
+            Extension = fileModel.FileExtension
+        }).ToList();    
+    }
 
-        }).ToList();
+    public void AddFileAsync(IFormFile file, long studentId, long assignmentId)
+    {
+        var fileModel = new AssignmentAnswer()
+        {
+            FileName = file.FileName,
+            FileExtension = file.ContentType,
+            StudentId = studentId,
+            AssignmentId = assignmentId
+        };
+
+        using (var ms = new MemoryStream())
+        {
+            file.CopyToAsync(ms);
+            fileModel.FileContent = ms.ToArray();
+        }
+
+        _assignmentAnswerRepo.Add(fileModel);
     }
 }
