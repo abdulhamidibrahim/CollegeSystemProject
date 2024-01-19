@@ -1,11 +1,14 @@
-﻿namespace CollegeSystem.DL;
+﻿using Microsoft.AspNetCore.Http;
+
+namespace CollegeSystem.DL;
 
 public interface IAssignmentAnswerManager
 {
-    public void Add(AssignmentAnswerAddDto assignmentAnswerAddDto);
-    public void Update(AssignmentAnswerUpdateDto assignmentAnswerUpdateDto);
-    public void Delete(AssignmentAnswerDeleteDto assignmentAnswerDeleteDto);
-    public AssignmentAnswerReadDto? Get(long id);
-    public List<AssignmentAnswerReadDto> GetAll();
-    // public UserReadDto Login(UserLoginDto userLoginDto);
+    
+    public void UpdateFileAsync(long assignmentId,long studentId, IFormFile file);
+    public void DeleteFile(long assignmentId, long studentId);
+    public UploadAssignmentFileDto? GetFile(long assignmentId, long studentId);
+    public List<UploadAssignmentFileDto>? GetAllFiles();
+    public void AddFileAsync(IFormFile file, long assignmentId, long studentId);
+    
 }

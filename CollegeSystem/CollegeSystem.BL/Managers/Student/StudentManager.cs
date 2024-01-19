@@ -1,15 +1,19 @@
 using CollegeSystem.DAL.Models;
 using FCISystem.DAL;
+using Microsoft.AspNetCore.Http;
+using File = CollegeSystem.DAL.Models.File;
 
 namespace CollegeSystem.DL;
 
 public class StudentManager:IStudentManager
 {
     private readonly IStudentRepo _studentRepo;
+    private readonly IFileRepo _fileRepo;
 
-    public StudentManager(IStudentRepo studentRepo)
+    public StudentManager(IStudentRepo studentRepo,IFileRepo fileRepo)
     {
         _studentRepo = studentRepo;
+        _fileRepo = fileRepo;
     }
     
     public void Add(StudentAddDto studentAddDto)
@@ -23,7 +27,6 @@ public class StudentManager:IStudentManager
              Phone = studentAddDto.Phone,
              Password = studentAddDto.Password,
              Ssn = studentAddDto.Ssn,
-             Img = studentAddDto.Img,
              ParentEmail = studentAddDto.ParentEmail,
              ParentPhone = studentAddDto.ParentPhone,
         };
@@ -39,7 +42,6 @@ public class StudentManager:IStudentManager
         user.UniversityEmail = studentUpdateDto.UniversityEmail;
         user.Password = studentUpdateDto.Password;
         user.Ssn = studentUpdateDto.Ssn;
-        user.Img = studentUpdateDto.Img;
         user.Phone = studentUpdateDto.Phone;
         user.ParentEmail = studentUpdateDto.ParentEmail;
         user.ParentPhone = studentUpdateDto.ParentPhone;
@@ -65,7 +67,6 @@ public class StudentManager:IStudentManager
             UniversityEmail = user.UniversityEmail,
             Phone = user.Phone,
             Ssn = user.Ssn,
-            Img = user.Img,
             ParentEmail = user.ParentEmail,
             ParentPhone = user.ParentPhone,
         };
@@ -81,9 +82,64 @@ public class StudentManager:IStudentManager
             UniversityEmail = user.UniversityEmail,
             Phone = user.Phone,
             Ssn = user.Ssn,
-            Img = user.Img,
             ParentEmail = user.ParentEmail,
             ParentPhone = user.ParentPhone,
         }).ToList();
+    }
+
+    public void UpdateImageAsync(int id, IFormFile file)
+    {
+        var fileModel = _fileRepo.GetById(id);
+        var student = _studentRepo.GetById(id);
+        if (fileModel == null || student==null)
+            throw new InvalidDataException("File Not Found");
+        fileModel.Name = file.FileName;
+        using (var ms = new MemoryStream()) 
+        {
+            file.CopyToAsync(ms);
+            fileModel.Content = ms.ToArray();
+        }
+        
+        _fileRepo.Update(fileModel);
+    }
+
+    public void DeleteImage(int id)
+    {
+        var fileModel = _fileRepo.GetById(id);
+        if (fileModel == null)
+            throw new InvalidDataException("File Not Found");
+        _fileRepo.Delete(fileModel);
+    }
+
+    public UploadStudentImageDto? GetImage(int id)
+    {
+        var fileModel = _fileRepo.GetById(id);
+        var student = _studentRepo.GetById(id);
+        if (fileModel == null || student==null)
+            return null;
+        return new UploadStudentImageDto()
+        {
+            Name = fileModel.Name,
+            Content = fileModel.Content,
+            Extension = fileModel.Extension
+        };
+    }
+
+    public void AddImageAsync(IFormFile file, long id)
+    {
+        var fileModel = new File()
+        {
+            Name = file.FileName,
+            Extension = file.ContentType,
+            StudentId = id
+        };
+
+        using (var ms = new MemoryStream())
+        {
+            file.CopyToAsync(ms);
+            fileModel.Content = ms.ToArray();
+        }
+
+        _fileRepo.Add(fileModel);
     }
 }

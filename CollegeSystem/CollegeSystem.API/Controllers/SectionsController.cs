@@ -1,4 +1,5 @@
 using CollegeSystem.DL;
+using FileUploadingWebAPI.Filter;
 using Microsoft.AspNetCore.Mvc;
 
 namespace CollegeSystem.API.Controllers;
@@ -47,6 +48,33 @@ public class SectionsController: ControllerBase
     {
         _sectionManager.Delete(sectionDeleteDto);
         return Ok();
+    }
+    
+    
+    
+    [HttpPost("uploadFile/{id}")]
+    // [FileValidator]
+    public IActionResult UploadFile(IFormFile iamge,long id)
+    {
+        _sectionManager.AddFileAsync(iamge,id);
+        return Ok();
+    }
+    
+    
+    [HttpPut("{id}")]
+    public IActionResult UpdateFile(int sectionId, IFormFile file)
+    {
+        _sectionManager.UpdateFileAsync(sectionId, file);
+
+        return Ok("Image Updated Successfully");
+    }
+    
+    [HttpDelete("{id}")]
+    public IActionResult DeleteFile(int id)
+    {
+        _sectionManager.DeleteFile(id);
+
+        return Ok("Image Updated Successfully");
     }
     
 }

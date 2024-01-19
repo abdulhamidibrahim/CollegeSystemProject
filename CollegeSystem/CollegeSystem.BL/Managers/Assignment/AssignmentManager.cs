@@ -1,5 +1,6 @@
 ﻿using CollegeSystem.DAL.Models;
 using FCISystem.DAL;
+using Microsoft.AspNetCore.Http;
 
 namespace CollegeSystem.DL;
 
@@ -11,64 +12,104 @@ public class AssignmentManager : IAssignmentManager
     {
         _assignmentRepo = assignmentRepo;
     }
-
-    public void Add(AssignmentAddDto assignmentAddDto)
+    
+    public void UpdateAssignmentAsync(int id, IFormFile file)
     {
-        var assignment = new Assignment()
+        var fileModel = _assignmentRepo.GetById(id);
+        if (fileModel == null )
+            throw new InvalidDataException("File Not Found");
+        fileModel.FileName  = file.FileName;
+        using (var ms = new MemoryStream()) 
         {
-            Title = assignmentAddDto.Title,
-            Description = assignmentAddDto.Description,
-            File = assignmentAddDto.File,
-            CourseId = assignmentAddDto.CourseId,
-            
-        };
-        _assignmentRepo.Add(assignment);
+            file.CopyToAsync(ms);
+            fileModel.FileContent = ms.ToArray();
+        }
+        
+        _assignmentRepo.Update(fileModel);
     }
 
-    public void Update(AssignmentUpdateDto assignmentUpdateDto)
+    public void DeleteAssignment(int id)
     {
-        var assignment = _assignmentRepo.GetById(assignmentUpdateDto.AssignmentId);
-        if (assignment == null) return;
-        assignment.Title = assignmentUpdateDto.Title;
-        assignment.Description = assignmentUpdateDto.Description;
-        assignment.File = assignmentUpdateDto.File;
-        assignment.CourseId = assignmentUpdateDto.CourseId;
-
-
-        _assignmentRepo.Update(assignment);
+        var fileModel = _assignmentRepo.GetById(id);
+        if (fileModel == null)
+            throw new InvalidDataException("File Not Found");
+        _assignmentRepo.Delete(fileModel);
     }
 
-    public void Delete(AssignmentDeleteDto assignmentDeleteDto)
+    public UploadAssignmentFileDto GetAssignment(int id)
     {
-        var assignment = _assignmentRepo.GetById(assignmentDeleteDto.Id);
-        if (assignment == null) return;
-        _assignmentRepo.Delete(assignment);
-    }
-
-    public AssignmentReadDto? Get(long id)
-    {
-        var assignment = _assignmentRepo.GetById(id);
-        if (assignment == null) return null;
-        return new AssignmentReadDto()
+        var fileModel = _assignmentRepo.GetById(id);
+        if (fileModel == null)
+            throw new InvalidDataException("File Not Found");
+        return new UploadAssignmentFileDto()
         {
-            Title = assignment.Title,
-            Description = assignment.Description,
-            File = assignment.File,
-            CourseId = assignment.CourseId,
-
+            Name = fileModel.FileName,
+            Content = fileModel.FileContent,
+            Extension = fileModel.FileExtension
         };
     }
-
-    public List<AssignmentReadDto> GetAll()
+    
+    public List<UploadAssignmentFileDto>? GetAllSectionAssignments()
     {
-        var assignment = _assignmentRepo.GetAll();
-        return assignment.Select(assignment => new AssignmentReadDto()
+        var fileModel = _assignmentRepo.GetAll().Where(x => x.AssignmentId != null);
+        
+        return fileModel.Where(s=>s.SectionId != null).Select(x => new UploadAssignmentFileDto()
         {
-            Title = assignment.Title,
-            Description = assignment.Description,
-            File = assignment.File,
-            CourseId = assignment.CourseId,
-
+            Name = x.FileName ,
+            Content = x.FileContent ,
+            Extension = x.FileExtension 
         }).ToList();
+
+        return null;
+    }
+    
+    public List<UploadAssignmentFileDto>? GetAllLectureAssignments()
+    {
+        var fileModel = _assignmentRepo.GetAll().Where(x => x.AssignmentId != null);
+        
+        return fileModel.Where(s=>s.LectureId != null).Select(x => new UploadAssignmentFileDto()
+        {
+            Name = x.FileName ,
+            Content = x.FileContent ,
+            Extension = x.FileExtension 
+        }).ToList();
+
+        return null;
+    }
+
+    public void AddSectionAssignmentAsync(IFormFile file, long id)
+    {
+    var fileModel = new Assignment()
+    {
+        FileName = file.FileName,
+        FileExtension = file.ContentType,
+        SectionId = id
+    };
+
+    using (var ms = new MemoryStream())
+    {
+        file.CopyToAsync(ms);
+        fileModel.FileContent = ms.ToArray();
+    }
+    
+    _assignmentRepo.Add(fileModel);
+    }
+    
+    public void AddLectureAssignmentAsync(IFormFile file, long id)
+    {
+    var fileModel = new Assignment()
+    {
+        FileName = file.FileName,
+        FileExtension = file.ContentType,
+        SectionId = id
+    };
+
+    using (var ms = new MemoryStream())
+    {
+        file.CopyToAsync(ms);
+        fileModel.FileContent = ms.ToArray();
+    }
+    
+    _assignmentRepo.Add(fileModel);
     }
 }

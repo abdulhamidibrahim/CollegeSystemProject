@@ -1,4 +1,5 @@
 ﻿using CollegeSystem.DL;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace CollegeSystem.API.Controllers;
@@ -13,39 +14,54 @@ public class AssignmentController : ControllerBase
     {
         _assignmentManager = assignmentManager;
     }
-
-    [HttpGet]
-    public ActionResult<List<AssignmentReadDto>> GetAll()
+    
+    // [Authorize(Roles = "Staff")]
+    [HttpPost("uploadSectionAssignment")]
+    public IActionResult UploadFile(IFormFile file,long sectionId)
     {
-        return _assignmentManager.GetAll();
+        if (file == null || file.Length == 0)
+            return Content("file not selected");
+        _assignmentManager.AddSectionAssignmentAsync(file,sectionId);
+
+        return Ok("File Uploaded Successfully");
+    }
+    
+    
+    [HttpPost("uploadLectureAssignment")]
+    public IActionResult UploadLectureAssignment(IFormFile file,long lectureId)
+    {
+        if (file == null || file.Length == 0)
+            return Content("file not selected");
+        _assignmentManager.AddLectureAssignmentAsync(file,lectureId);
+
+        return Ok("File Uploaded Successfully");
     }
 
-    [HttpGet("{id}")]
-    public ActionResult<AssignmentReadDto?> Get(long id)
+    
+    // [Authorize(Roles = "Student")]
+    [HttpGet("DownloadAssignment/{id}")]
+    public IActionResult DownloadFile(int id)
     {
-        var user = _assignmentManager.Get(id);
-        if (user == null) return NotFound();
-        return user;
+        var fileModel = _assignmentManager.GetAssignment(id);
+        if (fileModel == null)
+            return NotFound();
+
+        return File(fileModel.Content, "application/octet-stream", fileModel.Name);
     }
 
-    [HttpPost]
-    public ActionResult Add(AssignmentAddDto assignmentAddDto)
-    {
-        _assignmentManager.Add(assignmentAddDto);
-        return Ok();
-    }
+    // [HttpGet("list")]
+    // public IActionResult ListAssignment()
+    // {
+    //     var fileModels = _assignmentManager.GetAll();
+    //     return Ok(fileModels);
+    // }
 
-    [HttpPut]
-    public ActionResult Update(AssignmentUpdateDto assignmentUpdateDto)
+    [Authorize(Roles = "Staff")]
+    [HttpDelete("DeleteFile/{id}")]
+    public IActionResult DeleteFile(int id)
     {
-        _assignmentManager.Update(assignmentUpdateDto);
-        return Ok();
-    }
-
-    [HttpDelete]
-    public ActionResult Delete(AssignmentDeleteDto assignmentDeleteDto)
-    {
-        _assignmentManager.Delete(assignmentDeleteDto);
+        _assignmentManager.DeleteAssignment(id);
+      
         return Ok();
     }
 

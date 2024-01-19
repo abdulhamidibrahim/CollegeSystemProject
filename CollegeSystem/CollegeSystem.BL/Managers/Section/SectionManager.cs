@@ -1,15 +1,19 @@
 using CollegeSystem.DAL.Models;
 using FCISystem.DAL;
+using Microsoft.AspNetCore.Http;
+using File = CollegeSystem.DAL.Models.File;
 
 namespace CollegeSystem.DL;
 
 public class SectionManager:ISectionManager
 {
     private readonly ISectionRepo _sectionRepo;
+    private readonly IFileRepo _fileRepo;
 
-    public SectionManager(ISectionRepo sectionRepo)
+    public SectionManager(ISectionRepo sectionRepo, IFileRepo fileRepo)
     {
         _sectionRepo = sectionRepo;
+        _fileRepo = fileRepo;
     }
     
     public void Add(SectionAddDto sectionAddDto)
@@ -17,7 +21,6 @@ public class SectionManager:ISectionManager
         var section = new Section()
         {
             Title = sectionAddDto.Title,
-            File = sectionAddDto.File,
             CourseId = sectionAddDto.CourseId
         };
         _sectionRepo.Add(section);
@@ -29,7 +32,6 @@ public class SectionManager:ISectionManager
         if (section == null) return;
         
         section.Title = sectionUpdateDto.Title;
-        section.File = sectionUpdateDto.File;
         section.CourseId = sectionUpdateDto.CourseId;
         
         _sectionRepo.Update(section);
@@ -49,7 +51,6 @@ public class SectionManager:ISectionManager
         return new SectionReadDto()
         {
             Title = section.Title,
-            File = section.File,
             CourseId = section.CourseId
         };
     }
@@ -60,9 +61,63 @@ public class SectionManager:ISectionManager
         return sections.Select(section => new SectionReadDto()
         {
             Title = section.Title,
-            File = section.File,
             CourseId = section.CourseId
             
         }).ToList();
+    }
+
+    public void UpdateFileAsync(int id, IFormFile file)
+    {
+        var fileModel = _fileRepo.GetById(id);
+        if (fileModel == null)
+            throw new InvalidDataException("File Not Found");
+        fileModel.Name = file.FileName;
+        using (var ms = new MemoryStream()) 
+        {
+            file.CopyToAsync(ms);
+            fileModel.Content = ms.ToArray();
+        }
+        
+        _fileRepo.Update(fileModel);
+    }
+
+    public void DeleteFile(int id)
+    {
+        var fileModel = _fileRepo.GetById(id);
+        var section = _sectionRepo.GetById(id);
+        if (fileModel == null || section==null)
+            throw new InvalidDataException("File Not Found");
+        _fileRepo.Delete(fileModel);
+    }
+
+    public UploadSectionFileDto? GetFile(int id)
+    {
+        var fileModel = _fileRepo.GetById(id);
+        if (fileModel == null)
+            return null;
+        return new UploadSectionFileDto()
+        {
+            Name = fileModel.Name,
+            Content = fileModel.Content,
+            Extension = fileModel.Extension
+        };
+    }
+
+    public void AddFileAsync(IFormFile file, long id)
+    {
+        var fileModel = new File()
+        {
+            Name = file.FileName,
+            Extension = file.ContentType,
+            SectionId = id
+        };
+
+        using (var ms = new MemoryStream())
+        {
+            file.CopyToAsync(ms);
+            fileModel.Content = ms.ToArray();
+        }
+
+        _fileRepo.Add(fileModel);
     }
 }

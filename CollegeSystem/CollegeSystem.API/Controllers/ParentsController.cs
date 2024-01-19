@@ -17,12 +17,12 @@ namespace CollegeSystem.API.Controllers;
 public class ParentsController: ControllerBase
 {
     private readonly IParentManager _parentManager;
-    private readonly UserManager<ApplicationUser> _userManager;
+    private readonly UserManager<Parent> _userManager;
     private readonly IEmailService _emailService;
     private readonly IConfiguration _config;
 
     public ParentsController(IParentManager parentManager,
-        UserManager<ApplicationUser> userManager, 
+        UserManager<Parent> userManager, 
         IEmailService emailService,
         IConfiguration config)
     {
@@ -76,7 +76,7 @@ public class ParentsController: ControllerBase
     {
         if (ModelState.IsValid)
         {
-           ApplicationUser? user=await _userManager.FindByNameAsync(parentRegisterDto.UserName);
+           Parent? user=await _userManager.FindByNameAsync(parentRegisterDto.UserName);
            if (user != null)
            {
               bool found= await _userManager.CheckPasswordAsync(user, parentRegisterDto.Password);

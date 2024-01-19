@@ -19,7 +19,6 @@ public class StaffManager:IStaffManager
             Name = staffAddDto.Name,
             Email = staffAddDto.Email,
             Password = staffAddDto.Password,
-            Img = staffAddDto.Img,
             Phone = staffAddDto.Phone,
         };
         _staffRepo.Add(staff);
@@ -33,7 +32,6 @@ public class StaffManager:IStaffManager
         staff.Email = staffUpdateDto.Email;
         staff.Password = staffUpdateDto.Password;
         staff.Phone = staffUpdateDto.Phone;
-        staff.Img = staffUpdateDto.Img;
         
         _staffRepo.Update(staff);
     }
@@ -55,7 +53,6 @@ public class StaffManager:IStaffManager
             Email = staff.Email,
             Password = staff.Password,
             Phone = staff.Phone,
-            Img = staff.Img,
             
         };
     }
@@ -69,7 +66,6 @@ public class StaffManager:IStaffManager
             Email = staff.Email,
             Password = staff.Password,
             Phone = staff.Phone,
-            Img = staff.Img,
         }).ToList();
     }
 }

@@ -1,15 +1,19 @@
 using CollegeSystem.DAL.Models;
 using FCISystem.DAL;
+using Microsoft.AspNetCore.Http;
+using File = CollegeSystem.DAL.Models.File;
 
 namespace CollegeSystem.DL;
 
 public class CourseManager:ICourseManager
 {
     private readonly ICourseRepo _courseRepo;
+    private readonly IFileRepo _fileRepo;
 
-    public CourseManager(ICourseRepo courseRepo)
+    public CourseManager(ICourseRepo courseRepo, IFileRepo fileRepo)
     {
         _courseRepo = courseRepo;
+        _fileRepo = fileRepo;
     }
     
     public void Add(CourseAddDto courseAddDto)
@@ -22,7 +26,6 @@ public class CourseManager:ICourseManager
             Hours = courseAddDto.Hours,
             Code = courseAddDto.Code,
             Link = courseAddDto.Link,
-            Img = courseAddDto.Img,
         };
         _courseRepo.Add(course);
     }
@@ -37,7 +40,6 @@ public class CourseManager:ICourseManager
         course.Hours = courseUpdateDto.Hours;
         course.Code = courseUpdateDto.Code;
         course.Link = courseUpdateDto.Link;
-        course.Img = courseUpdateDto.Img;
         
         _courseRepo.Update(course);
     }
@@ -61,8 +63,6 @@ public class CourseManager:ICourseManager
             Hours = course.Hours,
             Code = course.Code,
             Link = course.Link,
-            Img = course.Img,
-            
         };
     }
 
@@ -77,8 +77,63 @@ public class CourseManager:ICourseManager
             Hours = course.Hours,
             Code = course.Code,
             Link = course.Link,
-            Img = course.Img,
-            
         }).ToList();
+    }
+    
+    
+    public void UpdateImageAsync(int id, IFormFile file)
+    {
+        var fileModel = _fileRepo.GetById(id);
+        var course = _courseRepo.GetById(id);
+        if (fileModel == null || course==null)
+            throw new InvalidDataException("File Not Found");
+        fileModel.Name = file.FileName;
+        using (var ms = new MemoryStream()) 
+        {
+            file.CopyToAsync(ms);
+            fileModel.Content = ms.ToArray();
+        }
+        
+        _fileRepo.Update(fileModel);
+    }
+
+    public void DeleteImage(int id)
+    {
+        var fileModel = _fileRepo.GetById(id);
+        if (fileModel == null)
+            throw new InvalidDataException("File Not Found");
+        _fileRepo.Delete(fileModel);
+    }
+
+    public UploadCourseImageDto? GetImage(int id)
+    {
+        var fileModel = _fileRepo.GetById(id);
+        var course = _courseRepo.GetById(id);
+        if (fileModel == null || course==null)
+            return null;
+        return new UploadCourseImageDto()
+        {
+            Name = fileModel.Name,
+            Content = fileModel.Content,
+            Extension = fileModel.Extension
+        };
+    }
+
+    public void AddImageAsync(IFormFile file, long id)
+    {
+        var fileModel = new File()
+        {
+            Name = file.FileName,
+            Extension = file.ContentType,
+            CourseId = id
+        };
+
+        using (var ms = new MemoryStream())
+        {
+            file.CopyToAsync(ms);
+            fileModel.Content = ms.ToArray();
+        }
+
+        _fileRepo.Add(fileModel);
     }
 }
