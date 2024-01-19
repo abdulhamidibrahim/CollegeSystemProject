@@ -45,9 +45,9 @@ public class ActiveQuizManager : IActiveQuizManager
         _activeQuizRepo.Delete(ActiveQuiz);
     }
 
-    public ActiveQuizReadDto? Get(long id)
+    public ActiveQuizReadDto? Get(long quizId)
     {
-        var ActiveQuiz = _activeQuizRepo.GetById(id);
+        var ActiveQuiz = _activeQuizRepo.GetByQuizId(quizId);
         if (ActiveQuiz == null) return null;
         return new ActiveQuizReadDto()
         {

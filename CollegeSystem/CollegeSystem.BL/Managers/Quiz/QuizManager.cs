@@ -20,7 +20,8 @@ public class QuizManager:IQuizManager
             Instructor = quizAddDto.Instructor,
             MaxDegree = quizAddDto.MaxDegree,
             MaxTime = quizAddDto.MaxTime,
-            CourseId = quizAddDto.CourseId,
+            LectureId = quizAddDto.LectureId,
+            SectionId = quizAddDto.SectionId,
         };
         _quizRepo.Add(quiz);
     }
@@ -33,7 +34,8 @@ public class QuizManager:IQuizManager
         quiz.Instructor = quizUpdateDto.Instructor;
         quiz.MaxDegree = quizUpdateDto.MaxDegree;
         quiz.MaxTime = quizUpdateDto.MaxTime;
-        quiz.CourseId = quizUpdateDto.CourseId;
+        quiz.LectureId = quizUpdateDto.LectureId;
+        quiz.SectionId = quizUpdateDto.SectionId;
         quiz.QuizId = quizUpdateDto.QuizId;        
 
         _quizRepo.Update(quiz);
@@ -56,7 +58,8 @@ public class QuizManager:IQuizManager
             Instructor = quiz.Instructor,
             MaxDegree = quiz.MaxDegree,
             MaxTime = quiz.MaxTime,
-            CourseId = quiz.CourseId,
+            LectureId = quiz.LectureId,
+            SectionId = quiz.SectionId,
         };
     }
 
@@ -69,7 +72,8 @@ public class QuizManager:IQuizManager
             Instructor = quiz.Instructor,
             MaxDegree = quiz.MaxDegree,
             MaxTime = quiz.MaxTime,
-            CourseId = quiz.CourseId,
+            LectureId = quiz.LectureId,
+            SectionId = quiz.SectionId,
         }).ToList();
     }
 }

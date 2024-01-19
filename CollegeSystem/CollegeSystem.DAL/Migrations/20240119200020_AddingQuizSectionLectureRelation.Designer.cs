@@ -4,6 +4,7 @@ using CollegeSystem.DAL.Context;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace CollegeSystem.DAL.Migrations
 {
     [DbContext(typeof(CollegeSystemDbContext))]
-    partial class CollegeSystemDbContextModelSnapshot : ModelSnapshot
+    [Migration("20240119200020_AddingQuizSectionLectureRelation")]
+    partial class AddingQuizSectionLectureRelation
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -168,7 +171,8 @@ namespace CollegeSystem.DAL.Migrations
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("AnswerId"));
 
                     b.Property<long?>("CourseId")
-                        .HasColumnType("bigint");
+                        .HasColumnType("bigint")
+                        .HasColumnName("course_id");
 
                     b.Property<long?>("QuizId")
                         .HasColumnType("bigint")
@@ -1268,9 +1272,10 @@ namespace CollegeSystem.DAL.Migrations
 
             modelBuilder.Entity("CollegeSystem.DAL.Models.Answer", b =>
                 {
-                    b.HasOne("CollegeSystem.DAL.Models.Course", null)
+                    b.HasOne("CollegeSystem.DAL.Models.Course", "Course")
                         .WithMany("Answers")
-                        .HasForeignKey("CourseId");
+                        .HasForeignKey("CourseId")
+                        .HasConstraintName("FK_Answers_Courses");
 
                     b.HasOne("CollegeSystem.DAL.Models.Quiz", "Quiz")
                         .WithMany("Answers")
@@ -1280,6 +1285,8 @@ namespace CollegeSystem.DAL.Migrations
                     b.HasOne("CollegeSystem.DAL.Models.Student", "Student")
                         .WithMany("Answers")
                         .HasForeignKey("StudentId");
+
+                    b.Navigation("Course");
 
                     b.Navigation("Quiz");
 

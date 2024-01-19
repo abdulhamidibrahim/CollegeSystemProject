@@ -16,13 +16,13 @@ public class ActiveQuizController : ControllerBase
         _activeQuizManager = activeQuizManager;
     }
 
-    [HttpGet]
+    [HttpGet("getAllActiveQuizzes")]
     public ActionResult<List<ActiveQuizReadDto>> GetAll()
     {
         return _activeQuizManager.GetAll();
     }
 
-    [HttpGet("{id}")]
+    [HttpGet("getActiveQuizzes/{id}")]
     public ActionResult<ActiveQuizReadDto?> Get(long id)
     {
         var user = _activeQuizManager.Get(id);
@@ -34,7 +34,7 @@ public class ActiveQuizController : ControllerBase
 
         return user;
     }
-    [HttpPost]
+    [HttpPost("addActiveQuiz")]
     public ActionResult Add(ActiveQuizAddDto activeQuizAddDto)
     {
         _activeQuizManager.Add(activeQuizAddDto);
@@ -48,7 +48,7 @@ public class ActiveQuizController : ControllerBase
         return Ok();
     }
 
-    [HttpDelete]
+    [HttpDelete("deleteActiveQuiz")]
     public ActionResult Delete(ActiveQuizDeleteDto activeQuizDeleteeDto)
     {
         _activeQuizManager.Delete(activeQuizDeleteeDto);

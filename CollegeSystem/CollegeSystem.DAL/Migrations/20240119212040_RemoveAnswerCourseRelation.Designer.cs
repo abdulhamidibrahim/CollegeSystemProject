@@ -4,6 +4,7 @@ using CollegeSystem.DAL.Context;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace CollegeSystem.DAL.Migrations
 {
     [DbContext(typeof(CollegeSystemDbContext))]
-    partial class CollegeSystemDbContextModelSnapshot : ModelSnapshot
+    [Migration("20240119212040_RemoveAnswerCourseRelation")]
+    partial class RemoveAnswerCourseRelation
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder

@@ -69,9 +69,9 @@ public class QuestionManager:IQuestionManager
         };
     }
 
-    public List<QuestionReadDto> GetAll()
+    public List<QuestionReadDto> GetAllByQuizId(long quizId)
     {
-        var questions = _questionRepo.GetAll();
+        var questions = _questionRepo.GetByQuizId(quizId);
         return questions.Select(question => new QuestionReadDto()
         {
             Question1 = question.Question1,
@@ -81,8 +81,22 @@ public class QuestionManager:IQuestionManager
             Choice3 = question.Choice3,
             Choice4 = question.Choice4,
             Choice5 = question.Choice5,
-            QuizId = question.QuizId,
             
         }).ToList();
     }
+    // {
+    //     var questions = _questionRepo.GetAll();
+    //     return questions.Select(question => new QuestionReadDto()
+    //     {
+    //         Question1 = question.Question1,
+    //         Answer = question.Answer,
+    //         Choice1 = question.Choice1,
+    //         Choice2 = question.Choice2,
+    //         Choice3 = question.Choice3,
+    //         Choice4 = question.Choice4,
+    //         Choice5 = question.Choice5,
+    //         QuizId = question.QuizId,
+    //         
+    //     }).ToList();
+    // }
 }

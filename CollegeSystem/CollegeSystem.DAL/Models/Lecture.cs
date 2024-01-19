@@ -15,7 +15,9 @@ public partial class Lecture
 
     public virtual Course? Course { get; set; }
 
+    
     public virtual ICollection<LectureAssignment> LectureAssignments { get; set; } = new List<LectureAssignment>();
+    public virtual ICollection<Quiz> Quizzes { get; set; } = new List<Quiz>();
     public virtual ICollection<PermAttendance> PermAttendances { get; set; } = new List<PermAttendance>();
 
     public virtual ICollection<TempAttendance> TempAttendances { get; set; } = new List<TempAttendance>();

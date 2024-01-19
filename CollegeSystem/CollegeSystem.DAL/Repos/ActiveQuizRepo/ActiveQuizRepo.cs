@@ -13,4 +13,10 @@ public class ActiveQuizRepo :GenericRepo<ActiveQuiz>, IActiveQuizRepo
         _context = context;
     }
     
+    public ActiveQuiz? GetByQuizId(long quizId)
+    {
+        return _context.ActiveQuizzes?
+            .FirstOrDefault(x => x.QuizId == quizId);
+    }
+    
 }

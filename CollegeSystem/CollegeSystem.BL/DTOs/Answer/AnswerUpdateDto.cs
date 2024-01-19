@@ -6,7 +6,7 @@ public class AnswerUpdateDto
 
     public string? StudentMark { get; set; } = string.Empty;
 
-    public long? UserId { get; set; }
+    public long? StudentId { get; set; }
 
     public long? QuizId { get; set; }
 

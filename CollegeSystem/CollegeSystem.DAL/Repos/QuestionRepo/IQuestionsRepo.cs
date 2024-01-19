@@ -4,5 +4,5 @@ namespace FCISystem.DAL;
 
 public interface IQuestionRepo :IGenericRepo<Question>
 {
-    // add Question specific functions here
+    List<Question> GetByQuizId(long quizId);
 }
