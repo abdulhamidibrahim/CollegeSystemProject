@@ -5,5 +5,5 @@ namespace FCISystem.DAL;
 public interface IAssignmentRepo :IGenericRepo<Assignment>
 {
     // add Assignment specific functions here
-
+    List<Assignment>? GetAllCourseAssignments(long courseId);
 }

@@ -46,7 +46,7 @@ public class AssignmentController : ControllerBase
         if (fileModel == null)
             return NotFound();
 
-        return File(fileModel.Content, "application/octet-stream", fileModel.Name);
+        return File(fileModel.FileContent, "application/octet-stream", fileModel.FileName);
     }
 
     // [HttpGet("list")]
@@ -65,4 +65,30 @@ public class AssignmentController : ControllerBase
         return Ok();
     }
 
+    [Authorize(Roles = "Staff")]
+    [HttpPut("UpdateFile/{id}")]
+    public IActionResult UpdateFile(int id, IFormFile file)
+    {
+        _assignmentManager.UpdateAssignmentAsync(id, file);
+        return Ok();
+    }
+    
+    [HttpGet("GetAllSectionAssignments")]
+    public ActionResult<List<AssignmentReadDto>> GetAllSectionAssignments()
+    {
+        return _assignmentManager.GetAllSectionAssignments() ?? throw new InvalidOperationException();
+    }
+    
+    [HttpGet("GetAllLectureAssignments")]
+    public ActionResult<List<AssignmentReadDto>> GetAllLectureAssignments()
+    {
+        return _assignmentManager.GetAllLectureAssignments() ?? throw new InvalidOperationException();
+    }
+    
+    [HttpGet("GetAllCourseAssignments")]
+    public ActionResult<List<AssignmentReadDto>> GetAllCourseAssignments(long courseId)
+    {
+        return _assignmentManager.GetAllCourseAssignments(courseId) ?? throw new InvalidOperationException();
+    }
+    
 }

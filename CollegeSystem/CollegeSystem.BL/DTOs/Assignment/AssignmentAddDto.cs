@@ -7,5 +7,7 @@ public class AssignmentAddDto
 
         public string FileName { get; set; } = string.Empty;
         public byte[] FileContent { get; set; } = Array.Empty<byte>();
-        public string FileExtension { get; set; } = string.Empty;    }
+        public string FileExtension { get; set; } = string.Empty;
+        
+    }
 

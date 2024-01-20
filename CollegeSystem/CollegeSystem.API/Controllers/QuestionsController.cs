@@ -14,11 +14,12 @@ public class QuestionsController: ControllerBase
         _questionManager = questionManager;
     }
     
-    [HttpGet]
-    public ActionResult<List<QuestionReadDto>> GetAll()
+    [HttpGet("GetAllQuizQuestions/{quizId}")]
+    public ActionResult<List<QuestionReadDto>> GetAll(long quizId)
     {
-        return _questionManager.GetAll();
+        return _questionManager.GetAll(quizId);
     }
+    
     
     [HttpGet("{id}")]
     public ActionResult<QuestionReadDto?> Get(long id)

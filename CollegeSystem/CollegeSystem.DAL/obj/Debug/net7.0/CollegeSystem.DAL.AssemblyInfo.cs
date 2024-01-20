@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("CollegeSystem.DAL")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+886ea01364e3cccc116aba05a1a2e8d0e66e930d")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+4b3c07bf12f4bb772107983b01bff3d661796316")]
 [assembly: System.Reflection.AssemblyProductAttribute("CollegeSystem.DAL")]
 [assembly: System.Reflection.AssemblyTitleAttribute("CollegeSystem.DAL")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

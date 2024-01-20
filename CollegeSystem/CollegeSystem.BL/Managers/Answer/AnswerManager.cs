@@ -18,7 +18,7 @@ public class AnswerManager : IAnswerManager
         {
             StudentMark = answerAddDto.StudentMark,
             QuizId = answerAddDto.QuizId,
-            CourseId = answerAddDto.CourseId,
+            StudentId = answerAddDto.StudentId,
         };
         _answerRepo.Add(answer);
     }
@@ -28,7 +28,7 @@ public class AnswerManager : IAnswerManager
         var answer = _answerRepo.GetById(answerUpdateDto.AnswerId);
         if (answer == null) return;
         answer.StudentMark = answerUpdateDto.StudentMark;
-        answer.CourseId = answerUpdateDto.CourseId;
+        answer.StudentId = answerUpdateDto.StudentId;
         answer.QuizId = answerUpdateDto.QuizId;
 
         _answerRepo.Update(answer);
@@ -48,7 +48,7 @@ public class AnswerManager : IAnswerManager
         return new AnswerReadDto()
         {
             StudentMark = answer.StudentMark,
-            CourseId = answer.CourseId,
+            StudentId = answer.StudentId,
             QuizId = answer.QuizId,
         };
     }
@@ -59,7 +59,7 @@ public class AnswerManager : IAnswerManager
         return answers.Select(answer => new AnswerReadDto()
         {
             StudentMark = answer.StudentMark,
-            CourseId = answer.CourseId,
+            StudentId = answer.StudentId,
             QuizId = answer.QuizId,
         }).ToList();
     }

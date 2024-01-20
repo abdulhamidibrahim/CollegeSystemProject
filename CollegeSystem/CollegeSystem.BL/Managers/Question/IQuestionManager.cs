@@ -6,6 +6,6 @@ public interface IQuestionManager
     public void Update(QuestionUpdateDto questionUpdateDto);
     public void Delete(QuestionDeleteDto questionDeleteDto);
     public QuestionReadDto? Get(long id);
-    public List<QuestionReadDto> GetAll();
+    public List<QuestionReadDto> GetAll(long quizId);
     // public UserReadDto Login(UserLoginDto userLoginDto);
 }

@@ -14,63 +14,85 @@ public class ActiveQuizManager : IActiveQuizManager
 
     public void Add(ActiveQuizAddDto activeQuizAddDto)
     {
-        var ActiveQuiz = new ActiveQuiz()
+        var activeQuiz = new ActiveQuiz()
         {
             ActiveQuizzesId = activeQuizAddDto.ActiveQuizzesId,
             StartDate = activeQuizAddDto.StartDate,
-            Quiz = activeQuizAddDto.Quiz,
             QuizId = activeQuizAddDto.QuizId,
-
+            Duration = activeQuizAddDto.Duration
         };
-        _activeQuizRepo.Add(ActiveQuiz);
+        _activeQuizRepo.Add(activeQuiz);
     }
 
     public void Update(ActiveQuizUpdateDto activeQuizUpdateDto)
     {
-        var ActiveQuiz = _activeQuizRepo.GetById(activeQuizUpdateDto.ActiveQuizzesId);
-        if (ActiveQuiz == null) return;
-        ActiveQuiz.ActiveQuizzesId = activeQuizUpdateDto.ActiveQuizzesId;
-        ActiveQuiz.StartDate = activeQuizUpdateDto.StartDate;
-        ActiveQuiz.Quiz = activeQuizUpdateDto.Quiz;
-        ActiveQuiz.QuizId = activeQuizUpdateDto.QuizId;
+        var activeQuiz = _activeQuizRepo.GetById(activeQuizUpdateDto.ActiveQuizzesId);
+        if (activeQuiz == null) return;
+        activeQuiz.ActiveQuizzesId = activeQuizUpdateDto.ActiveQuizzesId;
+        activeQuiz.StartDate = activeQuizUpdateDto.StartDate;
+        activeQuiz.QuizId = activeQuizUpdateDto.QuizId;
+        activeQuiz.Duration = activeQuizUpdateDto.Duration;
 
-
-        _activeQuizRepo.Update(ActiveQuiz);
+        _activeQuizRepo.Update(activeQuiz);
     }
 
     public void Delete(ActiveQuizDeleteDto activeQuizDeleteDto)
     {
-        var ActiveQuiz = _activeQuizRepo.GetById(activeQuizDeleteDto.Id);
-        if (ActiveQuiz == null) return;
-        _activeQuizRepo.Delete(ActiveQuiz);
+        var activeQuiz = _activeQuizRepo.GetById(activeQuizDeleteDto.Id);
+        if (activeQuiz == null) return;
+        _activeQuizRepo.Delete(activeQuiz);
     }
 
-    public ActiveQuizReadDto? Get(long id)
+    public ActiveQuizReadDto? Get(long quizId)
     {
-        var ActiveQuiz = _activeQuizRepo.GetById(id);
-        if (ActiveQuiz == null) return null;
+        var activeQuiz = _activeQuizRepo.GetByQuizId(quizId);
+        if (activeQuiz == null) return null;
         return new ActiveQuizReadDto()
         {
-            ActiveQuizzesId = ActiveQuiz.ActiveQuizzesId,
-            StartDate = ActiveQuiz.StartDate,
-            Quiz = ActiveQuiz.Quiz,
-            QuizId = ActiveQuiz.QuizId,
-
+            ActiveQuizzesId = activeQuiz.ActiveQuizzesId,
+            StartDate = activeQuiz.StartDate,
+            QuizId = activeQuiz.QuizId,
+            Duration = activeQuiz.Duration
         };
     }
 
     public List<ActiveQuizReadDto> GetAll()
     {
-        var ActiveQuiz = _activeQuizRepo.GetAll();
-        return ActiveQuiz.Select(ActiveQuiz => new ActiveQuizReadDto()
+        var activeQuizzes = _activeQuizRepo.GetAll();
+        return activeQuizzes.Select(activeQuiz => new ActiveQuizReadDto()
         {
-            ActiveQuizzesId = ActiveQuiz.ActiveQuizzesId,
-            StartDate = ActiveQuiz.StartDate,
-            Quiz = ActiveQuiz.Quiz,
-            QuizId = ActiveQuiz.QuizId,
+            ActiveQuizzesId = activeQuiz.ActiveQuizzesId,
+            StartDate = activeQuiz.StartDate,
+            QuizId = activeQuiz.QuizId,
+            Duration = activeQuiz.Duration
 
         }).ToList();
     }
 
+    public List<ActiveQuizReadDto> GetAllSectionQuizzes()
+    {
+        var activeQuizzes = _activeQuizRepo.GetSectionsActiveQuiz();
+        return activeQuizzes!.Select(activeQuiz => new ActiveQuizReadDto()
+        {
+            ActiveQuizzesId = activeQuiz.ActiveQuizzesId,
+            StartDate = activeQuiz.StartDate,
+            QuizId = activeQuiz.QuizId,
+            Duration = activeQuiz.Duration
+
+        }).ToList();
+    }
+    
+    public List<ActiveQuizReadDto> GetAllLectureQuizzes()
+    {
+        var activeQuizzes = _activeQuizRepo.GetLecturesActiveQuiz();
+        return activeQuizzes!.Select(activeQuiz => new ActiveQuizReadDto()
+        {
+            ActiveQuizzesId = activeQuiz.ActiveQuizzesId,
+            StartDate = activeQuiz.StartDate,
+            QuizId = activeQuiz.QuizId,
+            Duration = activeQuiz.Duration
+
+        }).ToList();
+    }
   
 }
