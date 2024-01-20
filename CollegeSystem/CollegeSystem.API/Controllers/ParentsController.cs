@@ -4,6 +4,7 @@ using System.Text;
 using CollegeSystem.BL.DTOs;
 using CollegeSystem.DAL.Models;
 using CollegeSystem.DL;
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
@@ -228,5 +229,14 @@ public class ParentsController: ControllerBase
 
         return BadRequest("Invalid payload");
     }
+    
+    // logout
+    [HttpPost("logout")]
+    public async Task<ActionResult> Logout()
+    {
+        await HttpContext.SignOutAsync(IdentityConstants.ApplicationScheme);
+        return Ok();
+    }
+    
     
 }
