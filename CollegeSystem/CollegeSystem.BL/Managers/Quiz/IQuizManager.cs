@@ -6,6 +6,10 @@ public interface IQuizManager
     public void Update(QuizUpdateDto quizUpdateDto);
     public void Delete(QuizDeleteDto quizDeleteDto);
     public QuizReadDto? Get(long id);
-    public List<QuizReadDto> GetAll();
-    // public UserReadDto Login(UserLoginDto userLoginDto);
+    public List<QuizReadDto> GetAll(long courseId);
+    public List<QuizReadDto> GetAllSectionQuizzes(long courseId);
+    public List<QuizReadDto> GetAllLectureQuizzes(long courseId);
+    public QuizReadDto? GetByLectureId(long lectureId);
+    public QuizReadDto? GetBySectionId(long sectionId);
+    
 }

@@ -160,16 +160,16 @@ public partial class CollegeSystemDbContext : IdentityDbContext<ApplicationUser,
         modelBuilder.Entity<Answer>(entity =>
         {
             entity.Property(e => e.AnswerId).HasColumnName("answer_id");
-            entity.Property(e => e.CourseId).HasColumnName("course_id");
+            // entity.Property(e => e.CourseId).HasColumnName("course_id");
             entity.Property(e => e.QuizId).HasColumnName("quiz_id");
             entity.Property(e => e.StudentMark)
                 .HasMaxLength(50)
                 .HasColumnName("student_mark");
            
 
-            entity.HasOne(d => d.Course).WithMany(p => p.Answers)
-                .HasForeignKey(d => d.CourseId)
-                .HasConstraintName("FK_Answers_Courses");
+            // entity.HasOne(d => d.Course).WithMany(p => p.Answers)
+            //     .HasForeignKey(d => d.CourseId)
+            //     .HasConstraintName("FK_Answers_Courses");
 
             entity.HasOne(d => d.Quiz).WithMany(p => p.Answers)
                 .HasForeignKey(d => d.QuizId)
@@ -456,7 +456,7 @@ public partial class CollegeSystemDbContext : IdentityDbContext<ApplicationUser,
         modelBuilder.Entity<Quiz>(entity =>
         {
             entity.Property(e => e.QuizId).HasColumnName("quiz_id");
-            entity.Property(e => e.CourseId).HasColumnName("course_id");
+            // entity.Property(e => e.CourseId).HasColumnName("course_id");
             entity.Property(e => e.Instructor)
                 .HasMaxLength(50)
                 .HasColumnName("instructor");
@@ -470,10 +470,10 @@ public partial class CollegeSystemDbContext : IdentityDbContext<ApplicationUser,
                 .HasMaxLength(50)
                 .HasColumnName("name");
 
-            entity.HasOne(d => d.Course).WithMany(p => p.Quizzes)
-                .HasForeignKey(d => d.CourseId)
-                .OnDelete(DeleteBehavior.Cascade)
-                .HasConstraintName("FK_Quizzes_Courses");
+            // entity.HasOne(d => d.Course).WithMany(p => p.Quizzes)
+            //     .HasForeignKey(d => d.CourseId)
+            //     .OnDelete(DeleteBehavior.Cascade)
+            //     .HasConstraintName("FK_Quizzes_Courses");
         });
 
         modelBuilder.Entity<Reply>(entity =>

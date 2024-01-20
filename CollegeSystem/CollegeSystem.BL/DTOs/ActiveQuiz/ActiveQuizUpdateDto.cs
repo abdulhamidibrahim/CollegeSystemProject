@@ -10,6 +10,6 @@ public class ActiveQuizUpdateDto
     public long? QuizId { get; set; }
 
     public DateTime? StartDate { get; set; }
+    public DateTime? Duration { get; set; }
 
-    public virtual Quiz? Quiz { get; set; }
 }

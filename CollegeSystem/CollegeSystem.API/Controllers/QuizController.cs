@@ -15,17 +15,17 @@ public class QuizController: ControllerBase
     }
     
     [HttpGet]
-    public ActionResult<List<QuizReadDto>> GetAll()
+    public ActionResult<List<QuizReadDto>> GetAll(long courseId)
     {
-        return _quizManager.GetAll();
+        return _quizManager.GetAll(courseId);
     }
     
     [HttpGet("{id}")]
     public ActionResult<QuizReadDto?> Get(long id)
     {
-        var user = _quizManager.Get(id);
-        if (user == null) return NotFound();
-        return user;
+        var quiz = _quizManager.Get(id);
+        if (quiz == null) return NotFound();
+        return quiz;
     }
     
     [HttpPost]
@@ -47,6 +47,34 @@ public class QuizController: ControllerBase
     {
         _quizManager.Delete(quizDeleteDto);
         return Ok();
+    }
+    
+    [HttpGet("GetAllSectionQuizzes")]
+    public ActionResult<List<QuizReadDto>> GetAllSectionQuizzes(long courseId)
+    {
+        return _quizManager.GetAllSectionQuizzes(courseId);
+    }
+    
+    [HttpGet("GetAllLectureQuizzes")]
+    public ActionResult<List<QuizReadDto>> GetAllLectureQuizzes(long courseId)
+    {
+        return _quizManager.GetAllLectureQuizzes(courseId);
+    }
+    
+    [HttpGet("GetByLectureId")]
+    public ActionResult<QuizReadDto?> GetByLectureId(long lectureId)
+    {
+        var quiz = _quizManager.GetByLectureId(lectureId);
+        if (quiz == null) return NotFound();
+        return quiz;
+    }
+    
+    [HttpGet("GetBySectionId")]
+    public ActionResult<QuizReadDto?> GetBySectionId(long sectionId)
+    {
+        var quiz = _quizManager.GetBySectionId(sectionId);
+        if (quiz == null) return NotFound();
+        return quiz;
     }
     
 }

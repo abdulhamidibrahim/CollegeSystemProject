@@ -13,4 +13,10 @@ public class AssignmentRepo :GenericRepo<Assignment>,IAssignmentRepo
         _context = context;
     }
     
+    public List<Assignment>? GetAllCourseAssignments(long courseId)
+    {
+        return _context.Assignments?
+            .Where(a => a.CourseId == courseId)
+            .ToList();
+    }
 }

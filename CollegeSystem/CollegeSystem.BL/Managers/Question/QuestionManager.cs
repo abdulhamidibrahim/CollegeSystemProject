@@ -69,9 +69,9 @@ public class QuestionManager:IQuestionManager
         };
     }
 
-    public List<QuestionReadDto> GetAll()
+    public List<QuestionReadDto> GetAll(long quizId)
     {
-        var questions = _questionRepo.GetAll();
+        var questions = _questionRepo.GetByQuizId(quizId);
         return questions.Select(question => new QuestionReadDto()
         {
             Question1 = question.Question1,

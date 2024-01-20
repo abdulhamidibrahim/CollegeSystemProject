@@ -36,42 +36,42 @@ public class AssignmentManager : IAssignmentManager
         _assignmentRepo.Delete(fileModel);
     }
 
-    public UploadAssignmentFileDto GetAssignment(int id)
+    public AssignmentReadDto GetAssignment(int id)
     {
         var fileModel = _assignmentRepo.GetById(id);
         if (fileModel == null)
             throw new InvalidDataException("File Not Found");
-        return new UploadAssignmentFileDto()
+        return new AssignmentReadDto()
         {
-            Name = fileModel.FileName,
-            Content = fileModel.FileContent,
-            Extension = fileModel.FileExtension
+            FileName = fileModel.FileName,
+            FileContent = fileModel.FileContent,
+            FileExtension = fileModel.FileExtension
         };
     }
     
-    public List<UploadAssignmentFileDto>? GetAllSectionAssignments()
+    public List<AssignmentReadDto>? GetAllSectionAssignments()
     {
-        var fileModel = _assignmentRepo.GetAll().Where(x => x.AssignmentId != null);
+        var fileModel = _assignmentRepo.GetAll().Where(x => x.SectionId != null);
         
-        return fileModel.Where(s=>s.SectionId != null).Select(x => new UploadAssignmentFileDto()
+        return fileModel.Where(s=>s.SectionId != null).Select(x => new AssignmentReadDto()
         {
-            Name = x.FileName ,
-            Content = x.FileContent ,
-            Extension = x.FileExtension 
+            FileName = x.FileName ,
+            FileContent = x.FileContent ,
+            FileExtension = x.FileExtension 
         }).ToList();
 
         return null;
     }
     
-    public List<UploadAssignmentFileDto>? GetAllLectureAssignments()
+    public List<AssignmentReadDto>? GetAllLectureAssignments()
     {
-        var fileModel = _assignmentRepo.GetAll().Where(x => x.AssignmentId != null);
+        var fileModel = _assignmentRepo.GetAll().Where(x => x.LectureId != null);
         
-        return fileModel.Where(s=>s.LectureId != null).Select(x => new UploadAssignmentFileDto()
+        return fileModel.Where(s=>s.LectureId != null).Select(x => new AssignmentReadDto()
         {
-            Name = x.FileName ,
-            Content = x.FileContent ,
-            Extension = x.FileExtension 
+            FileName = x.FileName ,
+            FileContent = x.FileContent ,
+            FileExtension = x.FileExtension 
         }).ToList();
 
         return null;
@@ -111,5 +111,19 @@ public class AssignmentManager : IAssignmentManager
     }
     
     _assignmentRepo.Add(fileModel);
+    }
+    
+    public List<AssignmentReadDto>? GetAllCourseAssignments(long courseId)
+    {
+        var fileModel = _assignmentRepo.GetAllCourseAssignments(courseId);
+        
+        return fileModel.Where(s=>s.CourseId == courseId).Select(x => new AssignmentReadDto()
+        {
+            FileName = x.FileName ,
+            FileContent = x.FileContent ,
+            FileExtension = x.FileExtension 
+        }).ToList();
+
+        return null;
     }
 }

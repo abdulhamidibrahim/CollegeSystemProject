@@ -20,6 +20,8 @@ public class QuizManager:IQuizManager
             Instructor = quizAddDto.Instructor,
             MaxDegree = quizAddDto.MaxDegree,
             MaxTime = quizAddDto.MaxTime,
+            LectureId = quizAddDto.LectureId,
+            SectionId = quizAddDto.SectionId,
             CourseId = quizAddDto.CourseId,
         };
         _quizRepo.Add(quiz);
@@ -33,6 +35,8 @@ public class QuizManager:IQuizManager
         quiz.Instructor = quizUpdateDto.Instructor;
         quiz.MaxDegree = quizUpdateDto.MaxDegree;
         quiz.MaxTime = quizUpdateDto.MaxTime;
+        quiz.SectionId = quizUpdateDto.SectionId;
+        quiz.LectureId = quizUpdateDto.LectureId;
         quiz.CourseId = quizUpdateDto.CourseId;
         quiz.QuizId = quizUpdateDto.QuizId;        
 
@@ -57,12 +61,14 @@ public class QuizManager:IQuizManager
             MaxDegree = quiz.MaxDegree,
             MaxTime = quiz.MaxTime,
             CourseId = quiz.CourseId,
+            SectionId = quiz.SectionId,
+            LectureId = quiz.LectureId,
         };
     }
 
-    public List<QuizReadDto> GetAll()
+    public List<QuizReadDto> GetAll(long courseId)
     {
-        var quizs = _quizRepo.GetAll();
+        var quizs = _quizRepo.GetAll(courseId);
         return quizs.Select(quiz => new QuizReadDto()
         {
             Name = quiz.Name,
@@ -70,6 +76,70 @@ public class QuizManager:IQuizManager
             MaxDegree = quiz.MaxDegree,
             MaxTime = quiz.MaxTime,
             CourseId = quiz.CourseId,
+            SectionId = quiz.SectionId,
+            LectureId = quiz.LectureId,
+        }).ToList();
+    }
+    
+    public QuizReadDto? GetByLectureId(long lectureId)
+    {
+        var quiz = _quizRepo.GetByLectureId(lectureId);
+        if (quiz == null) return null;
+        return new QuizReadDto()
+        {
+            Name = quiz.Name,
+            Instructor = quiz.Instructor,
+            MaxDegree = quiz.MaxDegree,
+            MaxTime = quiz.MaxTime,
+            CourseId = quiz.CourseId,
+            SectionId = quiz.SectionId,
+            LectureId = quiz.LectureId,
+        };
+    }
+    
+    public QuizReadDto? GetBySectionId(long sectionId)
+    {
+        var quiz = _quizRepo.GetBySectionId(sectionId);
+        if (quiz == null) return null;
+        return new QuizReadDto()
+        {
+            Name = quiz.Name,
+            Instructor = quiz.Instructor,
+            MaxDegree = quiz.MaxDegree,
+            MaxTime = quiz.MaxTime,
+            CourseId = quiz.CourseId,
+            SectionId = quiz.SectionId,
+            LectureId = quiz.LectureId,
+        };
+    }
+    
+    public List<QuizReadDto> GetAllSectionQuizzes(long courseId)
+    {
+        var quizzes = _quizRepo.GetAllSectionQuizzes(courseId);
+        return quizzes!.Select(quiz => new QuizReadDto()
+        {
+            Name = quiz.Name,
+            Instructor = quiz.Instructor,
+            MaxDegree = quiz.MaxDegree,
+            MaxTime = quiz.MaxTime,
+            CourseId = quiz.CourseId,
+            SectionId = quiz.SectionId,
+            LectureId = quiz.LectureId,
+        }).ToList();
+    }
+    
+    public List<QuizReadDto> GetAllLectureQuizzes(long courseId)
+    {
+        var quizs = _quizRepo.GetAllLectureQuizzes(courseId);
+        return quizs.Select(quiz => new QuizReadDto()
+        {
+            Name = quiz.Name,
+            Instructor = quiz.Instructor,
+            MaxDegree = quiz.MaxDegree,
+            MaxTime = quiz.MaxTime,
+            CourseId = quiz.CourseId,
+            SectionId = quiz.SectionId,
+            LectureId = quiz.LectureId,
         }).ToList();
     }
 }

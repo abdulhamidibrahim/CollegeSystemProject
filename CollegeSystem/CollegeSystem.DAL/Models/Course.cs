@@ -25,7 +25,7 @@ public partial class Course
 
     public virtual ICollection<AnswerAllQuiz> AnswerAllQuizzes { get; set; } = new List<AnswerAllQuiz>();
 
-    public virtual ICollection<Answer> Answers { get; set; } = new List<Answer>();
+    // public virtual ICollection<Answer> Answers { get; set; } = new List<Answer>();
 
     public virtual ICollection<Assignment> Assignments { get; set; } = new List<Assignment>();
 

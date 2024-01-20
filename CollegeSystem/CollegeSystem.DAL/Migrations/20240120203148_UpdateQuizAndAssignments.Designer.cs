@@ -4,6 +4,7 @@ using CollegeSystem.DAL.Context;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace CollegeSystem.DAL.Migrations
 {
     [DbContext(typeof(CollegeSystemDbContext))]
-    partial class CollegeSystemDbContextModelSnapshot : ModelSnapshot
+    [Migration("20240120203148_UpdateQuizAndAssignments")]
+    partial class UpdateQuizAndAssignments
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -170,6 +173,9 @@ namespace CollegeSystem.DAL.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("AnswerId"));
 
+                    b.Property<long?>("CourseId")
+                        .HasColumnType("bigint");
+
                     b.Property<long?>("QuizId")
                         .HasColumnType("bigint")
                         .HasColumnName("quiz_id");
@@ -183,6 +189,8 @@ namespace CollegeSystem.DAL.Migrations
                         .HasColumnName("student_mark");
 
                     b.HasKey("AnswerId");
+
+                    b.HasIndex("CourseId");
 
                     b.HasIndex("QuizId");
 
@@ -1206,6 +1214,10 @@ namespace CollegeSystem.DAL.Migrations
 
             modelBuilder.Entity("CollegeSystem.DAL.Models.Answer", b =>
                 {
+                    b.HasOne("CollegeSystem.DAL.Models.Course", null)
+                        .WithMany("Answers")
+                        .HasForeignKey("CourseId");
+
                     b.HasOne("CollegeSystem.DAL.Models.Quiz", "Quiz")
                         .WithMany("Answers")
                         .HasForeignKey("QuizId")
@@ -1608,6 +1620,8 @@ namespace CollegeSystem.DAL.Migrations
                     b.Navigation("AllQuizzes");
 
                     b.Navigation("AnswerAllQuizzes");
+
+                    b.Navigation("Answers");
 
                     b.Navigation("Assignments");
 

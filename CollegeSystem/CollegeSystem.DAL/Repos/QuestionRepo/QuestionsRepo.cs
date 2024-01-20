@@ -12,4 +12,10 @@ public class QuestionsRepo :GenericRepo<Question>,IQuestionRepo
         _context = context;
     }
     
+    public List<Question> GetByQuizId(long quizId)
+    {
+        return _context.Questions!
+            .Where(q => q.QuizId == quizId)
+            .ToList();
+    }
 }

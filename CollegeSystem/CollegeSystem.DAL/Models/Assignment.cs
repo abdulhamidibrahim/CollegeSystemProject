@@ -21,4 +21,6 @@ public partial class Assignment
 
     public Lecture? Lecture { get; set; } 
     public long? LectureId { get; set; }
+    public Course? Course { get; set; } 
+    public long? CourseId { get; set; }
 }
