@@ -4,6 +4,7 @@ using System.Text;
 using CollegeSystem.BL.DTOs;
 using CollegeSystem.BL.DTOs.User;
 using CollegeSystem.DAL.Models;
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
@@ -193,5 +194,11 @@ public class AdminController : ControllerBase
         return BadRequest("Invalid payload");
     }
     
-    
+    //sign out
+    [HttpPost("logOut")]
+    public new async Task<ActionResult> SignOut()
+    {
+        await HttpContext.SignOutAsync(IdentityConstants.ApplicationScheme);
+        return Ok("logged out successfully");
+    }
  }

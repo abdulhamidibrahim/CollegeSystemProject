@@ -5,6 +5,7 @@ using CollegeSystem.BL.DTOs;
 using CollegeSystem.DAL.Models;
 using CollegeSystem.DL;
 using FileUploadingWebAPI.Filter;
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
@@ -195,7 +196,13 @@ public class StudentsController: ControllerBase
     }
     
     
-    
+    //logout
+    [HttpPost("logout")]
+    public async Task<ActionResult> Logout()
+    {
+        await HttpContext.SignOutAsync(IdentityConstants.ApplicationScheme);
+        return Ok("Logout successfully");
+    }
     
     
     [HttpPost("uploadImage/{id}")]
