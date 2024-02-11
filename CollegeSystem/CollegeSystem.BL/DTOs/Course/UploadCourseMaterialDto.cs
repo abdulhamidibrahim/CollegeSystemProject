@@ -1,6 +1,6 @@
 namespace CollegeSystem.DL;
 
-public class UploadLectureFileDto
+public class UploadCourseMaterialDto
 {
     public string Name { get; set; } = string.Empty;
     public byte[] Content { get; set; } = Array.Empty<byte>();

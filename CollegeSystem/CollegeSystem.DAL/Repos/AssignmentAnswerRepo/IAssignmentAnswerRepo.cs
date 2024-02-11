@@ -7,5 +7,5 @@ public interface IAssignmentAnswerRepo :IGenericRepo<AssignmentAnswer>
 {
     // add assignment answer specific functions here
     AssignmentAnswer? GetByAssignmentAndStudentId(long assignmentId, long studentId);
-
+    List<AssignmentAnswer>? GetAllStudentAnswers(long sectionId);
 }

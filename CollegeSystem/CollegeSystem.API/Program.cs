@@ -6,6 +6,7 @@ using FCISystem.DAL;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using User.Management.Services.Models;
@@ -42,11 +43,13 @@ builder.Services.AddSwaggerGen(options =>
             new List<string>()
         }
     });
+    options.ResolveConflictingActions(apiDescriptions => apiDescriptions.First());
 });
 
 //add connection string
 builder.Services.AddDbContext<CollegeSystemDbContext>(options =>
-    options.UseSqlServer(builder.Configuration.GetConnectionString("CollegeSystemDbConnection")));
+    options.UseSqlServer(builder.Configuration.GetConnectionString("CollegeSystemDbConnection"),
+    option => option.CommandTimeout(300)));
 
 
 
@@ -65,15 +68,15 @@ builder.Services.AddIdentityCore<Student>()
     .AddEntityFrameworkStores<CollegeSystemDbContext>()
     .AddDefaultTokenProviders();
 
-// builder.Services.AddIdentityCore<Parent>()
-//     .AddRoles<IdentityRole<long>>()
-//     .AddEntityFrameworkStores<CollegeSystemDbContext>()
-//     .AddDefaultTokenProviders();
-//
-// builder.Services.AddIdentityCore<Staff>()
-//     .AddRoles<IdentityRole<long>>()
-//     .AddEntityFrameworkStores<CollegeSystemDbContext>()
-//     .AddDefaultTokenProviders();
+builder.Services.AddIdentityCore<Parent>()
+    .AddRoles<IdentityRole<long>>()
+    .AddEntityFrameworkStores<CollegeSystemDbContext>()
+    .AddDefaultTokenProviders();
+
+builder.Services.AddIdentityCore<Staff>()
+    .AddRoles<IdentityRole<long>>()
+    .AddEntityFrameworkStores<CollegeSystemDbContext>()
+    .AddDefaultTokenProviders();
 
 
 
@@ -101,6 +104,46 @@ builder.Services.Configure<DataProtectionTokenProviderOptions>(options =>
     options.TokenLifespan = TimeSpan.FromHours(2);
 });
 
+// builder.Host.ConfigureAppConfiguration((hostingContext, config) =>
+// {
+//     config.AddJsonFile("appsettings.json", optional: true, reloadOnChange: true);
+//     config.AddEnvironmentVariables();
+// });
+
+// builder.Services.AddCors(options =>
+// {
+//     options.AddPolicy("AllowAll",
+//         builder =>
+//         {
+//             builder.AllowAnyOrigin()
+//                 .AllowAnyMethod()
+//                 .AllowAnyHeader();
+//         });
+// });
+//
+//expose port 80 and 443
+// builder.Services.AddCors(options =>
+// {
+//     options.AddPolicy("AllowAll",
+//         builder =>
+//         {
+//             builder.AllowAnyOrigin()
+//                 .AllowAnyMethod()
+//                 .AllowAnyHeader();
+//         });
+// });
+// builder.WebHost.ConfigureKestrel(serverOptions =>
+// {
+//     serverOptions.Limits.MaxRequestBodySize = 52428800; // 50MB
+// });
+
+    // builder.Host.ConfigureAppConfiguration((hostingContext, config) =>
+    //     .ConfigureWebHostDefaults(webBuilder =>
+    //     {
+    //         webBuilder.UseUrls("http://*:80");
+    //         webBuilder.UseStartup<Startup>();
+    //    
+
 #region Resolving Managers Services
 
 builder.Services.AddScoped<IStudentManager, StudentManager>();
@@ -119,7 +162,7 @@ builder.Services.AddScoped<IActiveAllQuizManager, ActiveAllQuizManager>();
 builder.Services.AddScoped<IActiveQuizManager, ActiveQuizManager>();
 builder.Services.AddScoped<IAllQuizManager, AllQuizManager>();
 builder.Services.AddScoped<IAnswerAllQuizManager, AnswerAllQuizManager>();
-builder.Services.AddScoped<IAnswerRepo, AnswerRepo>();
+builder.Services.AddScoped<IAnswerManager, AnswerManager>();
 builder.Services.AddScoped<IAssignmentManager, AssignmentManager>();
 builder.Services.AddScoped<IAssignmentAnswerManager, AssignmentAnswerManager>();
 builder.Services.AddScoped<ICourseManager, CourseManager>();
@@ -129,6 +172,7 @@ builder.Services.AddScoped<ICourseUserManager, CourseUserManager>();
 builder.Services.AddScoped<IParentCallManager, ParentCallManager>();
 builder.Services.AddScoped<IPermAttendanceManager, PermAttendanceManager>();
 builder.Services.AddScoped<IQuizManager, QuizManager>();
+builder.Services.AddScoped<IMeetingManager, MeetingManager>();
 builder.Services.AddScoped<ITempAttendanceManager, TempAttendanceManager>();
 
 
@@ -162,6 +206,8 @@ builder.Services.AddScoped<IPermAttendanceRepo, PermAttendanceRepo>();
 builder.Services.AddScoped<IQuizRepo, QuizRepo>();
 builder.Services.AddScoped<ITempAttendanceRepo, TempAttendanceRepo>();
 builder.Services.AddScoped<IFileRepo, FileRepo>();
+builder.Services.AddScoped<IAssignmentFileRepo, AssignmentFileRepo>();
+builder.Services.AddScoped<IMeetingRepo, MeetingRepo>();
 
 
 #endregion
@@ -197,14 +243,16 @@ builder.Services.AddAuthentication(options =>
 
 var app = builder.Build();
 
+// app.UseDeveloperExceptionPage();
+
 // Configure the HTTP request pipeline.
-if (app.Environment.IsDevelopment())
-{
+// if (app.Environment.IsDevelopment())
+// {
     app.UseSwagger();
     app.UseSwaggerUI();
-}
+// }
 
-app.UseHttpsRedirection();
+// app.UseHttpsRedirection();
 
 app.UseAuthentication();
 

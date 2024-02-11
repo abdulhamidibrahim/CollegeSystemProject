@@ -4,6 +4,8 @@ using CollegeSystem.DAL.Models;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Storage;
 using File = CollegeSystem.DAL.Models.File;
 
 namespace CollegeSystem.DAL.Context;
@@ -14,6 +16,20 @@ public partial class CollegeSystemDbContext : IdentityDbContext<ApplicationUser,
     public CollegeSystemDbContext(DbContextOptions<CollegeSystemDbContext> options)
         : base(options)
     {
+        if(Database.GetService<IDatabaseCreator>() is RelationalDatabaseCreator dbCreater)
+        {
+            // Create Database 
+            if(!dbCreater.CanConnect())
+            {
+                dbCreater.Create();
+            }
+        
+            // Create Tables
+            if (!dbCreater.HasTables())
+            {
+                dbCreater.CreateTables();
+            }
+        }
     }
 
     public virtual DbSet<ActiveAllQuiz>? ActiveAllQuizzes { get; set; }
@@ -33,6 +49,8 @@ public partial class CollegeSystemDbContext : IdentityDbContext<ApplicationUser,
     public virtual DbSet<Assignment>? Assignments { get; set; }
 
     public virtual DbSet<AssignmentAnswer>? AssignmentAnswers { get; set; }
+    
+    public virtual DbSet<AssignmentFile>? AssignmentFile { get; set; }
 
     public virtual DbSet<Course>? Courses { get; set; }
 
@@ -45,6 +63,7 @@ public partial class CollegeSystemDbContext : IdentityDbContext<ApplicationUser,
     public virtual DbSet<File>? Files { get; set; }
     
     public virtual DbSet<Lecture>? Lectures { get; set; }
+    public virtual DbSet<Meeting>? Meetings { get; set; }
 
     public virtual DbSet<PostUser>? PostUsers { get; set; }
     
@@ -555,7 +574,11 @@ public partial class CollegeSystemDbContext : IdentityDbContext<ApplicationUser,
                 .HasForeignKey(d => d.SectionId)
                 .HasConstraintName("FK_Temp_Attendances_Sections_2");
         });
-        
+
+        // modelBuilder.Entity<AssignmentFile>(entity =>
+        // {
+        //     entity.HasKey(e => new { e.AssignmentId, e.FileId });
+        // });
 
         modelBuilder.Entity<Student>(entity =>
         {

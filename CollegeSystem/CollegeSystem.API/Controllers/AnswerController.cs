@@ -1,4 +1,5 @@
 ﻿using CollegeSystem.DL;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace CollegeSystem.API.Controllers;
@@ -37,11 +38,26 @@ public class AnswerController : ControllerBase
         _answerManager.Update(answerUpdateDto);
         return Ok();
     }
+    
     [HttpDelete]
     public ActionResult Delete(AnswerDeleteDto answerDeleteDto)
     {
         _answerManager.Delete(answerDeleteDto);
         return Ok();
+    }
+    
+    [Authorize(Roles = "Student")]
+    [HttpGet("GetAllStudentAnswers/{id}")]
+    public ActionResult<List<AnswerReadDto>> GetByStudentId(long id)
+    {
+        return _answerManager.GetAllStudentAnswers(id);
+    }
+    
+    [Authorize(Roles = "Staff")]
+    [HttpGet("GetAllQuizAnswers/{id}")]
+    public ActionResult<List<AnswerReadDto>> GetByQuizId(long id)
+    {
+        return _answerManager.GetAllQuizAnswers(id);
     }
 
 }

@@ -112,7 +112,35 @@ public class QuizManager:IQuizManager
             LectureId = quiz.LectureId,
         };
     }
-    
+
+    public void AddSectionQuiz(AddSectionQuizDto quizAddDto)
+    {
+        var quiz = new Quiz()
+        {
+            Name = quizAddDto.Name,
+            Instructor = quizAddDto.Instructor,
+            MaxDegree = quizAddDto.MaxDegree,
+            MaxTime = quizAddDto.MaxTime,
+            SectionId = quizAddDto.SectionId,
+            CourseId = quizAddDto.CourseId,
+        };
+        _quizRepo.Add(quiz);
+    }
+
+    public void AddLectureQuiz(AddLectureQuizDto quizAddDto)
+    {
+        var quiz = new Quiz()
+        {
+            Name = quizAddDto.Name,
+            Instructor = quizAddDto.Instructor,
+            MaxDegree = quizAddDto.MaxDegree,
+            MaxTime = quizAddDto.MaxTime,
+            LectureId = quizAddDto.LectureId,
+            CourseId = quizAddDto.CourseId,
+        };
+        _quizRepo.Add(quiz);
+    }
+
     public List<QuizReadDto> GetAllSectionQuizzes(long courseId)
     {
         var quizzes = _quizRepo.GetAllSectionQuizzes(courseId);
@@ -142,4 +170,6 @@ public class QuizManager:IQuizManager
             LectureId = quiz.LectureId,
         }).ToList();
     }
+    
+    
 }

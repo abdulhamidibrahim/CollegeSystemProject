@@ -8,5 +8,6 @@ public class LectureAssignmentAddDto
     public string? Description { get; set; }
     
     public long? LectureId { get; set; }
+    public DateTime? Deadline { get; set; }
 }
 

@@ -1,8 +1,10 @@
 using CollegeSystem.DL;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace CollegeSystem.API.Controllers;
 
+[Authorize(Roles = "Teacher,Assistant")]
 [ApiController]
 [Route("api/[controller]")]
 public class QuestionsController: ControllerBase
@@ -14,6 +16,7 @@ public class QuestionsController: ControllerBase
         _questionManager = questionManager;
     }
     
+    [Authorize(Roles = "Student")]
     [HttpGet("GetAllQuizQuestions/{quizId}")]
     public ActionResult<List<QuestionReadDto>> GetAll(long quizId)
     {

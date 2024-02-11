@@ -49,9 +49,9 @@ public class AllQuizController : ControllerBase
     }
 
     [HttpDelete]
-    public ActionResult Delete(AllQuizDeleteDto allQuizDeleteeDto)
+    public ActionResult Delete(AllQuizDeleteDto allQuizDeleteDto)
     {
-        _allQuizManager.Delete(allQuizDeleteeDto);
+        _allQuizManager.Delete(allQuizDeleteDto);
         return Ok();
     }
 }

@@ -63,5 +63,26 @@ public class AnswerManager : IAnswerManager
             QuizId = answer.QuizId,
         }).ToList();
     }
+
+    public List<AnswerReadDto> GetAllQuizAnswers(long quizId)
+    {
+        var quizAnswers = _answerRepo.GetAllQuizAnswers(quizId);
+        return quizAnswers.Select(answer => new AnswerReadDto()
+        {
+            StudentMark = answer.StudentMark,
+            StudentId = answer.StudentId,
+            QuizId = answer.QuizId,
+        }).ToList();
+    }
+    
+    public List<AnswerReadDto> GetAllStudentAnswers(long studentId)
+    {
+        var quizAnswers = _answerRepo.GetAllStudentAnswers(studentId);
+        return quizAnswers.Select(answer => new AnswerReadDto()
+        {
+            StudentMark = answer.StudentMark,
+            QuizId = answer.QuizId,
+        }).ToList();
+    }
 }
  

@@ -9,8 +9,8 @@ public class SectionAssignmentAddDto
 
     public string? Description { get; set; }
 
-    public File? File { get; set; }
+    public DateTime? Deadline { get; set; }
 
-    public long? CourseId { get; set; }
+    public long? SectionId { get; set; }
     
 }

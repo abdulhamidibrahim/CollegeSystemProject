@@ -16,4 +16,6 @@ public partial class Staff : ApplicationUser
     
     public string? Phone { get; set; }
 
+    public bool IsAssistant { get; set; }
+
 }

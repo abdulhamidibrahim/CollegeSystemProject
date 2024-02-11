@@ -1,17 +1,19 @@
 ﻿using CollegeSystem.DAL.Models;
 using CollegeSystem.DL;
 using FCISystem.DAL;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace CollegeSystem.API.Controllers;
 
+[Authorize(Roles = "Staff")]
 [Route("api/[controller]")]
 [ApiController]
-public class ActiveQuizController : ControllerBase
+public class ActiveQuizzesController : ControllerBase
 {
     private readonly IActiveQuizManager _activeQuizManager;
 
-    public ActiveQuizController(IActiveQuizManager activeQuizManager)
+    public ActiveQuizzesController(IActiveQuizManager activeQuizManager)
     {
         _activeQuizManager = activeQuizManager;
     }
@@ -55,12 +57,14 @@ public class ActiveQuizController : ControllerBase
         return Ok();
     }
     
+    [Authorize(Roles = "Student, Assistant")]
     [HttpGet("GetAllSectionQuizzes")]
     public ActionResult<List<ActiveQuizReadDto>> GetAllSectionQuizzes()
     {
         return _activeQuizManager.GetAllSectionQuizzes();
     }
     
+    [Authorize(Roles = "Student, Teacher")]
     [HttpGet("GetAllLectureQuizzes")]
     public ActionResult<List<ActiveQuizReadDto>> GetAllLectureQuizzes()
     {

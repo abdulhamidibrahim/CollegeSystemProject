@@ -9,6 +9,8 @@ public class File
     public byte[] Content { get; set; } = Array.Empty<byte>();
     public string Extension { get; set; } = string.Empty;
     
+    public DateTime? CreatedAt { get; set; }
+    
     public long? LectureId { get; set; }
     public Lecture Lecture { get; set; } = null!;
 

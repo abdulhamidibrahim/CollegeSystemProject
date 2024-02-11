@@ -17,7 +17,7 @@ namespace CollegeSystem.DAL.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "7.0.13")
+                .HasAnnotation("ProductVersion", "8.0.1")
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
@@ -310,21 +310,15 @@ namespace CollegeSystem.DAL.Migrations
                     b.Property<long?>("CourseId")
                         .HasColumnType("bigint");
 
+                    b.Property<DateTime?>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime?>("Deadline")
+                        .HasColumnType("datetime2");
+
                     b.Property<string>("Description")
                         .HasColumnType("nvarchar(max)")
                         .HasColumnName("description");
-
-                    b.Property<byte[]>("FileContent")
-                        .IsRequired()
-                        .HasColumnType("varbinary(max)");
-
-                    b.Property<string>("FileExtension")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("FileName")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
 
                     b.Property<long?>("LectureId")
                         .HasColumnType("bigint");
@@ -348,6 +342,8 @@ namespace CollegeSystem.DAL.Migrations
                         .HasFilter("[SectionId] IS NOT NULL");
 
                     b.ToTable("Assignments");
+
+                    b.UseTptMappingStrategy();
                 });
 
             modelBuilder.Entity("CollegeSystem.DAL.Models.AssignmentAnswer", b =>
@@ -523,8 +519,10 @@ namespace CollegeSystem.DAL.Migrations
                         .HasColumnType("varbinary(max)");
 
                     b.Property<long?>("CourseId")
-                        .IsRequired()
                         .HasColumnType("bigint");
+
+                    b.Property<DateTime?>("CreatedAt")
+                        .HasColumnType("datetime2");
 
                     b.Property<string>("Extension")
                         .IsRequired()
@@ -546,7 +544,8 @@ namespace CollegeSystem.DAL.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("CourseId")
-                        .IsUnique();
+                        .IsUnique()
+                        .HasFilter("[CourseId] IS NOT NULL");
 
                     b.HasIndex("LectureId");
 
@@ -583,6 +582,28 @@ namespace CollegeSystem.DAL.Migrations
                     b.HasIndex("CourseId");
 
                     b.ToTable("Lectures");
+                });
+
+            modelBuilder.Entity("CollegeSystem.DAL.Models.Meeting", b =>
+                {
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("Id"));
+
+                    b.Property<DateTime?>("StartDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Title")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Url")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Meetings");
                 });
 
             modelBuilder.Entity("CollegeSystem.DAL.Models.ParentCall", b =>
@@ -1099,6 +1120,9 @@ namespace CollegeSystem.DAL.Migrations
                 {
                     b.HasBaseType("CollegeSystem.DAL.Models.ApplicationUser");
 
+                    b.Property<bool>("IsAssistant")
+                        .HasColumnType("bit");
+
                     b.Property<string>("Name")
                         .HasMaxLength(100)
                         .HasColumnType("nvarchar(100)")
@@ -1161,6 +1185,30 @@ namespace CollegeSystem.DAL.Migrations
                     b.HasIndex("DeptId");
 
                     b.ToTable("Student");
+                });
+
+            modelBuilder.Entity("CollegeSystem.DAL.Models.AssignmentFile", b =>
+                {
+                    b.HasBaseType("CollegeSystem.DAL.Models.Assignment");
+
+                    b.Property<long?>("AssignmentId1")
+                        .HasColumnType("bigint");
+
+                    b.Property<byte[]>("Content")
+                        .IsRequired()
+                        .HasColumnType("varbinary(max)");
+
+                    b.Property<string>("Extension")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasIndex("AssignmentId1");
+
+                    b.ToTable("AssignmentFile");
                 });
 
             modelBuilder.Entity("CollegeSystem.DAL.Models.ActiveAllQuiz", b =>
@@ -1325,12 +1373,10 @@ namespace CollegeSystem.DAL.Migrations
                     b.HasOne("CollegeSystem.DAL.Models.Course", "Course")
                         .WithOne("Img")
                         .HasForeignKey("CollegeSystem.DAL.Models.File", "CourseId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired()
                         .HasConstraintName("FK_Courses_Images");
 
                     b.HasOne("CollegeSystem.DAL.Models.Lecture", "Lecture")
-                        .WithMany()
+                        .WithMany("Files")
                         .HasForeignKey("LectureId");
 
                     b.HasOne("CollegeSystem.DAL.Models.Section", "Section")
@@ -1589,6 +1635,19 @@ namespace CollegeSystem.DAL.Migrations
                     b.Navigation("Dept");
                 });
 
+            modelBuilder.Entity("CollegeSystem.DAL.Models.AssignmentFile", b =>
+                {
+                    b.HasOne("CollegeSystem.DAL.Models.Assignment", null)
+                        .WithOne()
+                        .HasForeignKey("CollegeSystem.DAL.Models.AssignmentFile", "AssignmentId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("CollegeSystem.DAL.Models.Assignment", null)
+                        .WithMany("AssignmentFiles")
+                        .HasForeignKey("AssignmentId1");
+                });
+
             modelBuilder.Entity("CollegeSystem.DAL.Models.AllQuiz", b =>
                 {
                     b.Navigation("ActiveAllQuizzes");
@@ -1601,6 +1660,8 @@ namespace CollegeSystem.DAL.Migrations
             modelBuilder.Entity("CollegeSystem.DAL.Models.Assignment", b =>
                 {
                     b.Navigation("AssignmentAnswers");
+
+                    b.Navigation("AssignmentFiles");
                 });
 
             modelBuilder.Entity("CollegeSystem.DAL.Models.Course", b =>
@@ -1636,6 +1697,8 @@ namespace CollegeSystem.DAL.Migrations
             modelBuilder.Entity("CollegeSystem.DAL.Models.Lecture", b =>
                 {
                     b.Navigation("Assignments");
+
+                    b.Navigation("Files");
 
                     b.Navigation("PermAttendances");
 

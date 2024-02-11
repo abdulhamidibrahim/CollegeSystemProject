@@ -109,7 +109,8 @@ public class SectionManager:ISectionManager
         {
             Name = file.FileName,
             Extension = file.ContentType,
-            SectionId = id
+            SectionId = id,
+            CreatedAt = DateTime.Now
         };
 
         using (var ms = new MemoryStream())
@@ -119,5 +120,18 @@ public class SectionManager:ISectionManager
         }
 
         _fileRepo.Add(fileModel);
+    }
+    public List<UploadSectionFileDto> GetAllFiles()
+    {
+        var fileModel = _fileRepo.GetAll().Where(x => x.SectionId != null);
+        
+        return fileModel.Select(x => new UploadSectionFileDto()
+        {
+            Id = x.Id,
+            Name = x.Name,
+            // Content = x.Content,
+            Extension = x.Extension,
+            CreatedAt = x.CreatedAt
+        }).ToList();
     }
 }

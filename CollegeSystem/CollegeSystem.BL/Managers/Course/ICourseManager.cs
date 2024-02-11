@@ -13,5 +13,4 @@ public interface ICourseManager
     public void DeleteImage(int id);
     public UploadCourseImageDto? GetImage(int id);
     public void AddImageAsync(IFormFile file,long id);
-    // public UserReadDto Login(UserLoginDto userLoginDto);
 }

@@ -21,4 +21,17 @@ public class AssignmentAnswerRepo :GenericRepo<AssignmentAnswer>,IAssignmentAnsw
                       && a.StudentId==studentId);
     }
     
+    public AssignmentAnswer? GetByAssignmentId(long assignmentId)
+    {
+        return _context.AssignmentAnswers?
+            .FirstOrDefault
+                (a => a.AssignmentId == assignmentId);
+    }
+    
+    public List<AssignmentAnswer>? GetAllStudentAnswers(long studentId)
+    {
+        return _context.AssignmentAnswers?
+            .Where(s=>s.StudentId == studentId)
+            .ToList();
+    }
 }

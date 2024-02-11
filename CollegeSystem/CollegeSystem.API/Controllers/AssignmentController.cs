@@ -15,30 +15,46 @@ public class AssignmentController : ControllerBase
         _assignmentManager = assignmentManager;
     }
     
-    // [Authorize(Roles = "Staff")]
-    [HttpPost("uploadSectionAssignment")]
-    public IActionResult UploadFile(IFormFile file,long sectionId)
+    [Authorize(Roles = "Assistant")]
+    [HttpPost("uploadSectionFileAssignment")]
+    public IActionResult UploadSectionAssignmentFile(IFormFile file,long assignmentId)
     {
         if (file == null || file.Length == 0)
             return Content("file not selected");
-        _assignmentManager.AddSectionAssignmentAsync(file,sectionId);
+        _assignmentManager.AddSectionAssignmentFileAsync(file,assignmentId);
 
         return Ok("File Uploaded Successfully");
     }
     
-    
-    [HttpPost("uploadLectureAssignment")]
-    public IActionResult UploadLectureAssignment(IFormFile file,long lectureId)
+    [Authorize(Roles = "Teacher")]
+    [HttpPost("uploadLectureFileAssignment")]
+    public IActionResult UploadLectureFileAssignment(IFormFile file,long assignmentId)
     {
         if (file == null || file.Length == 0)
             return Content("file not selected");
-        _assignmentManager.AddLectureAssignmentAsync(file,lectureId);
+        _assignmentManager.AddLectureAssignmentFileAsync(file,assignmentId);
 
         return Ok("File Uploaded Successfully");
     }
+    
+    [Authorize(Roles = "Assistant")]
+    [HttpPost("AddSectionAssignment")]
+    public IActionResult AddSectionAssignment(SectionAssignmentAddDto assignmentAddDto)
+    {
+        _assignmentManager.AddSectionAssignmentAsync(assignmentAddDto);
+        return Ok();
+    }
+    
+    [Authorize(Roles = "Teacher")]
+    [HttpPost("AddLectureAssignment")]
+    public IActionResult AddLectureAssignment(LectureAssignmentAddDto assignmentAddDto)
+    {
+        _assignmentManager.AddLectureAssignmentAsync(assignmentAddDto);
+        return Ok();
+    }
 
     
-    // [Authorize(Roles = "Student")]
+    [Authorize(Roles = "Student")]
     [HttpGet("DownloadAssignment/{id}")]
     public IActionResult DownloadFile(int id)
     {
@@ -65,26 +81,38 @@ public class AssignmentController : ControllerBase
         return Ok();
     }
 
-    [Authorize(Roles = "Staff")]
-    [HttpPut("UpdateFile/{id}")]
-    public IActionResult UpdateFile(int id, IFormFile file)
+    [Authorize(Roles = "Assistant")]
+    [HttpPut("UpdateSectionAssignment/{id}")]
+    public IActionResult UpdateSectionFile(int assignmentId, IFormFile file,DateTime deadline)
     {
-        _assignmentManager.UpdateAssignmentAsync(id, file);
+        _assignmentManager.UpdateAssignmentAsync(assignmentId, file,deadline);
         return Ok();
     }
     
+    
+    [Authorize(Roles = "Teacher")]
+    [HttpPut("UpdateLectureAssignment/{id}")]
+    public IActionResult UpdateLectureFile(int lectureId, IFormFile file,DateTime deadline)
+    {
+        _assignmentManager.UpdateAssignmentAsync(lectureId, file,deadline);
+        return Ok();
+    }
+    
+    [Authorize(Roles = "Assistant,Student")]
     [HttpGet("GetAllSectionAssignments")]
     public ActionResult<List<AssignmentReadDto>> GetAllSectionAssignments()
     {
         return _assignmentManager.GetAllSectionAssignments() ?? throw new InvalidOperationException();
     }
     
+    [Authorize(Roles = "Teacher, Student")]
     [HttpGet("GetAllLectureAssignments")]
     public ActionResult<List<AssignmentReadDto>> GetAllLectureAssignments()
     {
         return _assignmentManager.GetAllLectureAssignments() ?? throw new InvalidOperationException();
     }
     
+    [Authorize(Roles = "Student")]
     [HttpGet("GetAllCourseAssignments")]
     public ActionResult<List<AssignmentReadDto>> GetAllCourseAssignments(long courseId)
     {

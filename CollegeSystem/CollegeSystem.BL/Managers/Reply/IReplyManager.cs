@@ -7,5 +7,5 @@ public interface IReplyManager
     public void Delete(ReplyDeleteDto replyDeleteDto);
     public ReplyReadDto? Get(long id);
     public List<ReplyReadDto> GetAll();
-    // public UserReadDto Login(UserLoginDto userLoginDto);
+    public List<ReplyReadDto>? GetByPostId(long id);
 }

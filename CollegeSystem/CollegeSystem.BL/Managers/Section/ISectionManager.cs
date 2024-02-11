@@ -13,5 +13,5 @@ public interface ISectionManager
     public void DeleteFile(int id);
     public UploadSectionFileDto? GetFile(int id);
     public void AddFileAsync(IFormFile file,long id);
-    // public UserReadDto Login(UserLoginDto userLoginDto);
+    public List<UploadSectionFileDto> GetAllFiles();
 }

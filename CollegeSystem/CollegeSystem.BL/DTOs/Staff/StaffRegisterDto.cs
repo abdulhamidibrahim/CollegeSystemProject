@@ -15,5 +15,11 @@ public class StaffRegisterDto
     
     public string Phone { get; set; } = string.Empty;
     public string Role { get; set; } = "Staff";
+    public string RoleAssistant { get; set; } = "Assistant";
+    public string RoleTeacher { get; set; } = "Teacher";
     
+    [Required]
+    public bool IsAssistant { get; set; } = false;
+
+
 }

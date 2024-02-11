@@ -18,7 +18,7 @@ public class AssignmentAnswerController : ControllerBase
     
     
     
-    // [Authorize(Roles = "Student")]
+    [Authorize(Roles = "Student")]
     [HttpPost]
     public IActionResult UploadFileAsync(IFormFile file, long assignmentId,long studentId)
     {
@@ -31,6 +31,7 @@ public class AssignmentAnswerController : ControllerBase
         return Ok(new { file.Name });
     }
     
+    [Authorize(Roles = "Student")]
     [HttpPut]
     public IActionResult UpdateFileAsync(IFormFile file, long assignmentId,long studentId)
     {
@@ -45,7 +46,7 @@ public class AssignmentAnswerController : ControllerBase
    
     
     
-    // [Authorize(Roles = "Staff")]
+    [Authorize(Roles = "Staff")]
     [HttpGet("{id}")]
     public IActionResult Download(long assignmentId,long studentId)
     {
@@ -55,11 +56,15 @@ public class AssignmentAnswerController : ControllerBase
     
         return File(fileModel.Content, "application/octet-stream", fileModel.Name);
     }
-    //
+    
+    
+    
     [HttpGet]
     public IActionResult List()
     {
-        var fileModels = _assignmentAnswerManager.GetAllFiles()?.Select(x => x.Name);
+        var fileModels = _assignmentAnswerManager
+            .GetAllFiles()?
+            .Select(x => x.Name);
         return Ok(fileModels);
     }
     
