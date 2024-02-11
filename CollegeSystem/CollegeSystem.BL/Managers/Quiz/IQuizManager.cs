@@ -12,4 +12,7 @@ public interface IQuizManager
     public QuizReadDto? GetByLectureId(long lectureId);
     public QuizReadDto? GetBySectionId(long sectionId);
     
+    public void AddSectionQuiz(AddSectionQuizDto quizAddDto);
+    public void AddLectureQuiz(AddLectureQuizDto quizAddDto);
+
 }

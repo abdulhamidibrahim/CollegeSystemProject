@@ -1,10 +1,13 @@
 using System.ComponentModel.DataAnnotations;
+using CollegeSystem.DAL.Models;
 using CollegeSystem.DL;
 using FileUploadingWebAPI.Filter;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace CollegeSystem.API.Controllers;
 
+[Authorize(Roles = nameof(Admin))]
 [ApiController]
 [Route("api/[controller]")]
 public class CoursesController: ControllerBase

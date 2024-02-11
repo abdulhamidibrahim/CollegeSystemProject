@@ -15,11 +15,13 @@ public class StudentRegisterDto
     [Required]
     [Compare("Password")]
     public string ConfirmPassword { get; set; } = string.Empty;
-    
+
+    public string Role { get; set; } = "Student";
+
     // public string? Phone { get; set; }  
     // public string? ParentEmail { get; set; }
     // public string? ParentPhone { get; set; }
     // public string? UniversityEmail { get; set; }
     // public string? Ssn { get; set; }
-    
+
 }

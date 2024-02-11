@@ -11,5 +11,11 @@ public class ReplyRepo :GenericRepo<Reply>,IReplyRepo
     {
         _context = context;
     }
-    
+
+    public List<Reply>? GetByPostId(long postId)
+    {
+        return _context.Replies?
+            .Where(reply => reply.PostId == postId)
+            .ToList();
+    }
 }

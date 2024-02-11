@@ -41,11 +41,11 @@ public class StaffsController: ControllerBase
         {
             var staff = new Staff()
             {
-                //StudentId = 
                 UserName  = staffRegisterDto.UserName,
                 Email = staffRegisterDto.Email,
                 Name = staffRegisterDto.Name,
                 Phone = staffRegisterDto.Phone,
+                IsAssistant = staffRegisterDto.IsAssistant,
                 EmailConfirmed = false,
                 TwoFactorEnabled = true
             };
@@ -53,9 +53,14 @@ public class StaffsController: ControllerBase
             IdentityResult result = await _userManager.CreateAsync(staff, staffRegisterDto.Password);
             if (!result.Succeeded)
             {
-               
+                return BadRequest("Error while creating the user");
             }
             
+            await _userManager.AddToRoleAsync(staff, staffRegisterDto.Role);
+            if (staffRegisterDto.IsAssistant)
+                await _userManager.AddToRoleAsync(staff, staffRegisterDto.RoleAssistant);
+            
+            await _userManager.AddToRoleAsync(staff, staffRegisterDto.RoleTeacher);
             // send email verification to the user
             var token = await _userManager.GenerateEmailConfirmationTokenAsync(staff);
             var confirmationLink = Url.Action(nameof(ConfirmEmail), "Staffs", new { token, email = staff.Email },

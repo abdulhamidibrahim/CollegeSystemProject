@@ -61,4 +61,15 @@ public class ReplyManager:IReplyManager
             
         }).ToList();
     }
+    
+    public List<ReplyReadDto>? GetByPostId(long id)
+    {
+        var replies = _replyRepo.GetByPostId(id);
+        return replies?.Select(reply => new ReplyReadDto()
+        {
+            Content = reply.Content,
+            PostId = reply.PostId
+            
+        }).ToList();
+    }
 }

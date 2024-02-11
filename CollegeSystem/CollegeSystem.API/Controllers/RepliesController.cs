@@ -44,4 +44,10 @@ public class RepliesController: ControllerBase
         return Ok();
     }
     
+    [HttpGet("GetByPostId/{id}")]
+    public ActionResult<List<ReplyReadDto>> GetByPostId(long id)
+    {
+        return _replyManager.GetByPostId(id)!;
+    }
+    
 }

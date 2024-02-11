@@ -1,3 +1,4 @@
+using System.ComponentModel.DataAnnotations;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
@@ -7,7 +8,6 @@ using CollegeSystem.DAL.Models;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using User.Management.Services.Models;
 using IEmailService = User.Management.Services.Services.IEmailService;
@@ -65,7 +65,7 @@ public class AdminController : ControllerBase
                 "Account created successfully, we have sent a confirmation email, please click the link to confirm your email");
         }
 
-        var errors = ModelState.Where(n => n.Value.Errors.Count > 0).ToList();
+        var errors = ModelState.Where(n => n.Value!.Errors.Count > 0).ToList();
         return BadRequest(errors);
     }
 
@@ -124,6 +124,21 @@ public class AdminController : ControllerBase
     }
 
 
+    [HttpPost("confirmEmail")]
+    public async Task<ActionResult> ConfirmEmail([Required]string email)
+    {
+        var user = await _userManager.FindByEmailAsync(email);
+        if (user == null) return NotFound("User not found");
+        var token = await _userManager.GenerateEmailConfirmationTokenAsync(user);
+        var confirmationLink = Url.Action(nameof(ConfirmEmail), "Admin", new { token, email = user.Email },
+            Request.Scheme);
+        var message = new Message(new[] { user.Email }!, "Confirmation email link", confirmationLink!);
+
+        _emailService.SendEmail(message);
+        return Ok(
+            "Account created successfully, we have sent a confirmation email, please click the link to confirm your email");
+    }
+    
     [HttpGet]
     [Route("confirmEmail")]
     public async Task<ActionResult> ConfirmEmail(string token, string email)
@@ -150,7 +165,7 @@ public class AdminController : ControllerBase
     {
         var user = await _userManager.FindByEmailAsync(email);
         if (user == null) return BadRequest("User not found");
-        var token = await _userManager.GenerateUserTokenAsync(user, "Email","ResetFactor");
+        var token = await _userManager.GenerateUserTokenAsync(user, "Default","ResetFactor");
         var passwordResetLink = Url.Action(nameof(ResetPassword), "Admin", new { token, email = user.Email },Request.Scheme);
         var message = new Message(new[] { user.Email }!, "Reset password link", passwordResetLink!);
         _emailService.SendEmail(message);
@@ -176,8 +191,8 @@ public class AdminController : ControllerBase
         {
             var user = await _userManager.FindByEmailAsync(resetPasswordDto.Email);
             if (user == null) return NotFound("User not found");
-            var validateOTP = await _userManager.VerifyUserTokenAsync(user,"Email","ResetFactor", resetPasswordDto.Token);
-            if (!validateOTP)
+            var validateOtp = await _userManager.VerifyUserTokenAsync(user,"Default","ResetFactor", resetPasswordDto.Token);
+            if (!validateOtp)
             {
                 return BadRequest("Invalid OTP");
             }

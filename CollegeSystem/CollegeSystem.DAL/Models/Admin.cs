@@ -8,7 +8,7 @@ namespace CollegeSystem.DAL.Models;
 public class Admin: ApplicationUser
 {
     [Required]
-    [RegularExpression(@"^[0-9\u0600-\u06FF\s]+$", 
+    [RegularExpression(@"^[\u0600-\u06FF\s]+$", 
         ErrorMessage ="Enter Arabic characters and Numeric")]
     public string Name { get; set; } = string.Empty;
     [Required]

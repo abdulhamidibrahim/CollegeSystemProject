@@ -1,8 +1,10 @@
 using CollegeSystem.DL;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace CollegeSystem.API.Controllers;
 
+[Authorize(Roles = "Teacher")]
 [ApiController]
 [Route("api/[controller]")]
 public class LecturesController: ControllerBase
@@ -49,4 +51,40 @@ public class LecturesController: ControllerBase
         return Ok();
     }
     
+    [HttpPost("uploadFile/{id}")]
+    public IActionResult UploadFile(IFormFile file,long id)
+    {
+        _lectureManager.AddFileAsync(file,id);
+        return Ok("File Uploaded Successfully");
+    }
+    
+    [Authorize(Roles = "Student")]
+    [HttpGet("getAllFiles")]
+    public ActionResult<List<UploadLectureFileDto>> GetAllFiles()
+    {
+        return _lectureManager.GetAllFiles()!;
+    }
+    
+    [Authorize(Roles = "Student")]
+    [HttpGet("getFile/{id}")]
+    public IActionResult GetFile(int id)
+    {
+        var file = _lectureManager.GetFile(id);
+        if (file == null) return NotFound();
+        return File(file.Content,file.Extension);
+    }
+    
+    [HttpDelete("deleteFile/{id}")]
+    public IActionResult DeleteFile(int id)
+    {
+        _lectureManager.DeleteFile(id);
+        return Ok();
+    }
+    
+    [HttpPut("updateFile/{id}")]
+    public IActionResult UpdateFile(int id, IFormFile file)
+    {
+        _lectureManager.UpdateFileAsync(id,file);
+        return Ok("File Updated Successfully");
+    }
 }

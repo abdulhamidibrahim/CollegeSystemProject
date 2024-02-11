@@ -7,26 +7,35 @@ namespace CollegeSystem.DL;
 public class AssignmentManager : IAssignmentManager
 {
     private readonly IAssignmentRepo _assignmentRepo;
+    private readonly IAssignmentFileRepo _assignmentFileRepo;
+    
 
-    public AssignmentManager(IAssignmentRepo assignmentRepo)
+    public AssignmentManager(IAssignmentRepo assignmentRepo, IAssignmentFileRepo assignmentFileRepo)
     {
         _assignmentRepo = assignmentRepo;
+        _assignmentFileRepo = assignmentFileRepo;
     }
     
-    public void UpdateAssignmentAsync(int id, IFormFile file)
+    public void UpdateAssignmentAsync(int id, IFormFile file, DateTime deadline)
     {
-        var fileModel = _assignmentRepo.GetById(id);
-        if (fileModel == null )
+        var fileModel = _assignmentFileRepo.GetById(id);
+        // var assignment = _assignmentRepo.GetById(id);
+        if (fileModel == null ) //|| assignment == null
             throw new InvalidDataException("File Not Found");
-        fileModel.FileName  = file.FileName;
+        fileModel.Name  = file.FileName;
+        fileModel.Extension = file.ContentType;
+        fileModel.CreatedAt= DateTime.Now;
+        fileModel.Deadline = deadline;
         using (var ms = new MemoryStream()) 
         {
             file.CopyToAsync(ms);
-            fileModel.FileContent = ms.ToArray();
+            fileModel.Content = ms.ToArray();
         }
         
-        _assignmentRepo.Update(fileModel);
+        _assignmentFileRepo.Update(fileModel);
     }
+
+    
 
     public void DeleteAssignment(int id)
     {
@@ -38,90 +47,127 @@ public class AssignmentManager : IAssignmentManager
 
     public AssignmentReadDto GetAssignment(int id)
     {
-        var fileModel = _assignmentRepo.GetById(id);
-        if (fileModel == null)
+        var fileModel = _assignmentFileRepo.GetById(id);
+        var assignment = _assignmentRepo.GetById(id);
+        if (fileModel == null || assignment == null)
             throw new InvalidDataException("File Not Found");
         return new AssignmentReadDto()
         {
-            FileName = fileModel.FileName,
-            FileContent = fileModel.FileContent,
-            FileExtension = fileModel.FileExtension
+            FileName = fileModel.Name,
+            FileContent = fileModel.Content,
+            FileExtension = fileModel.Extension,
+            CreatedAt =assignment.CreatedAt,
+            Deadline = assignment.Deadline
         };
     }
     
     public List<AssignmentReadDto>? GetAllSectionAssignments()
     {
-        var fileModel = _assignmentRepo.GetAll().Where(x => x.SectionId != null);
+        var assignments = _assignmentRepo.GetAll()
+            .Where(x => x.SectionId != null);
         
-        return fileModel.Where(s=>s.SectionId != null).Select(x => new AssignmentReadDto()
+        var file= assignments?.Select(x => new AssignmentReadDto()
         {
-            FileName = x.FileName ,
-            FileContent = x.FileContent ,
-            FileExtension = x.FileExtension 
+           AssignmentId = x.AssignmentId,
+           Title = x.Title,
+           Description = x.Description,
+           CreatedAt = x.CreatedAt,
+           Deadline = x.Deadline
         }).ToList();
-
+        
         return null;
     }
     
     public List<AssignmentReadDto>? GetAllLectureAssignments()
     {
-        var fileModel = _assignmentRepo.GetAll().Where(x => x.LectureId != null);
-        
-        return fileModel.Where(s=>s.LectureId != null).Select(x => new AssignmentReadDto()
+        var assignments = _assignmentRepo.GetAll().Where(x=>x.LectureId!=null);
+
+        // var fileModel = _assignmentFileRepo.GetAllLectureAssignments();
+        return assignments?.Select(x => new AssignmentReadDto()
         {
-            FileName = x.FileName ,
-            FileContent = x.FileContent ,
-            FileExtension = x.FileExtension 
+            AssignmentId = x.AssignmentId,
+            Title = x.Title,
+            Description = x.Description,
+            Deadline = x.Deadline,
+            CreatedAt = x.CreatedAt
         }).ToList();
 
         return null;
     }
 
-    public void AddSectionAssignmentAsync(IFormFile file, long id)
+    public void AddSectionAssignmentFileAsync(IFormFile file, long assignmentId)
     {
-    var fileModel = new Assignment()
+    var fileModel = new AssignmentFile()
     {
-        FileName = file.FileName,
-        FileExtension = file.ContentType,
-        SectionId = id
+        Name = file.FileName,
+        Extension = file.ContentType,
+        AssignmentId = assignmentId,
     };
 
     using (var ms = new MemoryStream())
     {
         file.CopyToAsync(ms);
-        fileModel.FileContent = ms.ToArray();
+        fileModel.Content = ms.ToArray();
     }
     
-    _assignmentRepo.Add(fileModel);
+
+    _assignmentFileRepo.Add(fileModel);
     }
-    
-    public void AddLectureAssignmentAsync(IFormFile file, long id)
+
+    public void AddSectionAssignmentAsync( SectionAssignmentAddDto assignmentAddDto)
     {
-    var fileModel = new Assignment()
+        var assignment = new Assignment()
+        {
+            SectionId = assignmentAddDto.SectionId,
+            Title = assignmentAddDto.Title,
+            Description = assignmentAddDto.Description,
+            Deadline = assignmentAddDto.Deadline,
+            CreatedAt = DateTime.Now,
+        };
+    }
+
+    public void AddLectureAssignmentFileAsync(IFormFile file, long assignmentId)
     {
-        FileName = file.FileName,
-        FileExtension = file.ContentType,
-        SectionId = id
+    var fileModel = new AssignmentFile()
+    {
+        Name = file.FileName,
+        Extension = file.ContentType,
+        AssignmentId = assignmentId
     };
 
     using (var ms = new MemoryStream())
     {
         file.CopyToAsync(ms);
-        fileModel.FileContent = ms.ToArray();
+        fileModel.Content = ms.ToArray();
     }
     
-    _assignmentRepo.Add(fileModel);
+    _assignmentFileRepo.Add(fileModel);
     }
     
+
+    public void AddLectureAssignmentAsync(LectureAssignmentAddDto assignmentAddDto)
+    {
+        var assignment = new Assignment()
+        {
+            Title = assignmentAddDto.Title,
+            Description = assignmentAddDto.Description,
+            Deadline = assignmentAddDto.Deadline,
+            LectureId = assignmentAddDto.LectureId
+        };
+    }
+
     public List<AssignmentReadDto>? GetAllCourseAssignments(long courseId)
     {
-        var fileModel = _assignmentRepo.GetAllCourseAssignments(courseId);
+        var assignments = _assignmentRepo.GetAllCourseAssignments(courseId);
         
-        return fileModel.Where(s=>s.CourseId == courseId).Select(x => new AssignmentReadDto()
+        return assignments?.Where(s=>s.CourseId == courseId).Select(x => new AssignmentReadDto()
         {
-            FileName = x.FileName ,
-            FileContent = x.FileContent ,
-            FileExtension = x.FileExtension 
+            AssignmentId = x.AssignmentId,
+            Title = x.Title,
+            Description = x.Description,
+            Deadline = x.Deadline,
+            CreatedAt = x.CreatedAt
+            
         }).ToList();
 
         return null;

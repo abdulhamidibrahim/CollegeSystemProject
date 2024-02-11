@@ -7,5 +7,5 @@ public interface IStaffManager
     public void Delete(StaffDeleteDto staffDeleteDto);
     public StaffReadDto? Get(long id);
     public List<StaffReadDto> GetAll();
-    // public UserReadDto Login(UserLoginDto userLoginDto);
+    
 }

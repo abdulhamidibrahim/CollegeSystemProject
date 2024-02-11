@@ -55,6 +55,8 @@ public class StudentsController: ControllerBase
             {
                 return BadRequest(result.Errors);
             }
+
+            await _userManager.AddToRoleAsync(student, studentRegisterDto.Role);
             
             // send email verification to the user
             var token = await _userManager.GenerateEmailConfirmationTokenAsync(student);

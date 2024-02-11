@@ -1,9 +1,11 @@
+using Microsoft.EntityFrameworkCore.Diagnostics;
+
 namespace CollegeSystem.DL;
 
-public class UplaodLectureFileDto
+public class UploadAssignmentFileDto
 {
     public string Name { get; set; } = string.Empty;
     public byte[] Content { get; set; } = Array.Empty<byte>();
     public string Extension { get; set; } = string.Empty;
-    public long LectureId { get; set; }
+    public DateTime? CreatedAt { get; set; }
 }

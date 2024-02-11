@@ -102,19 +102,22 @@ public class LectureManager:ILectureManager
         {
             Name = fileModel.Name,
             Content = fileModel.Content,
-            Extension = fileModel.Extension
+            Extension = fileModel.Extension,
+            CreatedAt = fileModel.CreatedAt,
         };
     }
     
-    public List<UploadLectureFileDto>? GetAllFiles()
+    public List<UploadLectureFileDto> GetAllFiles()
     {
         var fileModel = _fileRepo.GetAll().Where(x => x.LectureId != null);
         
         return fileModel.Select(x => new UploadLectureFileDto()
         {
+            Id = x.Id,
             Name = x.Name,
-            Content = x.Content,
-            Extension = x.Extension
+            // Content = x.Content,
+            Extension = x.Extension,
+            CreatedAt = x.CreatedAt,
         }).ToList();
     }
 
@@ -124,7 +127,8 @@ public class LectureManager:ILectureManager
         {
             Name = file.FileName,
             Extension = file.ContentType,
-            LectureId = id
+            LectureId = id,
+            CreatedAt = DateTime.Now
         };
 
         using (var ms = new MemoryStream())

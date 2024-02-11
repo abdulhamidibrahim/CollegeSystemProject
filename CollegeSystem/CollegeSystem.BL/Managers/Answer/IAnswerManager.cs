@@ -7,5 +7,7 @@ public interface IAnswerManager
     public void Delete(AnswerDeleteDto answerDeleteDto);
     public AnswerReadDto? Get(long id);
     public List<AnswerReadDto> GetAll();
-    // public UserReadDto Login(UserLoginDto userLoginDto);
+    public List<AnswerReadDto> GetAllQuizAnswers(long quizId);
+    public List<AnswerReadDto> GetAllStudentAnswers(long studentId);
+    
 }

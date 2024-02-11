@@ -1,4 +1,5 @@
 using CollegeSystem.DL;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace CollegeSystem.API.Controllers;
@@ -13,25 +14,34 @@ public class QuizController: ControllerBase
     {
         _quizManager = quizManager;
     }
+    //
+    // [HttpGet]
+    // public ActionResult<List<QuizReadDto>> GetAll(long courseId)
+    // {
+    //     return _quizManager.GetAll(courseId);
+    // }
+    //
+    // [HttpGet("{id}")]
+    // public ActionResult<QuizReadDto?> Get(long id)
+    // {
+    //     var quiz = _quizManager.Get(id);
+    //     if (quiz == null) return NotFound();
+    //     return quiz;
+    // }
     
-    [HttpGet]
-    public ActionResult<List<QuizReadDto>> GetAll(long courseId)
-    {
-        return _quizManager.GetAll(courseId);
-    }
-    
-    [HttpGet("{id}")]
-    public ActionResult<QuizReadDto?> Get(long id)
-    {
-        var quiz = _quizManager.Get(id);
-        if (quiz == null) return NotFound();
-        return quiz;
-    }
-    
+    [Authorize(Roles = "Assistant")]
     [HttpPost]
-    public ActionResult Add(QuizAddDto quizAddDto)
+    public ActionResult AddSectionQuiz(AddSectionQuizDto quizAddDto)
     {
-        _quizManager.Add(quizAddDto);
+        _quizManager.AddSectionQuiz(quizAddDto);
+        return Ok();
+    }
+    
+    [Authorize(Roles = "Teacher")]
+    [HttpPost]
+    public ActionResult AddLectureQuiz(AddLectureQuizDto quizAddDto)
+    {
+        _quizManager.AddLectureQuiz(quizAddDto);
         return Ok();
     }
     
@@ -49,18 +59,21 @@ public class QuizController: ControllerBase
         return Ok();
     }
     
+    [Authorize(Roles = "Assistant, Student")]
     [HttpGet("GetAllSectionQuizzes")]
     public ActionResult<List<QuizReadDto>> GetAllSectionQuizzes(long courseId)
     {
         return _quizManager.GetAllSectionQuizzes(courseId);
     }
     
+    [Authorize(Roles = "Teacher,Student")]
     [HttpGet("GetAllLectureQuizzes")]
     public ActionResult<List<QuizReadDto>> GetAllLectureQuizzes(long courseId)
     {
         return _quizManager.GetAllLectureQuizzes(courseId);
     }
     
+    [Authorize(Roles = "Teacher,Student")]
     [HttpGet("GetByLectureId")]
     public ActionResult<QuizReadDto?> GetByLectureId(long lectureId)
     {
@@ -69,6 +82,7 @@ public class QuizController: ControllerBase
         return quiz;
     }
     
+    [Authorize(Roles = "Assistant, Student")]
     [HttpGet("GetBySectionId")]
     public ActionResult<QuizReadDto?> GetBySectionId(long sectionId)
     {
