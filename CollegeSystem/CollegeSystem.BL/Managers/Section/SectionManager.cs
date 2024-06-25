@@ -1,4 +1,5 @@
 using CollegeSystem.DAL.Models;
+using CollegeSystem.DAL.UnitOfWork;
 using FCISystem.DAL;
 using Microsoft.AspNetCore.Http;
 using File = CollegeSystem.DAL.Models.File;
@@ -9,11 +10,13 @@ public class SectionManager:ISectionManager
 {
     private readonly ISectionRepo _sectionRepo;
     private readonly IFileRepo _fileRepo;
+    private readonly IUnitOfWork _unitOfWork;
 
-    public SectionManager(ISectionRepo sectionRepo, IFileRepo fileRepo)
+    public SectionManager(ISectionRepo sectionRepo, IFileRepo fileRepo, IUnitOfWork unitOfWork)
     {
         _sectionRepo = sectionRepo;
         _fileRepo = fileRepo;
+        _unitOfWork = unitOfWork;
     }
     
     public void Add(SectionAddDto sectionAddDto)
@@ -24,6 +27,7 @@ public class SectionManager:ISectionManager
             CourseId = sectionAddDto.CourseId
         };
         _sectionRepo.Add(section);
+        _unitOfWork.CompleteAsync();
     }
 
     public void Update(SectionUpdateDto sectionUpdateDto)
@@ -35,6 +39,7 @@ public class SectionManager:ISectionManager
         section.CourseId = sectionUpdateDto.CourseId;
         
         _sectionRepo.Update(section);
+        _unitOfWork.CompleteAsync();
     }
 
     public void Delete(SectionDeleteDto sectionDeleteDto)
@@ -42,6 +47,8 @@ public class SectionManager:ISectionManager
         var section = _sectionRepo.GetById(sectionDeleteDto.Id);
         if (section == null) return;
         _sectionRepo.Delete(section);
+        _unitOfWork.CompleteAsync();
+        _unitOfWork.CompleteAsync();
     }
 
     public SectionReadDto? Get(long id)
@@ -50,19 +57,20 @@ public class SectionManager:ISectionManager
         if (section == null) return null;
         return new SectionReadDto()
         {
+            Id = section.SectionId,
             Title = section.Title,
             CourseId = section.CourseId
         };
     }
 
-    public List<SectionReadDto> GetAll()
+    public List<SectionReadDto> GetAll(long courseId)
     {
-        var sections = _sectionRepo.GetAll();
-        return sections.Select(section => new SectionReadDto()
+        var sections = _sectionRepo.GetAllSections(courseId);
+        return sections.Result.Select(section => new SectionReadDto()
         {
+            Id = section.SectionId,
             Title = section.Title,
-            CourseId = section.CourseId
-            
+            UploadedBy = section.UploadedBy,
         }).ToList();
     }
 
@@ -79,6 +87,7 @@ public class SectionManager:ISectionManager
         }
         
         _fileRepo.Update(fileModel);
+        _unitOfWork.CompleteAsync();
     }
 
     public void DeleteFile(int id)
@@ -88,6 +97,7 @@ public class SectionManager:ISectionManager
         if (fileModel == null || section==null)
             throw new InvalidDataException("File Not Found");
         _fileRepo.Delete(fileModel);
+        _unitOfWork.CompleteAsync();
     }
 
     public UploadSectionFileDto? GetFile(int id)
@@ -120,6 +130,7 @@ public class SectionManager:ISectionManager
         }
 
         _fileRepo.Add(fileModel);
+        _unitOfWork.CompleteAsync();
     }
     public List<UploadSectionFileDto> GetAllFiles()
     {

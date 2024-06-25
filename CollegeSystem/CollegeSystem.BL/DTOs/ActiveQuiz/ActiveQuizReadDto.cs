@@ -5,7 +5,7 @@ namespace CollegeSystem.DL;
 public class ActiveQuizReadDto
 {
 
-
+    public int Id { get; set; }
     public int ActiveQuizzesId { get; set; }
 
     public long? QuizId { get; set; }

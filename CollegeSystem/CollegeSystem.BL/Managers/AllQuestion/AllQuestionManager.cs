@@ -1,4 +1,5 @@
 using CollegeSystem.DAL.Models;
+using CollegeSystem.DAL.UnitOfWork;
 using FCISystem.DAL;
 
 namespace CollegeSystem.DL;
@@ -6,10 +7,12 @@ namespace CollegeSystem.DL;
 public class AllQuestionManager :IAllQuestionManager
 {
     private readonly IAllQuestionRepo _allQuestionRepo;
+    private readonly IUnitOfWork _unitOfWork;
 
-    public AllQuestionManager(IAllQuestionRepo allQuestionRepo)
+    public AllQuestionManager(IAllQuestionRepo allQuestionRepo, IUnitOfWork unitOfWork)
     {
         _allQuestionRepo = allQuestionRepo;
+        _unitOfWork = unitOfWork;
     }
     
     public void Add(AllQuestionAddDto allQuestionAddDto)
@@ -26,6 +29,7 @@ public class AllQuestionManager :IAllQuestionManager
             AllQuizzesId = allQuestionAddDto.AllQuizzesId
         };
         _allQuestionRepo.Add(allQuestion);
+        _unitOfWork.CompleteAsync();
     }
 
     public void Update(AllQuestionUpdateDto allQuestionUpdateDto)
@@ -42,6 +46,7 @@ public class AllQuestionManager :IAllQuestionManager
         allQuestion.AllQuizzesId = allQuestionUpdateDto.AllQuizzesId;        
 
         _allQuestionRepo.Update(allQuestion);
+        _unitOfWork.CompleteAsync();
     }
 
     public void Delete(AllQuestionDeleteDto allQuestionDeleteDto)
@@ -49,6 +54,7 @@ public class AllQuestionManager :IAllQuestionManager
         var allQuestion = _allQuestionRepo.GetById(allQuestionDeleteDto.Id);
         if (allQuestion == null) return;
         _allQuestionRepo.Delete(allQuestion);
+        _unitOfWork.CompleteAsync();
     }
 
     public AllQuestionReadDto? Get(long id)
@@ -74,6 +80,7 @@ public class AllQuestionManager :IAllQuestionManager
         var allQuestions = _allQuestionRepo.GetAll();
         return allQuestions.Select(allQuestion => new AllQuestionReadDto()
         {
+            Id = allQuestion.AllQuestionsId,
             Question = allQuestion.Question,
             Answer = allQuestion.Answer,
             Choice1 = allQuestion.Choice1,

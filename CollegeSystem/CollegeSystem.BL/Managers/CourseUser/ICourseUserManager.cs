@@ -7,5 +7,9 @@ public interface ICourseUserManager
     public void Delete(CourseUserDeleteDto courseUserDeleteDto);
     public CourseUserReadDto? Get(long id);
     public List<CourseUserReadDto> GetAll();
-    // public UserReadDto Login(UserLoginDto userLoginDto);
+
+    public void RegisterCoursesForStudent(long[] coursesId, long studentId);
+
+    public void UnRegisterCoursesForStudent(long[] coursesId, long studentId);
+    
 }

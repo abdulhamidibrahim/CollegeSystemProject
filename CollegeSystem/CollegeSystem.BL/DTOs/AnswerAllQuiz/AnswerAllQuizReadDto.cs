@@ -2,6 +2,7 @@
 
 public class AnswerAllQuizReadDto
 {
+    public long Id { get; set; }
     public string? StudentMark { get; set; }
 
     public long? UserId { get; set; }

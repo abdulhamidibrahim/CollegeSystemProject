@@ -1,4 +1,5 @@
 ﻿using CollegeSystem.DAL.Models;
+using CollegeSystem.DAL.UnitOfWork;
 using FCISystem.DAL;
 using Microsoft.AspNetCore.Http;
 
@@ -8,12 +9,14 @@ public class AssignmentManager : IAssignmentManager
 {
     private readonly IAssignmentRepo _assignmentRepo;
     private readonly IAssignmentFileRepo _assignmentFileRepo;
-    
+    private readonly IUnitOfWork _unitOfWork;
 
-    public AssignmentManager(IAssignmentRepo assignmentRepo, IAssignmentFileRepo assignmentFileRepo)
+
+    public AssignmentManager(IAssignmentRepo assignmentRepo, IAssignmentFileRepo assignmentFileRepo, IUnitOfWork unitOfWork)
     {
         _assignmentRepo = assignmentRepo;
         _assignmentFileRepo = assignmentFileRepo;
+        _unitOfWork = unitOfWork;
     }
     
     public void UpdateAssignmentAsync(int id, IFormFile file, DateTime deadline)
@@ -33,6 +36,7 @@ public class AssignmentManager : IAssignmentManager
         }
         
         _assignmentFileRepo.Update(fileModel);
+        _unitOfWork.CompleteAsync();
     }
 
     
@@ -43,6 +47,7 @@ public class AssignmentManager : IAssignmentManager
         if (fileModel == null)
             throw new InvalidDataException("File Not Found");
         _assignmentRepo.Delete(fileModel);
+        _unitOfWork.CompleteAsync();
     }
 
     public AssignmentReadDto GetAssignment(int id)
@@ -53,6 +58,7 @@ public class AssignmentManager : IAssignmentManager
             throw new InvalidDataException("File Not Found");
         return new AssignmentReadDto()
         {
+            Id = fileModel.AssignmentId,
             FileName = fileModel.Name,
             FileContent = fileModel.Content,
             FileExtension = fileModel.Extension,
@@ -68,7 +74,7 @@ public class AssignmentManager : IAssignmentManager
         
         var file= assignments?.Select(x => new AssignmentReadDto()
         {
-           AssignmentId = x.AssignmentId,
+           Id = x.AssignmentId,
            Title = x.Title,
            Description = x.Description,
            CreatedAt = x.CreatedAt,
@@ -85,7 +91,7 @@ public class AssignmentManager : IAssignmentManager
         // var fileModel = _assignmentFileRepo.GetAllLectureAssignments();
         return assignments?.Select(x => new AssignmentReadDto()
         {
-            AssignmentId = x.AssignmentId,
+            Id = x.AssignmentId,
             Title = x.Title,
             Description = x.Description,
             Deadline = x.Deadline,
@@ -112,6 +118,7 @@ public class AssignmentManager : IAssignmentManager
     
 
     _assignmentFileRepo.Add(fileModel);
+    _unitOfWork.CompleteAsync();
     }
 
     public void AddSectionAssignmentAsync( SectionAssignmentAddDto assignmentAddDto)
@@ -124,6 +131,9 @@ public class AssignmentManager : IAssignmentManager
             Deadline = assignmentAddDto.Deadline,
             CreatedAt = DateTime.Now,
         };
+        
+        _assignmentRepo.Add(assignment);
+        _unitOfWork.CompleteAsync();
     }
 
     public void AddLectureAssignmentFileAsync(IFormFile file, long assignmentId)
@@ -142,6 +152,7 @@ public class AssignmentManager : IAssignmentManager
     }
     
     _assignmentFileRepo.Add(fileModel);
+    _unitOfWork.CompleteAsync();
     }
     
 
@@ -149,11 +160,15 @@ public class AssignmentManager : IAssignmentManager
     {
         var assignment = new Assignment()
         {
+            
             Title = assignmentAddDto.Title,
             Description = assignmentAddDto.Description,
             Deadline = assignmentAddDto.Deadline,
             LectureId = assignmentAddDto.LectureId
         };
+        
+        _assignmentRepo.Add(assignment);
+        _unitOfWork.CompleteAsync();
     }
 
     public List<AssignmentReadDto>? GetAllCourseAssignments(long courseId)
@@ -162,7 +177,7 @@ public class AssignmentManager : IAssignmentManager
         
         return assignments?.Where(s=>s.CourseId == courseId).Select(x => new AssignmentReadDto()
         {
-            AssignmentId = x.AssignmentId,
+            Id = x.AssignmentId,
             Title = x.Title,
             Description = x.Description,
             Deadline = x.Deadline,
@@ -170,6 +185,6 @@ public class AssignmentManager : IAssignmentManager
             
         }).ToList();
 
-        return null;
+        
     }
 }

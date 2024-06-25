@@ -2,7 +2,7 @@ namespace CollegeSystem.DL;
 
 public class QuestionReadDto
 {
-
+    public long Id { get; set; }
     public string? Question1 { get; set; }
 
     public string? Answer { get; set; }

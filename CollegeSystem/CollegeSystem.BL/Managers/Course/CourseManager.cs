@@ -1,4 +1,5 @@
 using CollegeSystem.DAL.Models;
+using CollegeSystem.DAL.UnitOfWork;
 using FCISystem.DAL;
 using Microsoft.AspNetCore.Http;
 using File = CollegeSystem.DAL.Models.File;
@@ -9,11 +10,13 @@ public class CourseManager:ICourseManager
 {
     private readonly ICourseRepo _courseRepo;
     private readonly IFileRepo _fileRepo;
+    private readonly IUnitOfWork _unitOfWork;
 
-    public CourseManager(ICourseRepo courseRepo, IFileRepo fileRepo)
+    public CourseManager(ICourseRepo courseRepo, IFileRepo fileRepo, IUnitOfWork unitOfWork)
     {
         _courseRepo = courseRepo;
         _fileRepo = fileRepo;
+        _unitOfWork = unitOfWork;
     }
     
     public void Add(CourseAddDto courseAddDto)
@@ -28,6 +31,7 @@ public class CourseManager:ICourseManager
             Link = courseAddDto.Link,
         };
         _courseRepo.Add(course);
+        _unitOfWork.CompleteAsync();
     }
 
     public void Update(CourseUpdateDto courseUpdateDto)
@@ -42,6 +46,7 @@ public class CourseManager:ICourseManager
         course.Link = courseUpdateDto.Link;
         
         _courseRepo.Update(course);
+        _unitOfWork.CompleteAsync();
     }
 
     public void Delete(CourseDeleteDto courseDeleteDto)
@@ -49,6 +54,7 @@ public class CourseManager:ICourseManager
         var course = _courseRepo.GetById(courseDeleteDto.Id);
         if (course == null) return;
         _courseRepo.Delete(course);
+        _unitOfWork.CompleteAsync();
     }
 
     public CourseReadDto? Get(long id)
@@ -57,6 +63,7 @@ public class CourseManager:ICourseManager
         if (course == null) return null;
         return new CourseReadDto()
         {
+            Id = course.CourseId,
             Name = course.Name,
             Level = course.Level,
             Term = course.Term,
@@ -71,6 +78,7 @@ public class CourseManager:ICourseManager
         var courses = _courseRepo.GetAll();
         return courses.Select(course => new CourseReadDto()
         {
+            Id = course.CourseId,
             Name = course.Name,
             Level = course.Level,
             Term = course.Term,
@@ -95,6 +103,7 @@ public class CourseManager:ICourseManager
         }
         
         _fileRepo.Update(fileModel);
+        _unitOfWork.CompleteAsync();
     }
 
     public void DeleteImage(int id)
@@ -103,6 +112,7 @@ public class CourseManager:ICourseManager
         if (fileModel == null)
             throw new InvalidDataException("File Not Found");
         _fileRepo.Delete(fileModel);
+        _unitOfWork.CompleteAsync();
     }
 
     public UploadCourseImageDto? GetImage(int id)
@@ -135,5 +145,35 @@ public class CourseManager:ICourseManager
         }
 
         _fileRepo.Add(fileModel);
+        _unitOfWork.CompleteAsync();
+    }
+
+    public List<CourseReadDto> GetCoursesByDeptId(int deptId)
+    {
+        var courses = _courseRepo.GetCoursesByDeptId(deptId);
+        return courses.Select(course => new CourseReadDto()
+        {
+            Id = course.CourseId,
+            Name = course.Name,
+            Level = course.Level,
+            Term = course.Term,
+            Hours = course.Hours,
+            Code = course.Code,
+            Link = course.Link,
+        }).ToList();
+    }
+
+    public List<CourseReadDto> GetCoursesByLevelAndTerm(string level, string term)
+    {
+        var courses = _courseRepo.GetCoursesByLevelAndTerm(level, term);
+        return courses.Select(course => new CourseReadDto()
+        {
+            Name = course.Name,
+            Level = course.Level,
+            Term = course.Term,
+            Hours = course.Hours,
+            Code = course.Code,
+            Link = course.Link,
+        }).ToList();
     }
 }

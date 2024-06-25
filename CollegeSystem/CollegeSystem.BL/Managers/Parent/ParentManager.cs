@@ -1,4 +1,5 @@
 using CollegeSystem.DAL.Models;
+using CollegeSystem.DAL.UnitOfWork;
 using FCISystem.DAL;
 
 namespace CollegeSystem.DL;
@@ -6,10 +7,12 @@ namespace CollegeSystem.DL;
 public class ParentManager:IParentManager
 {
     private readonly IParentRepo _parentRepo;
+    private readonly IUnitOfWork _unitOfWork;
 
-    public ParentManager(IParentRepo parentRepo)
+    public ParentManager(IParentRepo parentRepo, IUnitOfWork unitOfWork)
     {
         _parentRepo = parentRepo;
+        _unitOfWork = unitOfWork;
     }
     
     public void Add(ParentAddDto parentAddDto)
@@ -21,6 +24,7 @@ public class ParentManager:IParentManager
             Phone = parentAddDto.Phone,
         };
         _parentRepo.Add(parent);
+        _unitOfWork.CompleteAsync();
     }
 
     public void Update(ParentUpdateDto parentUpdateDto)
@@ -32,6 +36,8 @@ public class ParentManager:IParentManager
         parent.Phone = parentUpdateDto.Phone;
         
         _parentRepo.Update(parent);
+        _unitOfWork.CompleteAsync();
+        
     }
 
     public void Delete(ParentDeleteDto parentDeleteDto)
@@ -39,6 +45,8 @@ public class ParentManager:IParentManager
         var parent = _parentRepo.GetById(parentDeleteDto.Id);
         if (parent == null) return;
         _parentRepo.Delete(parent);
+        _unitOfWork.CompleteAsync();
+        
     }
 
     public ParentReadDto? Get(long id)
@@ -47,6 +55,7 @@ public class ParentManager:IParentManager
         if (parent == null) return null;
         return new ParentReadDto()
         {
+            Id = parent.Id,
             Name = parent.Name,
             Email = parent.Email,
             Phone = parent.Phone,
@@ -58,6 +67,7 @@ public class ParentManager:IParentManager
         var parents = _parentRepo.GetAll();
         return parents.Select(parent => new ParentReadDto()
         {
+            Id = parent.Id,
             Name = parent.Name,
             Email = parent.Email,
             Phone = parent.Phone,

@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace CollegeSystem.DAL.Migrations
 {
     /// <inheritdoc />
-    public partial class FirstMigration : Migration
+    public partial class restoreMigration : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -30,7 +30,7 @@ namespace CollegeSystem.DAL.Migrations
                 name: "AspNetUsers",
                 columns: table => new
                 {
-                    parent_id = table.Column<long>(type: "bigint", nullable: false)
+                    Id = table.Column<long>(type: "bigint", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     UserName = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
                     NormalizedUserName = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
@@ -49,7 +49,7 @@ namespace CollegeSystem.DAL.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_AspNetUsers", x => x.parent_id);
+                    table.PrimaryKey("PK_AspNetUsers", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -63,8 +63,7 @@ namespace CollegeSystem.DAL.Migrations
                     term = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: true),
                     hours = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: true),
                     code = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: true),
-                    link = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: true),
-                    img = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: true)
+                    link = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: true)
                 },
                 constraints: table =>
                 {
@@ -87,6 +86,21 @@ namespace CollegeSystem.DAL.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "Meetings",
+                columns: table => new
+                {
+                    Id = table.Column<long>(type: "bigint", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Title = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    StartDate = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    Url = table.Column<string>(type: "nvarchar(max)", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Meetings", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "Parent_calls",
                 columns: table => new
                 {
@@ -99,6 +113,21 @@ namespace CollegeSystem.DAL.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Parent_calls", x => x.message_id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Posts",
+                columns: table => new
+                {
+                    post_id = table.Column<long>(type: "bigint", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    title = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: true),
+                    img = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: true),
+                    content = table.Column<string>(type: "nvarchar(max)", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Posts", x => x.post_id);
                 });
 
             migrationBuilder.CreateTable(
@@ -123,6 +152,25 @@ namespace CollegeSystem.DAL.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "Admin",
+                columns: table => new
+                {
+                    Id = table.Column<long>(type: "bigint", nullable: false),
+                    Name = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Phone = table.Column<string>(type: "nvarchar(max)", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Admin", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Admin_AspNetUsers_Id",
+                        column: x => x.Id,
+                        principalTable: "AspNetUsers",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "AspNetUserClaims",
                 columns: table => new
                 {
@@ -139,7 +187,7 @@ namespace CollegeSystem.DAL.Migrations
                         name: "FK_AspNetUserClaims_AspNetUsers_UserId",
                         column: x => x.UserId,
                         principalTable: "AspNetUsers",
-                        principalColumn: "parent_id",
+                        principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
 
@@ -159,7 +207,7 @@ namespace CollegeSystem.DAL.Migrations
                         name: "FK_AspNetUserLogins_AspNetUsers_UserId",
                         column: x => x.UserId,
                         principalTable: "AspNetUsers",
-                        principalColumn: "parent_id",
+                        principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
 
@@ -183,7 +231,7 @@ namespace CollegeSystem.DAL.Migrations
                         name: "FK_AspNetUserRoles_AspNetUsers_UserId",
                         column: x => x.UserId,
                         principalTable: "AspNetUsers",
-                        principalColumn: "parent_id",
+                        principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
 
@@ -203,7 +251,7 @@ namespace CollegeSystem.DAL.Migrations
                         name: "FK_AspNetUserTokens_AspNetUsers_UserId",
                         column: x => x.UserId,
                         principalTable: "AspNetUsers",
-                        principalColumn: "parent_id",
+                        principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
 
@@ -211,19 +259,19 @@ namespace CollegeSystem.DAL.Migrations
                 name: "Parent",
                 columns: table => new
                 {
-                    parent_id = table.Column<long>(type: "bigint", nullable: false),
+                    Id = table.Column<long>(type: "bigint", nullable: false),
                     name = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: true),
                     Address = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     phone = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Parent", x => x.parent_id);
+                    table.PrimaryKey("PK_Parent", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Parent_AspNetUsers_parent_id",
-                        column: x => x.parent_id,
+                        name: "FK_Parent_AspNetUsers_Id",
+                        column: x => x.Id,
                         principalTable: "AspNetUsers",
-                        principalColumn: "parent_id",
+                        principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
 
@@ -231,20 +279,20 @@ namespace CollegeSystem.DAL.Migrations
                 name: "Staff",
                 columns: table => new
                 {
-                    parent_id = table.Column<long>(type: "bigint", nullable: false),
+                    Id = table.Column<long>(type: "bigint", nullable: false),
                     name = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: true),
                     password = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    img = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    phone = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: true)
+                    phone = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: true),
+                    IsAssistant = table.Column<bool>(type: "bit", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Staff", x => x.parent_id);
+                    table.PrimaryKey("PK_Staff", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Staff_AspNetUsers_parent_id",
-                        column: x => x.parent_id,
+                        name: "FK_Staff_AspNetUsers_Id",
+                        column: x => x.Id,
                         principalTable: "AspNetUsers",
-                        principalColumn: "parent_id",
+                        principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
 
@@ -271,34 +319,12 @@ namespace CollegeSystem.DAL.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Assignments",
-                columns: table => new
-                {
-                    assignment_id = table.Column<long>(type: "bigint", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    title = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: true),
-                    description = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    file = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    course_id = table.Column<long>(type: "bigint", nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Assignments", x => x.assignment_id);
-                    table.ForeignKey(
-                        name: "FK_Assignments_Courses",
-                        column: x => x.course_id,
-                        principalTable: "Courses",
-                        principalColumn: "course_id");
-                });
-
-            migrationBuilder.CreateTable(
                 name: "Lectures",
                 columns: table => new
                 {
                     lecture_id = table.Column<long>(type: "bigint", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     title = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: true),
-                    file = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     course_id = table.Column<long>(type: "bigint", nullable: true)
                 },
                 constraints: table =>
@@ -312,35 +338,12 @@ namespace CollegeSystem.DAL.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Quizzes",
-                columns: table => new
-                {
-                    quiz_id = table.Column<long>(type: "bigint", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    name = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: true),
-                    instructor = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: true),
-                    max_degree = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: true),
-                    max_time = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: true),
-                    course_id = table.Column<long>(type: "bigint", nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Quizzes", x => x.quiz_id);
-                    table.ForeignKey(
-                        name: "FK_Quizzes_Courses",
-                        column: x => x.course_id,
-                        principalTable: "Courses",
-                        principalColumn: "course_id",
-                        onDelete: ReferentialAction.Cascade);
-                });
-
-            migrationBuilder.CreateTable(
                 name: "Sections",
                 columns: table => new
                 {
-                    sections_id = table.Column<long>(type: "bigint", nullable: false),
+                    sections_id = table.Column<long>(type: "bigint", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
                     title = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: true),
-                    file = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     course_id = table.Column<long>(type: "bigint", nullable: true)
                 },
                 constraints: table =>
@@ -357,13 +360,11 @@ namespace CollegeSystem.DAL.Migrations
                 name: "Student",
                 columns: table => new
                 {
-                    parent_id = table.Column<long>(type: "bigint", nullable: false),
+                    Id = table.Column<long>(type: "bigint", nullable: false),
                     arabic_name = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: true),
                     university_email = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: true),
-                    email_verified_at = table.Column<DateTime>(type: "datetime", nullable: false),
                     password = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     ssn = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: true),
-                    img = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     phone = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: true),
                     parent_phone = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: true),
                     parent_email = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: true),
@@ -371,15 +372,15 @@ namespace CollegeSystem.DAL.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Student", x => x.parent_id);
+                    table.PrimaryKey("PK_Student", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Student_AspNetUsers_parent_id",
-                        column: x => x.parent_id,
+                        name: "FK_Student_AspNetUsers_Id",
+                        column: x => x.Id,
                         principalTable: "AspNetUsers",
-                        principalColumn: "parent_id",
+                        principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_Student_Departments_Dept_Id",
+                        name: "FK_Users_Departments",
                         column: x => x.Dept_Id,
                         principalTable: "Departments",
                         principalColumn: "dept_id");
@@ -406,7 +407,7 @@ namespace CollegeSystem.DAL.Migrations
                         name: "FK_Course_Staff_Staff_StaffId",
                         column: x => x.StaffId,
                         principalTable: "Staff",
-                        principalColumn: "parent_id");
+                        principalColumn: "Id");
                 });
 
             migrationBuilder.CreateTable(
@@ -455,119 +456,69 @@ namespace CollegeSystem.DAL.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Assignment_Answers",
+                name: "Assignments",
                 columns: table => new
                 {
-                    assignment_answer_id = table.Column<long>(type: "bigint", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    file = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    assignment_id = table.Column<long>(type: "bigint", nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Assignment_Answers", x => x.assignment_answer_id);
-                    table.ForeignKey(
-                        name: "FK_Assignment_Answers_Assignments",
-                        column: x => x.assignment_id,
-                        principalTable: "Assignments",
-                        principalColumn: "assignment_id");
-                });
-
-            migrationBuilder.CreateTable(
-                name: "Lecture_Assignments",
-                columns: table => new
-                {
-                    lecture_assignment_id = table.Column<long>(type: "bigint", nullable: false)
+                    assignment_id = table.Column<long>(type: "bigint", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     title = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: true),
                     description = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    file = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    lecture_id = table.Column<long>(type: "bigint", nullable: true),
+                    Deadline = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    SectionId = table.Column<long>(type: "bigint", nullable: true),
+                    LectureId = table.Column<long>(type: "bigint", nullable: true),
                     CourseId = table.Column<long>(type: "bigint", nullable: true)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Lecture_Assignments", x => x.lecture_assignment_id);
+                    table.PrimaryKey("PK_Assignments", x => x.assignment_id);
                     table.ForeignKey(
-                        name: "FK_Lecture_Assignments_Courses_CourseId",
+                        name: "FK_Assignments_Courses_CourseId",
                         column: x => x.CourseId,
                         principalTable: "Courses",
                         principalColumn: "course_id");
                     table.ForeignKey(
-                        name: "FK_Lecture_Assignments_Lectures",
-                        column: x => x.lecture_id,
+                        name: "FK_Assignments_Lectures_LectureId",
+                        column: x => x.LectureId,
                         principalTable: "Lectures",
-                        principalColumn: "lecture_id",
-                        onDelete: ReferentialAction.Cascade);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "Active_Quizzes",
-                columns: table => new
-                {
-                    active_quizzes_id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    quiz_id = table.Column<long>(type: "bigint", nullable: true),
-                    start_date = table.Column<DateTime>(type: "datetime", nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Active_Quizzes", x => x.active_quizzes_id);
+                        principalColumn: "lecture_id");
                     table.ForeignKey(
-                        name: "FK_Active_Quizzes_Quizzes",
-                        column: x => x.quiz_id,
-                        principalTable: "Quizzes",
-                        principalColumn: "quiz_id");
+                        name: "FK_Assignments_Sections_SectionId",
+                        column: x => x.SectionId,
+                        principalTable: "Sections",
+                        principalColumn: "sections_id");
                 });
 
             migrationBuilder.CreateTable(
-                name: "Questions",
+                name: "Quizzes",
                 columns: table => new
                 {
-                    id = table.Column<int>(type: "int", nullable: false)
+                    quiz_id = table.Column<long>(type: "bigint", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    question = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: true),
-                    answer = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: true),
-                    choice1 = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: true),
-                    choice2 = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: true),
-                    choice3 = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: true),
-                    choice4 = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: true),
-                    choice5 = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: true),
-                    quiz_id = table.Column<long>(type: "bigint", nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Questions", x => x.id);
-                    table.ForeignKey(
-                        name: "FK_Questions_Quizzes",
-                        column: x => x.quiz_id,
-                        principalTable: "Quizzes",
-                        principalColumn: "quiz_id");
-                });
-
-            migrationBuilder.CreateTable(
-                name: "Section_Assignments",
-                columns: table => new
-                {
-                    section_assignment_id = table.Column<long>(type: "bigint", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    title = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: true),
-                    description = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    file = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    section_id = table.Column<long>(type: "bigint", nullable: true),
+                    name = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: true),
+                    instructor = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: true),
+                    max_degree = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: true),
+                    max_time = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: true),
+                    LectureId = table.Column<long>(type: "bigint", nullable: true),
+                    SectionId = table.Column<long>(type: "bigint", nullable: true),
                     CourseId = table.Column<long>(type: "bigint", nullable: true)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Section_Assignments", x => x.section_assignment_id);
+                    table.PrimaryKey("PK_Quizzes", x => x.quiz_id);
                     table.ForeignKey(
-                        name: "FK_Section_Assignments_Courses_CourseId",
+                        name: "FK_Quizzes_Courses_CourseId",
                         column: x => x.CourseId,
                         principalTable: "Courses",
                         principalColumn: "course_id");
                     table.ForeignKey(
-                        name: "FK_Section_Assignments_Sections",
-                        column: x => x.section_id,
+                        name: "FK_Quizzes_Lectures_LectureId",
+                        column: x => x.LectureId,
+                        principalTable: "Lectures",
+                        principalColumn: "lecture_id");
+                    table.ForeignKey(
+                        name: "FK_Quizzes_Sections_SectionId",
+                        column: x => x.SectionId,
                         principalTable: "Sections",
                         principalColumn: "sections_id");
                 });
@@ -635,38 +586,7 @@ namespace CollegeSystem.DAL.Migrations
                         name: "FK_Answer_All_Quizzes_Student_StudentId",
                         column: x => x.StudentId,
                         principalTable: "Student",
-                        principalColumn: "parent_id");
-                });
-
-            migrationBuilder.CreateTable(
-                name: "Answers",
-                columns: table => new
-                {
-                    answer_id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    student_mark = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: true),
-                    quiz_id = table.Column<long>(type: "bigint", nullable: true),
-                    course_id = table.Column<long>(type: "bigint", nullable: true),
-                    StudentId = table.Column<long>(type: "bigint", nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Answers", x => x.answer_id);
-                    table.ForeignKey(
-                        name: "FK_Answers_Courses",
-                        column: x => x.course_id,
-                        principalTable: "Courses",
-                        principalColumn: "course_id");
-                    table.ForeignKey(
-                        name: "FK_Answers_Quizzes_1",
-                        column: x => x.quiz_id,
-                        principalTable: "Quizzes",
-                        principalColumn: "quiz_id");
-                    table.ForeignKey(
-                        name: "FK_Answers_Student_StudentId",
-                        column: x => x.StudentId,
-                        principalTable: "Student",
-                        principalColumn: "parent_id");
+                        principalColumn: "Id");
                 });
 
             migrationBuilder.CreateTable(
@@ -692,7 +612,47 @@ namespace CollegeSystem.DAL.Migrations
                         name: "FK_Course_Users_Student_StudentId",
                         column: x => x.StudentId,
                         principalTable: "Student",
-                        principalColumn: "parent_id");
+                        principalColumn: "Id");
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Files",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Name = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Content = table.Column<byte[]>(type: "varbinary(max)", nullable: false),
+                    Extension = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    LectureId = table.Column<long>(type: "bigint", nullable: true),
+                    CourseId = table.Column<long>(type: "bigint", nullable: true),
+                    StudentId = table.Column<long>(type: "bigint", nullable: true),
+                    SectionId = table.Column<long>(type: "bigint", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Files", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Courses_Images",
+                        column: x => x.CourseId,
+                        principalTable: "Courses",
+                        principalColumn: "course_id");
+                    table.ForeignKey(
+                        name: "FK_Files_Lectures_LectureId",
+                        column: x => x.LectureId,
+                        principalTable: "Lectures",
+                        principalColumn: "lecture_id");
+                    table.ForeignKey(
+                        name: "FK_Files_Sections_SectionId",
+                        column: x => x.SectionId,
+                        principalTable: "Sections",
+                        principalColumn: "sections_id");
+                    table.ForeignKey(
+                        name: "FK_Files_Student_StudentId",
+                        column: x => x.StudentId,
+                        principalTable: "Student",
+                        principalColumn: "Id");
                 });
 
             migrationBuilder.CreateTable(
@@ -729,78 +689,7 @@ namespace CollegeSystem.DAL.Migrations
                         name: "FK_perm_attendances_Student_StudentId",
                         column: x => x.StudentId,
                         principalTable: "Student",
-                        principalColumn: "parent_id");
-                });
-
-            migrationBuilder.CreateTable(
-                name: "Posts",
-                columns: table => new
-                {
-                    post_id = table.Column<long>(type: "bigint", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    title = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: true),
-                    img = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: true),
-                    content = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    StudentId = table.Column<long>(type: "bigint", nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Posts", x => x.post_id);
-                    table.ForeignKey(
-                        name: "FK_Posts_Student_StudentId",
-                        column: x => x.StudentId,
-                        principalTable: "Student",
-                        principalColumn: "parent_id");
-                });
-
-            migrationBuilder.CreateTable(
-                name: "Lecture_Assignment_Answers",
-                columns: table => new
-                {
-                    lecture_assignment_answer_id = table.Column<long>(type: "bigint", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    file = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    lecture_assignment_id = table.Column<long>(type: "bigint", nullable: true),
-                    StudentId = table.Column<long>(type: "bigint", nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Lecture_Assignment_Answers", x => x.lecture_assignment_answer_id);
-                    table.ForeignKey(
-                        name: "FK_Lecture_Assignment_Answers_Lecture_Assignments_1",
-                        column: x => x.lecture_assignment_id,
-                        principalTable: "Lecture_Assignments",
-                        principalColumn: "lecture_assignment_id");
-                    table.ForeignKey(
-                        name: "FK_Lecture_Assignment_Answers_Student_StudentId",
-                        column: x => x.StudentId,
-                        principalTable: "Student",
-                        principalColumn: "parent_id");
-                });
-
-            migrationBuilder.CreateTable(
-                name: "Section_Assignment_Answers",
-                columns: table => new
-                {
-                    section_assignment_answer_id = table.Column<long>(type: "bigint", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    file = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    section_assignment_id = table.Column<long>(type: "bigint", nullable: true),
-                    StudentId = table.Column<long>(type: "bigint", nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Section_Assignment_Answers", x => x.section_assignment_answer_id);
-                    table.ForeignKey(
-                        name: "FK_Section_Assignment_Answers_Section_Assignments",
-                        column: x => x.section_assignment_id,
-                        principalTable: "Section_Assignments",
-                        principalColumn: "section_assignment_id");
-                    table.ForeignKey(
-                        name: "FK_Section_Assignment_Answers_Student_StudentId",
-                        column: x => x.StudentId,
-                        principalTable: "Student",
-                        principalColumn: "parent_id");
+                        principalColumn: "Id");
                 });
 
             migrationBuilder.CreateTable(
@@ -821,7 +710,7 @@ namespace CollegeSystem.DAL.Migrations
                         name: "FK_PostUsers_Staff_StaffId1",
                         column: x => x.StaffId1,
                         principalTable: "Staff",
-                        principalColumn: "parent_id");
+                        principalColumn: "Id");
                     table.ForeignKey(
                         name: "FK_Post_Users_Staffs",
                         column: x => x.staff_id,
@@ -831,7 +720,7 @@ namespace CollegeSystem.DAL.Migrations
                         name: "FK_Post_Users_Students",
                         column: x => x.student_id,
                         principalTable: "Student",
-                        principalColumn: "parent_id");
+                        principalColumn: "Id");
                 });
 
             migrationBuilder.CreateTable(
@@ -856,7 +745,132 @@ namespace CollegeSystem.DAL.Migrations
                         name: "FK_Replies_Student_StudentId",
                         column: x => x.StudentId,
                         principalTable: "Student",
-                        principalColumn: "parent_id");
+                        principalColumn: "Id");
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Assignment_Answers",
+                columns: table => new
+                {
+                    assignment_answer_id = table.Column<long>(type: "bigint", nullable: false),
+                    StudentId = table.Column<long>(type: "bigint", nullable: false),
+                    assignment_id = table.Column<long>(type: "bigint", nullable: false),
+                    FileName = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    FileContent = table.Column<byte[]>(type: "varbinary(max)", nullable: false),
+                    FileExtension = table.Column<string>(type: "nvarchar(max)", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Assignment_Answers", x => new { x.assignment_answer_id, x.StudentId });
+                    table.ForeignKey(
+                        name: "FK_Assignment_Answers_Assignments",
+                        column: x => x.assignment_id,
+                        principalTable: "Assignments",
+                        principalColumn: "assignment_id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_Assignment_Answers_Student",
+                        column: x => x.assignment_answer_id,
+                        principalTable: "Student",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "AssignmentFile",
+                columns: table => new
+                {
+                    assignment_id = table.Column<long>(type: "bigint", nullable: false),
+                    Name = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Content = table.Column<byte[]>(type: "varbinary(max)", nullable: false),
+                    Extension = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    AssignmentId1 = table.Column<long>(type: "bigint", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_AssignmentFile", x => x.assignment_id);
+                    table.ForeignKey(
+                        name: "FK_AssignmentFile_Assignments_AssignmentId1",
+                        column: x => x.AssignmentId1,
+                        principalTable: "Assignments",
+                        principalColumn: "assignment_id");
+                    table.ForeignKey(
+                        name: "FK_AssignmentFile_Assignments_assignment_id",
+                        column: x => x.assignment_id,
+                        principalTable: "Assignments",
+                        principalColumn: "assignment_id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Active_Quizzes",
+                columns: table => new
+                {
+                    active_quizzes_id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    quiz_id = table.Column<long>(type: "bigint", nullable: true),
+                    start_date = table.Column<DateTime>(type: "datetime", nullable: true),
+                    Duration = table.Column<DateTime>(type: "datetime2", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Active_Quizzes", x => x.active_quizzes_id);
+                    table.ForeignKey(
+                        name: "FK_Active_Quizzes_Quizzes",
+                        column: x => x.quiz_id,
+                        principalTable: "Quizzes",
+                        principalColumn: "quiz_id");
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Answers",
+                columns: table => new
+                {
+                    answer_id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    student_mark = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: true),
+                    quiz_id = table.Column<long>(type: "bigint", nullable: true),
+                    StudentId = table.Column<long>(type: "bigint", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Answers", x => x.answer_id);
+                    table.ForeignKey(
+                        name: "FK_Answers_Quizzes_1",
+                        column: x => x.quiz_id,
+                        principalTable: "Quizzes",
+                        principalColumn: "quiz_id");
+                    table.ForeignKey(
+                        name: "FK_Answers_Student_StudentId",
+                        column: x => x.StudentId,
+                        principalTable: "Student",
+                        principalColumn: "Id");
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Questions",
+                columns: table => new
+                {
+                    id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    question = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: true),
+                    degree = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: true),
+                    answer = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: true),
+                    choice1 = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: true),
+                    choice2 = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: true),
+                    choice3 = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: true),
+                    choice4 = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: true),
+                    choice5 = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: true),
+                    quiz_id = table.Column<long>(type: "bigint", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Questions", x => x.id);
+                    table.ForeignKey(
+                        name: "FK_Questions_Quizzes",
+                        column: x => x.quiz_id,
+                        principalTable: "Quizzes",
+                        principalColumn: "quiz_id");
                 });
 
             migrationBuilder.CreateIndex(
@@ -893,11 +907,6 @@ namespace CollegeSystem.DAL.Migrations
                 name: "IX_Answer_All_Quizzes_StudentId",
                 table: "Answer_All_Quizzes",
                 column: "StudentId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Answers_course_id",
-                table: "Answers",
-                column: "course_id");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Answers_quiz_id",
@@ -954,9 +963,26 @@ namespace CollegeSystem.DAL.Migrations
                 column: "assignment_id");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Assignments_course_id",
+                name: "IX_AssignmentFile_AssignmentId1",
+                table: "AssignmentFile",
+                column: "AssignmentId1");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Assignments_CourseId",
                 table: "Assignments",
-                column: "course_id");
+                column: "CourseId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Assignments_LectureId",
+                table: "Assignments",
+                column: "LectureId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Assignments_SectionId",
+                table: "Assignments",
+                column: "SectionId",
+                unique: true,
+                filter: "[SectionId] IS NOT NULL");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Course_Staff_course_id",
@@ -979,24 +1005,28 @@ namespace CollegeSystem.DAL.Migrations
                 column: "StudentId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Lecture_Assignment_Answers_lecture_assignment_id",
-                table: "Lecture_Assignment_Answers",
-                column: "lecture_assignment_id");
+                name: "IX_Files_CourseId",
+                table: "Files",
+                column: "CourseId",
+                unique: true,
+                filter: "[CourseId] IS NOT NULL");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Lecture_Assignment_Answers_StudentId",
-                table: "Lecture_Assignment_Answers",
-                column: "StudentId");
+                name: "IX_Files_LectureId",
+                table: "Files",
+                column: "LectureId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Lecture_Assignments_CourseId",
-                table: "Lecture_Assignments",
-                column: "CourseId");
+                name: "IX_Files_SectionId",
+                table: "Files",
+                column: "SectionId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Lecture_Assignments_lecture_id",
-                table: "Lecture_Assignments",
-                column: "lecture_id");
+                name: "IX_Files_StudentId",
+                table: "Files",
+                column: "StudentId",
+                unique: true,
+                filter: "[StudentId] IS NOT NULL");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Lectures_course_id",
@@ -1024,11 +1054,6 @@ namespace CollegeSystem.DAL.Migrations
                 column: "StudentId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Posts_StudentId",
-                table: "Posts",
-                column: "StudentId");
-
-            migrationBuilder.CreateIndex(
                 name: "IX_PostUsers_staff_id",
                 table: "PostUsers",
                 column: "staff_id");
@@ -1049,9 +1074,19 @@ namespace CollegeSystem.DAL.Migrations
                 column: "quiz_id");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Quizzes_course_id",
+                name: "IX_Quizzes_CourseId",
                 table: "Quizzes",
-                column: "course_id");
+                column: "CourseId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Quizzes_LectureId",
+                table: "Quizzes",
+                column: "LectureId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Quizzes_SectionId",
+                table: "Quizzes",
+                column: "SectionId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Replies_post_id",
@@ -1062,26 +1097,6 @@ namespace CollegeSystem.DAL.Migrations
                 name: "IX_Replies_StudentId",
                 table: "Replies",
                 column: "StudentId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Section_Assignment_Answers_section_assignment_id",
-                table: "Section_Assignment_Answers",
-                column: "section_assignment_id");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Section_Assignment_Answers_StudentId",
-                table: "Section_Assignment_Answers",
-                column: "StudentId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Section_Assignments_CourseId",
-                table: "Section_Assignments",
-                column: "CourseId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Section_Assignments_section_id",
-                table: "Section_Assignments",
-                column: "section_id");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Sections_course_id",
@@ -1119,6 +1134,9 @@ namespace CollegeSystem.DAL.Migrations
                 name: "Active_Quizzes");
 
             migrationBuilder.DropTable(
+                name: "Admin");
+
+            migrationBuilder.DropTable(
                 name: "All_Questions");
 
             migrationBuilder.DropTable(
@@ -1146,13 +1164,19 @@ namespace CollegeSystem.DAL.Migrations
                 name: "Assignment_Answers");
 
             migrationBuilder.DropTable(
+                name: "AssignmentFile");
+
+            migrationBuilder.DropTable(
                 name: "Course_Staff");
 
             migrationBuilder.DropTable(
                 name: "Course_Users");
 
             migrationBuilder.DropTable(
-                name: "Lecture_Assignment_Answers");
+                name: "Files");
+
+            migrationBuilder.DropTable(
+                name: "Meetings");
 
             migrationBuilder.DropTable(
                 name: "Parent");
@@ -1173,9 +1197,6 @@ namespace CollegeSystem.DAL.Migrations
                 name: "Replies");
 
             migrationBuilder.DropTable(
-                name: "Section_Assignment_Answers");
-
-            migrationBuilder.DropTable(
                 name: "Temp_Attendances");
 
             migrationBuilder.DropTable(
@@ -1188,9 +1209,6 @@ namespace CollegeSystem.DAL.Migrations
                 name: "Assignments");
 
             migrationBuilder.DropTable(
-                name: "Lecture_Assignments");
-
-            migrationBuilder.DropTable(
                 name: "Staff");
 
             migrationBuilder.DropTable(
@@ -1200,13 +1218,10 @@ namespace CollegeSystem.DAL.Migrations
                 name: "Posts");
 
             migrationBuilder.DropTable(
-                name: "Section_Assignments");
+                name: "Student");
 
             migrationBuilder.DropTable(
                 name: "Lectures");
-
-            migrationBuilder.DropTable(
-                name: "Student");
 
             migrationBuilder.DropTable(
                 name: "Sections");

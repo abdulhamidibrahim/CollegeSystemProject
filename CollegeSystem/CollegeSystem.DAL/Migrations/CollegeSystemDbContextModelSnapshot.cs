@@ -392,6 +392,9 @@ namespace CollegeSystem.DAL.Migrations
                         .HasColumnType("nvarchar(50)")
                         .HasColumnName("code");
 
+                    b.Property<int?>("DeptId")
+                        .HasColumnType("int");
+
                     b.Property<string>("Hours")
                         .HasMaxLength(50)
                         .HasColumnType("nvarchar(50)")
@@ -418,6 +421,8 @@ namespace CollegeSystem.DAL.Migrations
                         .HasColumnName("term");
 
                     b.HasKey("CourseId");
+
+                    b.HasIndex("DeptId");
 
                     b.ToTable("Courses");
                 });
@@ -575,6 +580,9 @@ namespace CollegeSystem.DAL.Migrations
                         .HasMaxLength(50)
                         .HasColumnType("nvarchar(50)")
                         .HasColumnName("title");
+
+                    b.Property<string>("UploadedBy")
+                        .HasColumnType("nvarchar(max)");
 
                     b.HasKey("LectureId")
                         .HasName("PK_Lecture");
@@ -877,12 +885,12 @@ namespace CollegeSystem.DAL.Migrations
 
             modelBuilder.Entity("CollegeSystem.DAL.Models.Section", b =>
                 {
-                    b.Property<long>("SectionsId")
+                    b.Property<long>("SectionId")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("bigint")
                         .HasColumnName("sections_id");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("SectionsId"));
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("SectionId"));
 
                     b.Property<long?>("CourseId")
                         .HasColumnType("bigint")
@@ -893,7 +901,10 @@ namespace CollegeSystem.DAL.Migrations
                         .HasColumnType("nvarchar(50)")
                         .HasColumnName("title");
 
-                    b.HasKey("SectionsId");
+                    b.Property<string>("UploadedBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("SectionId");
 
                     b.HasIndex("CourseId");
 
@@ -1153,6 +1164,12 @@ namespace CollegeSystem.DAL.Migrations
                         .HasColumnType("int")
                         .HasColumnName("Dept_Id");
 
+                    b.Property<string>("Gender")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Level")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("ParentEmail")
                         .HasMaxLength(100)
                         .HasColumnType("nvarchar(100)")
@@ -1176,6 +1193,9 @@ namespace CollegeSystem.DAL.Migrations
                         .HasMaxLength(50)
                         .HasColumnType("nvarchar(50)")
                         .HasColumnName("ssn");
+
+                    b.Property<string>("Term")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("UniversityEmail")
                         .HasMaxLength(100)
@@ -1333,6 +1353,15 @@ namespace CollegeSystem.DAL.Migrations
                     b.Navigation("Assignment");
 
                     b.Navigation("Student");
+                });
+
+            modelBuilder.Entity("CollegeSystem.DAL.Models.Course", b =>
+                {
+                    b.HasOne("CollegeSystem.DAL.Models.Department", "Department")
+                        .WithMany()
+                        .HasForeignKey("DeptId");
+
+                    b.Navigation("Department");
                 });
 
             modelBuilder.Entity("CollegeSystem.DAL.Models.CourseStaff", b =>

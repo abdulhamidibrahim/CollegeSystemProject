@@ -10,6 +10,7 @@ public partial class Lecture
     public string? Title { get; set; }
 
     public long? CourseId { get; set; }
+    public string? UploadedBy { get; set; }
 
     
     public virtual Course? Course { get; set; }

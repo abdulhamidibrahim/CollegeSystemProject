@@ -1,4 +1,5 @@
 ﻿using CollegeSystem.DAL.Models;
+using CollegeSystem.DAL.UnitOfWork;
 using FCISystem.DAL;
 
 namespace CollegeSystem.DL;
@@ -6,10 +7,12 @@ namespace CollegeSystem.DL;
 public class AllQuizManager : IAllQuizManager
 {
     private readonly IAllQuizRepo _allQuizRepo;
+    private readonly IUnitOfWork _unitOfWork;
 
-    public AllQuizManager(IAllQuizRepo allQuizRepo)
+    public AllQuizManager(IAllQuizRepo allQuizRepo, IUnitOfWork unitOfWork)
     {
         _allQuizRepo = allQuizRepo;
+        _unitOfWork = unitOfWork;
     }
 
     public void Add(AllQuizAddDto allQuizAddDto)
@@ -23,6 +26,7 @@ public class AllQuizManager : IAllQuizManager
 
         };
         _allQuizRepo.Add(user);
+        _unitOfWork.CompleteAsync();
     }
 
     public void Update(AllQuizUpdateDto allQuizUpdateDto)
@@ -36,6 +40,7 @@ public class AllQuizManager : IAllQuizManager
 
 
         _allQuizRepo.Update(user);
+        _unitOfWork.CompleteAsync();
     }
 
     public void Delete(AllQuizDeleteDto allQuizDeleteDto)
@@ -43,6 +48,7 @@ public class AllQuizManager : IAllQuizManager
         var user = _allQuizRepo.GetById(allQuizDeleteDto.Id);
         if (user == null) return;
         _allQuizRepo.Delete(user);
+        _unitOfWork.CompleteAsync();
     }
 
     public AllQuizReadDto? Get(long id)
@@ -51,12 +57,11 @@ public class AllQuizManager : IAllQuizManager
         if (user == null) return null;
         return new AllQuizReadDto()
         {
+            Id = user.AllQuizzesId,
             Name = user.Name,
             Instructor = user.Instructor,
             MaxDegree = user.MaxDegree,
             MaxTime = user.MaxTime,
-
-
         };
     }
 

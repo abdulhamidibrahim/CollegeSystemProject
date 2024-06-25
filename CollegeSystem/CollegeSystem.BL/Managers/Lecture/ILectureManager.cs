@@ -8,7 +8,7 @@ public interface ILectureManager
     public void Update(LectureUpdateDto lectureUpdateDto);
     public void Delete(LectureDeleteDto lectureDeleteDto);
     public LectureReadDto? Get(long id);
-    public List<LectureReadDto> GetAll();
+    public List<LectureReadDto> GetAll(long courseId);
     
     public void UpdateFileAsync(int id, IFormFile file);
     public void DeleteFile(int id);

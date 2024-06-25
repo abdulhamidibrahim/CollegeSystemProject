@@ -18,10 +18,10 @@ public class StudentRegisterDto
 
     public string Role { get; set; } = "Student";
 
-    // public string? Phone { get; set; }  
-    // public string? ParentEmail { get; set; }
-    // public string? ParentPhone { get; set; }
-    // public string? UniversityEmail { get; set; }
-    // public string? Ssn { get; set; }
+    public string? Phone { get; set; }  
+    public string? Level { get; set; }
+    public string? Term { get; set; }
+    public string? Gender { get; set; }
+    public string? Ssn { get; set; }
 
 }

@@ -2,6 +2,7 @@ namespace CollegeSystem.DL;
 
 public class StaffReadDto
 {
+    public long Id { get; set; }
     public string? Name { get; set; }
 
     public string? Email { get; set; }

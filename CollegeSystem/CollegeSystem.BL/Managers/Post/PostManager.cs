@@ -1,4 +1,5 @@
 using CollegeSystem.DAL.Models;
+using CollegeSystem.DAL.UnitOfWork;
 using FCISystem.DAL;
 
 namespace CollegeSystem.DL;
@@ -6,10 +7,12 @@ namespace CollegeSystem.DL;
 public class PostManager:IPostManager
 {
     private readonly IPostRepo _postRepo;
+    private readonly IUnitOfWork _unitOfWork;
 
-    public PostManager(IPostRepo postRepo)
+    public PostManager(IPostRepo postRepo, IUnitOfWork unitOfWork)
     {
         _postRepo = postRepo;
+        _unitOfWork = unitOfWork;
     }
     
     public void Add(PostAddDto postAddDto)
@@ -21,6 +24,7 @@ public class PostManager:IPostManager
            Img = postAddDto.Img,
         };
         _postRepo.Add(post);
+        _unitOfWork.CompleteAsync();
     }
 
     public void Update(PostUpdateDto postUpdateDto)
@@ -33,6 +37,7 @@ public class PostManager:IPostManager
         post.Img = postUpdateDto.Img;
         
         _postRepo.Update(post);
+        _unitOfWork.CompleteAsync();
     }
 
     public void Delete(PostDeleteDto postDeleteDto)
@@ -40,6 +45,8 @@ public class PostManager:IPostManager
         var post = _postRepo.GetById(postDeleteDto.Id);
         if (post == null) return;
         _postRepo.Delete(post);
+        _unitOfWork.CompleteAsync();
+        _unitOfWork.CompleteAsync();
     }
 
     public PostReadDto? Get(long id)
@@ -48,9 +55,10 @@ public class PostManager:IPostManager
         if (post == null) return null;
         return new PostReadDto()
         {
+            Id = post.PostId,
             Title = post.Title,
             Content = post.Content,
-            Img = post.Img,
+            // Img = post.Img,
         };
     }
 
@@ -59,9 +67,10 @@ public class PostManager:IPostManager
         var posts = _postRepo.GetAll();
         return posts.Select(post => new PostReadDto()
         {
+            Id = post.PostId,
             Title = post.Title,
             Content = post.Content,
-            Img = post.Img,
+            // Img = post.Img,
             
         }).ToList();
     }

@@ -1,4 +1,5 @@
 ﻿using CollegeSystem.DAL.Models;
+using CollegeSystem.DAL.UnitOfWork;
 using FCISystem.DAL;
 
 namespace CollegeSystem.DL;
@@ -6,10 +7,12 @@ namespace CollegeSystem.DL;
 public class AnswerManager : IAnswerManager
 {
     private readonly IAnswerRepo _answerRepo;
+    private readonly IUnitOfWork _unitOfWork;
 
-    public AnswerManager(IAnswerRepo answerRepo)
+    public AnswerManager(IAnswerRepo answerRepo, IUnitOfWork unitOfWork)
     {
         _answerRepo = answerRepo;
+        _unitOfWork = unitOfWork;
     }
 
     public void Add(AnswerAddDto answerAddDto)
@@ -21,6 +24,7 @@ public class AnswerManager : IAnswerManager
             StudentId = answerAddDto.StudentId,
         };
         _answerRepo.Add(answer);
+        _unitOfWork.CompleteAsync();
     }
 
     public void Update(AnswerUpdateDto answerUpdateDto)
@@ -32,6 +36,7 @@ public class AnswerManager : IAnswerManager
         answer.QuizId = answerUpdateDto.QuizId;
 
         _answerRepo.Update(answer);
+        _unitOfWork.CompleteAsync();
     }
 
     public void Delete(AnswerDeleteDto answerDeleteDto)
@@ -39,6 +44,7 @@ public class AnswerManager : IAnswerManager
         var answer = _answerRepo.GetById(answerDeleteDto.Id);
         if (answer == null) return;
         _answerRepo.Delete(answer);
+        _unitOfWork.CompleteAsync();
     }
 
     public AnswerReadDto? Get(long id)
@@ -47,6 +53,7 @@ public class AnswerManager : IAnswerManager
         if (answer == null) return null;
         return new AnswerReadDto()
         {
+            Id = answer.AnswerId,
             StudentMark = answer.StudentMark,
             StudentId = answer.StudentId,
             QuizId = answer.QuizId,
@@ -58,6 +65,7 @@ public class AnswerManager : IAnswerManager
         var answers = _answerRepo.GetAll();
         return answers.Select(answer => new AnswerReadDto()
         {
+            Id = answer.AnswerId,
             StudentMark = answer.StudentMark,
             StudentId = answer.StudentId,
             QuizId = answer.QuizId,

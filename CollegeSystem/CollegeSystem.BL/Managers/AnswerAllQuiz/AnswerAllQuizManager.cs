@@ -1,4 +1,5 @@
 ﻿using CollegeSystem.DAL.Models;
+using CollegeSystem.DAL.UnitOfWork;
 using FCISystem.DAL;
 
 namespace CollegeSystem.DL;
@@ -6,10 +7,12 @@ namespace CollegeSystem.DL;
 public class AnswerAllQuizManager : IAnswerAllQuizManager
 {
     private readonly IAnswerAllQuizRepo _answerAllQuizRepo;
+    private readonly IUnitOfWork _unitOfWork;
 
-    public AnswerAllQuizManager(IAnswerAllQuizRepo answerAllQuizRepo)
+    public AnswerAllQuizManager(IAnswerAllQuizRepo answerAllQuizRepo, IUnitOfWork unitOfWork)
     {
         _answerAllQuizRepo = answerAllQuizRepo;
+        _unitOfWork = unitOfWork;
     }
 
     public void Add(AnswerAllQuizAddDto answerAllQuizAddDto)
@@ -21,6 +24,7 @@ public class AnswerAllQuizManager : IAnswerAllQuizManager
             CourseId = answerAllQuizAddDto.CourseId,
         };
         _answerAllQuizRepo.Add(answerAllQuiz);
+        _unitOfWork.CompleteAsync();
     }
 
     public void Update(AnswerAllQuizUpdateDto answerAllQuizUpdateDto)
@@ -33,6 +37,7 @@ public class AnswerAllQuizManager : IAnswerAllQuizManager
        
 
         _answerAllQuizRepo.Update(answerAllQuiz);
+        _unitOfWork.CompleteAsync();
     }
 
     public void Delete(AnswerAllQuizDeleteDto answerDeleteAllQuizDto)
@@ -40,6 +45,7 @@ public class AnswerAllQuizManager : IAnswerAllQuizManager
         var answerAllQuiz = _answerAllQuizRepo.GetById(answerDeleteAllQuizDto.Id);
         if (answerAllQuiz == null) return;
         _answerAllQuizRepo.Delete(answerAllQuiz);
+        _unitOfWork.CompleteAsync();
     }
 
     public AnswerAllQuizReadDto? Get(long id)

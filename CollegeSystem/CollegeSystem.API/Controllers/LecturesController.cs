@@ -17,9 +17,9 @@ public class LecturesController: ControllerBase
     }
     
     [HttpGet]
-    public ActionResult<List<LectureReadDto>> GetAll()
+    public ActionResult<List<LectureReadDto>> GetAll(long courseId)
     {
-        return _lectureManager.GetAll();
+        return _lectureManager.GetAll(courseId);
     }
     
     [HttpGet("{id}")]
@@ -27,7 +27,7 @@ public class LecturesController: ControllerBase
     {
         var user = _lectureManager.Get(id);
         if (user == null) return NotFound();
-        return user;
+        return Ok(user.Files.Select(f=>new {f.Id,f.Name , f.Extension}).ToList());
     }
     
     [HttpPost]

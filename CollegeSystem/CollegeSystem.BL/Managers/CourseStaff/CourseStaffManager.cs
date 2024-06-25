@@ -1,4 +1,5 @@
 ﻿using CollegeSystem.DAL.Models;
+using CollegeSystem.DAL.UnitOfWork;
 using FCISystem.DAL;
 
 namespace CollegeSystem.DL;
@@ -6,10 +7,12 @@ namespace CollegeSystem.DL;
 public class CourseStaffManager : ICourseStaffManager
 {
     private readonly ICourseStaffRepo _courseStaffRepo;
+    private readonly IUnitOfWork _unitOfWork;
 
-    public CourseStaffManager(ICourseStaffRepo courseStaffRepo)
+    public CourseStaffManager(ICourseStaffRepo courseStaffRepo, IUnitOfWork unitOfWork)
     {
         _courseStaffRepo = courseStaffRepo;
+        _unitOfWork = unitOfWork;
     }
 
     public void Add(CourseStaffAddDto courseStaffAddDto)
@@ -20,6 +23,7 @@ public class CourseStaffManager : ICourseStaffManager
             
         };
         _courseStaffRepo.Add(courseStaff);
+        _unitOfWork.CompleteAsync();
     }
 
     public void Update(CourseStaffUpdateDto courseStaffUpdateDto)
@@ -30,6 +34,7 @@ public class CourseStaffManager : ICourseStaffManager
 
 
         _courseStaffRepo.Update(courseStaff);
+        _unitOfWork.CompleteAsync();
     }
 
     public void Delete(CourseStaffDeleteDto courseStaffDeleteDto)
@@ -37,6 +42,7 @@ public class CourseStaffManager : ICourseStaffManager
         var courseStaff = _courseStaffRepo.GetById(courseStaffDeleteDto.Id);
         if (courseStaff == null) return;
         _courseStaffRepo.Delete(courseStaff);
+        _unitOfWork.CompleteAsync();
     }
 
     public CourseStaffReadDto? Get(long id)
