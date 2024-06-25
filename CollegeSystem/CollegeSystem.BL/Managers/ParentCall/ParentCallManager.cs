@@ -1,4 +1,5 @@
 using CollegeSystem.DAL.Models;
+using CollegeSystem.DAL.UnitOfWork;
 using FCISystem.DAL;
 
 namespace CollegeSystem.DL;
@@ -6,10 +7,12 @@ namespace CollegeSystem.DL;
 public class ParentCallManager :IParentCallManager
 {
     private readonly IParentCallRepo _parentRepo;
+    private readonly IUnitOfWork _unitOfWork;
 
-    public ParentCallManager(IParentCallRepo parentRepo)
+    public ParentCallManager(IParentCallRepo parentRepo, IUnitOfWork unitOfWork)
     {
         _parentRepo = parentRepo;
+        _unitOfWork = unitOfWork;
     }
     
     public void Add(ParentCallAddDto parentAddDto)
@@ -21,6 +24,7 @@ public class ParentCallManager :IParentCallManager
            ParentEmail = parentAddDto.ParentEmail
         };
         _parentRepo.Add(parent);
+        _unitOfWork.CompleteAsync();
     }
 
     public void Update(ParentCallUpdateDto parentUpdateDto)
@@ -48,6 +52,7 @@ public class ParentCallManager :IParentCallManager
         if (parent == null) return null;
         return new ParentCallReadDto()
         {
+            Id = parent.MessageId,
             Message = parent.Message,
             File = parent.File,
             ParentEmail = parent.ParentEmail            
@@ -59,6 +64,7 @@ public class ParentCallManager :IParentCallManager
         var parents = _parentRepo.GetAll();
         return parents.Select(parent => new ParentCallReadDto()
         {
+            Id = parent.MessageId,
             Message = parent.Message,
             File = parent.File,
             ParentEmail = parent.ParentEmail   

@@ -1,16 +1,20 @@
 using System.IdentityModel.Tokens.Jwt;
+using System.Net;
 using System.Security.Claims;
 using System.Text;
 using CollegeSystem.BL.DTOs;
 using CollegeSystem.DAL.Models;
 using CollegeSystem.DL;
+using FCISystem.DAL;
 using FileUploadingWebAPI.Filter;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Http;
 using Microsoft.IdentityModel.Tokens;
 using User.Management.Services.Models;
 using User.Management.Services.Services;
+using File = CollegeSystem.DAL.Models.File;
 
 namespace CollegeSystem.API.Controllers;
 
@@ -22,15 +26,18 @@ public class StudentsController: ControllerBase
     private readonly IStudentManager _studentManager;
     private readonly UserManager<Student> _userManager;
     private readonly IEmailService _emailService;
+    private readonly IWebHostEnvironment _webHostEnvironment;
+    private readonly IFileRepo _fileRepo;
 
     public StudentsController(
         IStudentManager studentManager,
         UserManager<Student> userManager,
         IEmailService emailService,
-        IConfiguration config
-        )
+        IConfiguration config, IWebHostEnvironment webHostEnvironment, IFileRepo fileRepo)
     {
         _config = config;
+        _webHostEnvironment = webHostEnvironment;
+        _fileRepo = fileRepo;
         _studentManager = studentManager;
         _userManager = userManager;
         _emailService = emailService;
@@ -47,16 +54,30 @@ public class StudentsController: ControllerBase
                 UserName  = studentRegisterDto.UserName,
                 Email = studentRegisterDto.Email,
                 ArabicName = studentRegisterDto.Name,
+                Phone = studentRegisterDto.Phone,
+                Level = studentRegisterDto.Level,
+                Term = studentRegisterDto.Term,
+                Gender = studentRegisterDto.Gender,
+                Ssn = studentRegisterDto.Ssn,
                 EmailConfirmed = false,
             };
             
             IdentityResult result = await _userManager.CreateAsync(student, studentRegisterDto.Password);
             if (!result.Succeeded)
             {
-                return BadRequest(result.Errors);
+                return BadRequest(new { message = "Unable to create Student", status = "error",error = result.Errors});
             }
 
-            await _userManager.AddToRoleAsync(student, studentRegisterDto.Role);
+            try
+            {
+                await _userManager.AddToRoleAsync(student, studentRegisterDto.Role);
+            }catch (Exception e)
+            {
+                await _userManager.DeleteAsync(student);
+                return BadRequest(new { message = "Unable to add to role", status = "error",error = e.Message});
+            }
+            
+            
             
             // send email verification to the user
             var token = await _userManager.GenerateEmailConfirmationTokenAsync(student);
@@ -66,14 +87,35 @@ public class StudentsController: ControllerBase
 
             _emailService.SendEmail(message);
             return Ok(
-                "Account created successfully, we have sent a confirmation email, please click the link to confirm your email");
+                    new
+                {
+                    message = "Student created successfully, check your email for confirmation",
+                    status = "success"
+                });
 
             
         }
         var errors = ModelState.Where (n => n.Value.Errors.Count > 0).ToList ();
-        return BadRequest(errors);
+        return BadRequest(new { message = "Invalid data", status = "error",error = errors});
     }
 
+    // send email
+    [HttpPost]
+    [Route("ResendEmail")]
+    public async Task<ActionResult> SendConfirmationEmail(string email)
+    {
+        var student = await _userManager.FindByEmailAsync(email);
+        if (student == null) return NotFound(new { message = "Student not found", status = "error"});
+        if (student.EmailConfirmed) return BadRequest(new { message = "Email already confirmed", status = "error"});
+
+        var token = await _userManager.GenerateEmailConfirmationTokenAsync(student);
+        var confirmationLink = Url.Action(nameof(ConfirmEmail), "Students", new { token, email = student.Email },
+            Request.Scheme);
+        var message = new Message(new[] { student.Email }, "Confirmation email link", confirmationLink!);
+
+        _emailService.SendEmail(message);
+        return Ok(new { message = "Email sent successfully", status = "success"});
+    }
     
     [HttpPost]
     [Route("login")]
@@ -119,11 +161,13 @@ public class StudentsController: ControllerBase
                           expiration=myToken.ValidTo
                       });
               }
+              
+              return BadRequest(new { message = "Invalid username or password", status = "error",});
            }
            
-           return Unauthorized();
+           return BadRequest(new { message = "Invalid username or password", status = "error"});
         }
-        return Unauthorized();
+        return BadRequest(new { message = "Input a valid data!", status = "error"});
     }
     
     
@@ -133,31 +177,31 @@ public class StudentsController: ControllerBase
     {
         if (string.IsNullOrWhiteSpace(token) || string.IsNullOrWhiteSpace(email))
         {
-            return NotFound("Invalid token or Email");
+            return NotFound(new { message = "Invalid token or Email", status = "error"});
         }
 
         var user = await _userManager.FindByEmailAsync(email);
-        if (user == null) return NotFound("User not found");
+        if (user == null) return NotFound(new { message = "User not found", status = "error"});
 
         var result = await _userManager.ConfirmEmailAsync(user, token);
         if (!result.Succeeded)
         {
-            return BadRequest("Invalid token");
+            return BadRequest(new { message = "Email confirmation failed,Invalid token", status = "error"});
         }
 
-        return Ok("Email confirmed successfully");
+        return Ok(new { message = "Email confirmed successfully", status = "success"});
     }
     
     [HttpPost("forgotPassword")]
     public async Task<ActionResult> ForgotPassword(string email)
     {
         var user = await _userManager.FindByEmailAsync(email);
-        if (user == null) return BadRequest("User not found");
+        if (user == null) return BadRequest(new { message = "User not found", status = "error"});
         var token = await _userManager.GenerateUserTokenAsync(user, "Email","ResetFactor");
         var passwordResetLink = Url.Action(nameof(ResetPassword), "Students", new { token, email = user.Email },Request.Scheme);
         var message = new Message(new[] { user.Email }!, "Reset password link", passwordResetLink!);
         _emailService.SendEmail(message);
-        return Ok("Password reset link sent successfully");
+        return Ok(new { message = "Password reset link sent successfully", status = "success"});
     }
     
     [HttpGet("resetPassword")]
@@ -165,7 +209,7 @@ public class StudentsController: ControllerBase
     {
         if (string.IsNullOrWhiteSpace(token) || string.IsNullOrWhiteSpace(email))
         {
-            return NotFound("Invalid token or Email");
+            return NotFound(new { message = "Invalid token or Email", status = "error" });
         }
 
         return Ok(new ResetPasswordDto { Token = token, Email = email });
@@ -178,23 +222,23 @@ public class StudentsController: ControllerBase
         if (ModelState.IsValid)
         {
             var user = await _userManager.FindByEmailAsync(resetPasswordDto.Email);
-            if (user == null) return NotFound("User not found");
+            if (user == null) return NotFound(new { message = "User not found", status = "error"});
             var validateOTP = await _userManager.VerifyUserTokenAsync(user,"Email","ResetFactor", resetPasswordDto.Token);
             if (!validateOTP)
             {
-                return BadRequest("Invalid OTP");
+                return BadRequest(new { message = "Invalid OTP", status = "error"});
             }
             var token = await _userManager.GeneratePasswordResetTokenAsync(user);
             var result = await _userManager.ResetPasswordAsync(user ,token,resetPasswordDto.Password);
             if (!result.Succeeded)
             {
-                return BadRequest("Invalid token or password");
+                return BadRequest(new { message = "Password reset failed,Invalid token or password", status = "error",error = result.Errors});
             }
 
-            return Ok("Password reset successfully");
+            return Ok(new { message = "Password reset successfully", status = "success"});
         }
 
-        return BadRequest("Invalid payload");
+        return BadRequest(new { message = "Invalid data", status = "error"});
     }
     
     
@@ -203,16 +247,27 @@ public class StudentsController: ControllerBase
     public async Task<ActionResult> Logout()
     {
         await HttpContext.SignOutAsync(IdentityConstants.ApplicationScheme);
-        return Ok("Logout successfully");
+        return Ok(new { message = "Logged out successfully", status = "success"});
     }
     
     
     [HttpPost("uploadImage/{id}")]
     [ImageValidator]
-    public IActionResult UploadImage(IFormFile iamge,long id)
+    public IActionResult UploadImage(IFormFile image,long id)
     {
-         _studentManager.AddImageAsync(iamge,id);
-        return Ok("Image Uploaded Successfully");
+        var file = new File()
+        {
+            Name = image.Name,
+            Extension = image.ContentType,
+        };
+        
+        var path = Path.Combine(_webHostEnvironment.WebRootPath, "uploads", image.FileName);
+
+        using FileStream fileStream = new(path, FileMode.Create);
+        fileStream.CopyTo(fileStream);
+
+         _studentManager.AddImageAsync(image,id);
+        return Ok(new { message = "Image uploaded successfully", status = "success"});
     }
     
     
@@ -221,15 +276,18 @@ public class StudentsController: ControllerBase
     {
        _studentManager.UpdateImageAsync(id, file);
 
-        return Ok("Image Updated Successfully");
+        return Ok(new { message = "Image updated successfully", status = "success"});
     }
     
     [HttpGet("getImage/{id}")]
     public  IActionResult  GetImage(int id)
     {
-        _studentManager.GetImage(id);
+       var uploadedFile = _fileRepo.GetById(id);
 
-        return Ok();
+       if (uploadedFile is null) return null;
+
+       return Ok(Path.Combine(_webHostEnvironment.WebRootPath, "uploads", uploadedFile.Name));
+       
     }
     
     [HttpDelete("{id}")]
@@ -237,7 +295,7 @@ public class StudentsController: ControllerBase
     {
        _studentManager.DeleteImage(id);
 
-        return Ok("Image deleted Successfully");
+        return Ok(new { message = "Image deleted successfully", status = "success"});
     }
 
 
@@ -251,7 +309,7 @@ public class StudentsController: ControllerBase
     public ActionResult<StudentReadDto?> Get(long id)
     {
         var user = _studentManager.Get(id);
-        if (user == null) return NotFound();
+        if (user == null) return NotFound(new { message = "Student not found", status = "error"});
         return user;
     }
     
@@ -259,21 +317,21 @@ public class StudentsController: ControllerBase
     public ActionResult Add(StudentAddDto studentAddDto)
     {
         _studentManager.Add(studentAddDto);
-        return Ok();
+        return Ok(new { message = "Student added successfully", status = "success"});
     }
     
     [HttpPut]
     public ActionResult Update(StudentUpdateDto studentUpdateDto)
     {
         _studentManager.Update(studentUpdateDto);
-        return Ok();
+        return Ok(new { message = "Student updated successfully", status = "success"});
     }
     
     [HttpDelete]
     public ActionResult Delete(StudentDeleteDto studentDeleteDto)
     {
         _studentManager.Delete(studentDeleteDto);
-        return Ok();
+        return Ok(new { message = "Student deleted successfully", status = "success"});
     }
     
 }

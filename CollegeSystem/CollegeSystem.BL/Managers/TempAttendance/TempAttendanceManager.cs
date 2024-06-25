@@ -1,4 +1,5 @@
 using CollegeSystem.DAL.Models;
+using CollegeSystem.DAL.UnitOfWork;
 using FCISystem.DAL;
 
 namespace CollegeSystem.DL;
@@ -6,10 +7,12 @@ namespace CollegeSystem.DL;
 public class PermAttendanceManager:IPermAttendanceManager
 {
     private readonly IPermAttendanceRepo _permAttendanceRepo;
+    private readonly IUnitOfWork _unitOfWork;
 
-    public PermAttendanceManager(IPermAttendanceRepo permAttendanceRepo)
+    public PermAttendanceManager(IPermAttendanceRepo permAttendanceRepo, IUnitOfWork unitOfWork)
     {
         _permAttendanceRepo = permAttendanceRepo;
+        _unitOfWork = unitOfWork;
     }
     
     public void Add(PermAttendanceAddDto permAttendanceAddDto)
@@ -22,6 +25,7 @@ public class PermAttendanceManager:IPermAttendanceManager
             Code = permAttendanceAddDto.Code,
         };
         _permAttendanceRepo.Add(permAttendance);
+        _unitOfWork.CompleteAsync();
     }
 
     public void Update(PermAttendanceUpdateDto permAttendanceUpdateDto)
@@ -35,6 +39,7 @@ public class PermAttendanceManager:IPermAttendanceManager
         permAttendance.Code = permAttendanceUpdateDto.Code;
         
         _permAttendanceRepo.Update(permAttendance);
+        _unitOfWork.CompleteAsync();
     }
 
     public void Delete(PermAttendanceDeleteDto permAttendanceDeleteDto)
@@ -42,6 +47,7 @@ public class PermAttendanceManager:IPermAttendanceManager
         var permAttendance = _permAttendanceRepo.GetById(permAttendanceDeleteDto.Id);
         if (permAttendance == null) return;
         _permAttendanceRepo.Delete(permAttendance);
+        _unitOfWork.CompleteAsync();
     }
 
     public PermAttendanceReadDto? Get(long id)

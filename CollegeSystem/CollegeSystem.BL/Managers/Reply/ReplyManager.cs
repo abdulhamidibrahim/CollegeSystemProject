@@ -1,4 +1,5 @@
 using CollegeSystem.DAL.Models;
+using CollegeSystem.DAL.UnitOfWork;
 using FCISystem.DAL;
 
 namespace CollegeSystem.DL;
@@ -6,10 +7,12 @@ namespace CollegeSystem.DL;
 public class ReplyManager:IReplyManager
 {
     private readonly IReplyRepo _replyRepo;
+    private readonly IUnitOfWork _unitOfWork;
 
-    public ReplyManager(IReplyRepo replyRepo)
+    public ReplyManager(IReplyRepo replyRepo, IUnitOfWork unitOfWork)
     {
         _replyRepo = replyRepo;
+        _unitOfWork = unitOfWork;
     }
     
     public void Add(ReplyAddDto replyAddDto)
@@ -20,6 +23,7 @@ public class ReplyManager:IReplyManager
            PostId = replyAddDto.PostId,
         };
         _replyRepo.Add(reply);
+        _unitOfWork.CompleteAsync();
     }
 
     public void Update(ReplyUpdateDto replyUpdateDto)
@@ -31,6 +35,7 @@ public class ReplyManager:IReplyManager
         reply.PostId = replyUpdateDto.PostId;
 
         _replyRepo.Update(reply);
+        _unitOfWork.CompleteAsync();
     }
 
     public void Delete(ReplyDeleteDto replyDeleteDto)
@@ -38,6 +43,7 @@ public class ReplyManager:IReplyManager
         var reply = _replyRepo.GetById(replyDeleteDto.Id);
         if (reply == null) return;
         _replyRepo.Delete(reply);
+        _unitOfWork.CompleteAsync();
     }
 
     public ReplyReadDto? Get(long id)
@@ -46,6 +52,7 @@ public class ReplyManager:IReplyManager
         if (reply == null) return null;
         return new ReplyReadDto()
         {
+            Id = reply.ReplyId,
             Content = reply.Content,
             PostId = reply.PostId
         };
@@ -56,6 +63,7 @@ public class ReplyManager:IReplyManager
         var replys = _replyRepo.GetAll();
         return replys.Select(reply => new ReplyReadDto()
         {
+            Id = reply.ReplyId,
             Content = reply.Content,
             PostId = reply.PostId
             

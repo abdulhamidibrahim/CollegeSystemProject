@@ -20,6 +20,7 @@ public partial class Student : ApplicationUser
     public string? Password { get; set; }
 
     public string? Ssn { get; set; }
+    public string? Gender { get; set; }
 
     public File? Img { get; set; }
 
@@ -30,6 +31,8 @@ public partial class Student : ApplicationUser
     public string? ParentEmail { get; set; }
 
     public int? DeptId { get; set; }
+    public string? Level { get; set; }
+    public string? Term { get; set; }
 
     public virtual ICollection<AnswerAllQuiz> AnswerAllQuizzes { get; set; } = new List<AnswerAllQuiz>();
     

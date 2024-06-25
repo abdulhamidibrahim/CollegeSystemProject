@@ -1,10 +1,11 @@
 ﻿namespace CollegeSystem.DL;
 
-public class CourseStaffReadDto
+    public class CourseStaffReadDto
     {
-    public int? StaffId { get; set; }
+        public long Id { get; set; }
+        public int? StaffId { get; set; }
 
-    public long? CourseId { get; set; }
+        public long? CourseId { get; set; }
 
-}
+    }
 

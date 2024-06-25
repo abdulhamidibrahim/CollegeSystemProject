@@ -13,4 +13,6 @@ public interface ICourseManager
     public void DeleteImage(int id);
     public UploadCourseImageDto? GetImage(int id);
     public void AddImageAsync(IFormFile file,long id);
+    public List<CourseReadDto> GetCoursesByDeptId(int deptId);
+    public List<CourseReadDto> GetCoursesByLevelAndTerm(string level, string term);
 }

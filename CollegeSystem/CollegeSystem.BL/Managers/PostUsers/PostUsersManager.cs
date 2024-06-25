@@ -1,4 +1,5 @@
 using CollegeSystem.DAL.Models;
+using CollegeSystem.DAL.UnitOfWork;
 using FCISystem.DAL;
 
 namespace CollegeSystem.DL;
@@ -6,10 +7,12 @@ namespace CollegeSystem.DL;
 public class PostUsersManager:IPostUsersManager
 {
     private readonly IPostUsersRepo _postUsersRepo;
+    private readonly IUnitOfWork _unitOfWork;
 
-    public PostUsersManager(IPostUsersRepo postUsersRepo)
+    public PostUsersManager(IPostUsersRepo postUsersRepo, IUnitOfWork unitOfWork)
     {
         _postUsersRepo = postUsersRepo;
+        _unitOfWork = unitOfWork;
     }
     
     public void Add(PostUsersAddDto postUsersAddDto)
@@ -21,6 +24,7 @@ public class PostUsersManager:IPostUsersManager
             PostId = postUsersAddDto.PostId,
         };
         _postUsersRepo.Add(postUsers);
+        _unitOfWork.CompleteAsync();
     }
 
     public void Update(PostUsersUpdateDto postUsersUpdateDto)
@@ -31,8 +35,9 @@ public class PostUsersManager:IPostUsersManager
         postUsers.PostId = postUsersUpdateDto.PostId;
         postUsers.StudentId = postUsersUpdateDto.StudentId;
         postUsers.StaffId = postUsersUpdateDto.StaffId;
-        
+
         _postUsersRepo.Update(postUsers);
+        _unitOfWork.CompleteAsync();
     }
 
     public void Delete(PostUsersDeleteDto postUsersDeleteDto)
@@ -40,6 +45,7 @@ public class PostUsersManager:IPostUsersManager
         var postUsers = _postUsersRepo.GetById(postUsersDeleteDto.Id);
         if (postUsers == null) return;
         _postUsersRepo.Delete(postUsers);
+        _unitOfWork.CompleteAsync();
     }
 
     public PostUsersReadDto? Get(long id)

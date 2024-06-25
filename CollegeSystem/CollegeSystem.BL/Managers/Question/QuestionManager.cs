@@ -1,4 +1,5 @@
 using CollegeSystem.DAL.Models;
+using CollegeSystem.DAL.UnitOfWork;
 using FCISystem.DAL;
 
 namespace CollegeSystem.DL;
@@ -6,10 +7,12 @@ namespace CollegeSystem.DL;
 public class QuestionManager:IQuestionManager
 {
     private readonly IQuestionRepo _questionRepo;
+    private readonly IUnitOfWork _unitOfWork;
 
-    public QuestionManager(IQuestionRepo questionRepo)
+    public QuestionManager(IQuestionRepo questionRepo, IUnitOfWork unitOfWork)
     {
         _questionRepo = questionRepo;
+        _unitOfWork = unitOfWork;
     }
     
     public void Add(QuestionAddDto questionAddDto)
@@ -26,6 +29,7 @@ public class QuestionManager:IQuestionManager
             QuizId = questionAddDto.QuizId
         };
         _questionRepo.Add(question);
+        _unitOfWork.CompleteAsync();
     }
 
     public void Update(QuestionUpdateDto questionUpdateDto)
@@ -42,6 +46,7 @@ public class QuestionManager:IQuestionManager
         question.QuizId = questionUpdateDto.QuizId;        
 
         _questionRepo.Update(question);
+        _unitOfWork.CompleteAsync();
     }
 
     public void Delete(QuestionDeleteDto questionDeleteDto)
@@ -49,6 +54,7 @@ public class QuestionManager:IQuestionManager
         var question = _questionRepo.GetById(questionDeleteDto.Id);
         if (question == null) return;
         _questionRepo.Delete(question);
+        _unitOfWork.CompleteAsync();
     }
 
     public QuestionReadDto? Get(long id)
@@ -57,6 +63,7 @@ public class QuestionManager:IQuestionManager
         if (question == null) return null;
         return new QuestionReadDto()
         {
+            Id = question.Id,
            Question1 = question.Question1,
            Answer = question.Answer,
            Choice1 = question.Choice1,
@@ -74,6 +81,7 @@ public class QuestionManager:IQuestionManager
         var questions = _questionRepo.GetByQuizId(quizId);
         return questions.Select(question => new QuestionReadDto()
         {
+            Id = question.Id,
             Question1 = question.Question1,
             Answer = question.Answer,
             Choice1 = question.Choice1,

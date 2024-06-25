@@ -7,7 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace CollegeSystem.API.Controllers;
 
-[Authorize(Roles = nameof(Admin))]
+// [Authorize(Roles = nameof(Admin))]
 [ApiController]
 [Route("api/[controller]")]
 public class CoursesController: ControllerBase
@@ -34,19 +34,19 @@ public class CoursesController: ControllerBase
     public ActionResult Add(CourseAddDto courseAddDto)
     {
         _courseManager.Add(courseAddDto);
-        return Ok();
+        return Ok(new {message="Course Added Successfully", status = "success"});
     }
     [HttpPut]
     public ActionResult Update(CourseUpdateDto courseUpdateDto)
     {
         _courseManager.Update(courseUpdateDto);
-        return Ok();
+        return Ok(new {message="Course Updated Successfully", status = "success"});
     }
     [HttpDelete]
     public ActionResult Delete(CourseDeleteDto courseDeleteDto)
     {
         _courseManager.Delete(courseDeleteDto);
-        return Ok();
+        return Ok(new {message="Course Deleted Successfully", status = "success"});
     }
     
     
@@ -55,7 +55,7 @@ public class CoursesController: ControllerBase
     public IActionResult UploadImage(IFormFile image,long id)
     {
         _courseManager.AddImageAsync(image,id);
-        return Ok("Image Uploaded Successfully");
+        return Ok(new {message="Image Uploaded Successfully", status = "success"});
     }
     
     [HttpGet("{id}")]
@@ -63,7 +63,7 @@ public class CoursesController: ControllerBase
     {
         _courseManager.GetImage(id);
 
-        return Ok();
+        return Ok(new {message="Image Downloaded Successfully", status = "success"});
     }
     
     [HttpDelete("{id}")]
@@ -71,15 +71,20 @@ public class CoursesController: ControllerBase
     {
         _courseManager.DeleteImage(id);
 
-        return Ok("Image deleted Successfully");
+        return Ok(new {message="Image Deleted Successfully", status = "success"});
     }
      
     [HttpPut("{id}")]
     public IActionResult UpdateImage(int id, IFormFile file)
     {
          _courseManager.UpdateImageAsync(id, file);
-        return Ok("Image Updated Successfully");
+        return Ok(new {message="Image Updated Successfully", status = "success"});
     }
-
+    //getbylevelandterm
+    [HttpGet("GetByLevelAndTerm/{level}/{term}")]
+    public ActionResult<List<CourseReadDto>> GetByLevelAndTerm(string level, string term)
+    {
+        return _courseManager.GetCoursesByLevelAndTerm(level, term);
+    }
     
 }

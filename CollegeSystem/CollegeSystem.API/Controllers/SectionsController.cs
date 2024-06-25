@@ -19,9 +19,9 @@ public class SectionsController: ControllerBase
     }
     
     [HttpGet]
-    public ActionResult<List<SectionReadDto>> GetAll()
+    public ActionResult<List<SectionReadDto>> GetAll(long courseId)
     {
-        return _sectionManager.GetAll();
+        return _sectionManager.GetAll(courseId);
     }
     
     [HttpGet("{id}")]

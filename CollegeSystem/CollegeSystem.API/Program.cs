@@ -1,12 +1,14 @@
 using System.Text;
+using CollegeSystem.BL.Managers.File;
+using CollegeSystem.DAL.Configuration;
 using CollegeSystem.DAL.Context;
 using CollegeSystem.DAL.Models;
+using CollegeSystem.DAL.UnitOfWork;
 using CollegeSystem.DL;
 using FCISystem.DAL;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using User.Management.Services.Models;
@@ -144,6 +146,10 @@ builder.Services.Configure<DataProtectionTokenProviderOptions>(options =>
     //         webBuilder.UseStartup<Startup>();
     //    
 
+
+builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
+
+
 #region Resolving Managers Services
 
 builder.Services.AddScoped<IStudentManager, StudentManager>();
@@ -173,6 +179,7 @@ builder.Services.AddScoped<IParentCallManager, ParentCallManager>();
 builder.Services.AddScoped<IPermAttendanceManager, PermAttendanceManager>();
 builder.Services.AddScoped<IQuizManager, QuizManager>();
 builder.Services.AddScoped<IMeetingManager, MeetingManager>();
+builder.Services.AddScoped<IFileManager, FileManager>();
 builder.Services.AddScoped<ITempAttendanceManager, TempAttendanceManager>();
 
 
@@ -221,6 +228,18 @@ builder.Services.AddSingleton(emailConfig);
 
 builder.Services.AddSingleton<IEmailService, EmailService>();
 
+builder.Services.AddCors(
+        options =>
+    {
+        options.AddPolicy("CorsPolicy",
+            b =>
+            {
+                b.AllowAnyOrigin()
+                    .AllowAnyMethod()
+                    .AllowAnyHeader();
+            });
+    });
+
 // builder.Services.AddHostedService<SeedData>();
 
 builder.Services.AddAuthentication(options =>
@@ -240,6 +259,7 @@ builder.Services.AddAuthentication(options =>
     };
 });
 
+builder.Services.AddMigrate();
 
 var app = builder.Build();
 
@@ -257,7 +277,7 @@ var app = builder.Build();
 app.UseAuthentication();
 
 app.UseAuthorization();
-
+app.UseCors("CorsPolicy");
 app.MapControllers();
 
 app.Run();

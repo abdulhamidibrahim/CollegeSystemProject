@@ -1,6 +1,10 @@
+using System.Net;
 using CollegeSystem.DAL.Models;
+using CollegeSystem.DAL.UnitOfWork;
 using FCISystem.DAL;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
 using File = CollegeSystem.DAL.Models.File;
 
 namespace CollegeSystem.DL;
@@ -9,11 +13,15 @@ public class StudentManager:IStudentManager
 {
     private readonly IStudentRepo _studentRepo;
     private readonly IFileRepo _fileRepo;
+    private readonly IWebHostEnvironment _webHostEnvironment;
+    private readonly IUnitOfWork _unitOfWork;
 
-    public StudentManager(IStudentRepo studentRepo,IFileRepo fileRepo)
+    public StudentManager(IStudentRepo studentRepo,IFileRepo fileRepo, IWebHostEnvironment webHostEnvironment, IUnitOfWork unitOfWork)
     {
         _studentRepo = studentRepo;
         _fileRepo = fileRepo;
+        _webHostEnvironment = webHostEnvironment;
+        _unitOfWork = unitOfWork;
     }
     
     public void Add(StudentAddDto studentAddDto)
@@ -27,10 +35,14 @@ public class StudentManager:IStudentManager
              Phone = studentAddDto.Phone,
              Password = studentAddDto.Password,
              Ssn = studentAddDto.Ssn,
+             Term = studentAddDto.Term,
+             Level = studentAddDto.Level,
+             Gender = studentAddDto.Gender,
              ParentEmail = studentAddDto.ParentEmail,
              ParentPhone = studentAddDto.ParentPhone,
         };
         _studentRepo.Add(user);
+        _unitOfWork.CompleteAsync();
     }
 
     public void Update(StudentUpdateDto studentUpdateDto)
@@ -45,8 +57,11 @@ public class StudentManager:IStudentManager
         user.Phone = studentUpdateDto.Phone;
         user.ParentEmail = studentUpdateDto.ParentEmail;
         user.ParentPhone = studentUpdateDto.ParentPhone;
-        
+        user.Level = studentUpdateDto.Level;
+        user.Term = studentUpdateDto.Term;
+        user.Gender = studentUpdateDto.Gender;
         _studentRepo.Update(user);
+        _unitOfWork.CompleteAsync();
     }
 
     public void Delete(StudentDeleteDto studentDeleteDto)
@@ -54,6 +69,7 @@ public class StudentManager:IStudentManager
         var user = _studentRepo.GetById(studentDeleteDto.Id);
         if (user == null) return;
         _studentRepo.Delete(user);
+        _unitOfWork.CompleteAsync();
     }
 
     public StudentReadDto? Get(long id)
@@ -62,11 +78,15 @@ public class StudentManager:IStudentManager
         if (user == null) return null;
         return new StudentReadDto()
         {
+            Id = user.Id,
             Name = user.ArabicName,
             Email = user.Email,
             UniversityEmail = user.UniversityEmail,
             Phone = user.Phone,
             Ssn = user.Ssn,
+            Term = user.Term,
+            Level = user.Level,
+            Gender = user.Gender,
             ParentEmail = user.ParentEmail,
             ParentPhone = user.ParentPhone,
         };
@@ -77,11 +97,15 @@ public class StudentManager:IStudentManager
         var users = _studentRepo.GetAll();
         return users.Select(user => new StudentReadDto()
         {
+            Id = user.Id,
             Name = user.ArabicName,
             Email = user.Email,
             UniversityEmail = user.UniversityEmail,
             Phone = user.Phone,
             Ssn = user.Ssn,
+            Term = user.Term,
+            Level = user.Level,
+            Gender = user.Gender,
             ParentEmail = user.ParentEmail,
             ParentPhone = user.ParentPhone,
         }).ToList();
@@ -101,6 +125,7 @@ public class StudentManager:IStudentManager
         }
         
         _fileRepo.Update(fileModel);
+        _unitOfWork.CompleteAsync();
     }
 
     public void DeleteImage(int id)
@@ -109,6 +134,7 @@ public class StudentManager:IStudentManager
         if (fileModel == null)
             throw new InvalidDataException("File Not Found");
         _fileRepo.Delete(fileModel);
+        _unitOfWork.CompleteAsync();
     }
 
     public UploadStudentImageDto? GetImage(int id)
@@ -141,5 +167,42 @@ public class StudentManager:IStudentManager
         }
 
         _fileRepo.Add(fileModel);
+        _unitOfWork.CompleteAsync();
     }
+    public void UploadImage(IFormFile file, long id)
+    {
+
+        var fileModel = new File()
+        {
+            Name = file.FileName,
+            Extension = file.ContentType,
+        };
+        
+        var path = Path.Combine(_webHostEnvironment.WebRootPath, "images", file.FileName);
+
+        using FileStream fileStream = new(path, FileMode.Create);
+        file.CopyTo(fileStream);
+            
+
+        _fileRepo.Add(fileModel);
+        _unitOfWork.CompleteAsync();
+    }
+
+    // public IFormFile DownloadImage(int id)
+    // {
+    //     var uploadedFile = _fileRepo.GetById(id);
+    //
+    //     if (uploadedFile is null) return null;
+    //
+    //     var path = Path.Combine(_webHostEnvironment.WebRootPath, "uploads", uploadedFile.Name);
+    //
+    //     MemoryStream memoryStream = new();
+    //     using FileStream fileStream = new(path, FileMode.Open);
+    //     fileStream.CopyTo(memoryStream);
+    //
+    //     memoryStream.Position = 0;
+    //
+    //     return (memoryStream, uploadedFile.Extension, uploadedFile.Name);
+    //
+    // }
 }

@@ -5,6 +5,8 @@ namespace CollegeSystem.DL;
 
 public class SectionAssignmentReadDto
 {
+    public long Id { get; set; }
+    
     public string? Title { get; set; }
 
     public string? Description { get; set; }

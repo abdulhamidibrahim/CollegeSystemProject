@@ -1,4 +1,5 @@
 using CollegeSystem.DAL.Models;
+using CollegeSystem.DAL.UnitOfWork;
 using FCISystem.DAL;
 
 namespace CollegeSystem.DL;
@@ -6,10 +7,12 @@ namespace CollegeSystem.DL;
 public class StaffManager:IStaffManager
 {
     private readonly IStaffRepo _staffRepo;
+    private readonly IUnitOfWork _unitOfWork;
 
-    public StaffManager(IStaffRepo staffRepo)
+    public StaffManager(IStaffRepo staffRepo, IUnitOfWork unitOfWork)
     {
         _staffRepo = staffRepo;
+        _unitOfWork = unitOfWork;
     }
     
     public void Add(StaffAddDto staffAddDto)
@@ -22,6 +25,7 @@ public class StaffManager:IStaffManager
             Phone = staffAddDto.Phone,
         };
         _staffRepo.Add(staff);
+        _unitOfWork.CompleteAsync();
     }
 
     public void Update(StaffUpdateDto staffUpdateDto)
@@ -34,6 +38,7 @@ public class StaffManager:IStaffManager
         staff.Phone = staffUpdateDto.Phone;
         
         _staffRepo.Update(staff);
+        _unitOfWork.CompleteAsync();
     }
 
     public void Delete(StaffDeleteDto staffDeleteDto)
@@ -41,6 +46,7 @@ public class StaffManager:IStaffManager
         var staff = _staffRepo.GetById(staffDeleteDto.Id);
         if (staff == null) return;
         _staffRepo.Delete(staff);
+        _unitOfWork.CompleteAsync();
     }
 
     public StaffReadDto? Get(long id)
@@ -49,6 +55,7 @@ public class StaffManager:IStaffManager
         if (staff == null) return null;
         return new StaffReadDto()
         {
+            Id = staff.Id,
             Name = staff.Name,
             Email = staff.Email,
             Password = staff.Password,
@@ -61,7 +68,8 @@ public class StaffManager:IStaffManager
     {
         var staffs = _staffRepo.GetAll();
         return staffs.Select(staff => new StaffReadDto()
-        {
+        {          
+            Id = staff.Id,
             Name = staff.Name,
             Email = staff.Email,
             Password = staff.Password,

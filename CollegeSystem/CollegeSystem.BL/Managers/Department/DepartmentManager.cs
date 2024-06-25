@@ -1,4 +1,5 @@
 using CollegeSystem.DAL.Models;
+using CollegeSystem.DAL.UnitOfWork;
 using FCISystem.DAL;
 
 namespace CollegeSystem.DL;
@@ -6,10 +7,12 @@ namespace CollegeSystem.DL;
 public class DepartmentManager:IDepartmentManager
 {
     private readonly IDepartmentRepo _departmentRepo;
+    private readonly IUnitOfWork _unitOfWork;
 
-    public DepartmentManager(IDepartmentRepo departmentRepo)
+    public DepartmentManager(IDepartmentRepo departmentRepo, IUnitOfWork unitOfWork)
     {
         _departmentRepo = departmentRepo;
+        _unitOfWork = unitOfWork;
     }
     
     public void Add(DepartmentAddDto departmentAddDto)
@@ -21,6 +24,8 @@ public class DepartmentManager:IDepartmentManager
             Code = departmentAddDto.Code,
         };
         _departmentRepo.Add(department);
+        _unitOfWork.CompleteAsync();
+
     }
 
     public void Update(DepartmentUpdateDto departmentUpdateDto)
@@ -32,6 +37,7 @@ public class DepartmentManager:IDepartmentManager
         department.Code = departmentUpdateDto.Code;
         
         _departmentRepo.Update(department);
+        _unitOfWork.CompleteAsync();
     }
 
     public void Delete(DepartmentDeleteDto departmentDeleteDto)
@@ -39,6 +45,7 @@ public class DepartmentManager:IDepartmentManager
         var department = _departmentRepo.GetById(departmentDeleteDto.DeptId);
         if (department == null) return;
         _departmentRepo.Delete(department);
+        _unitOfWork.CompleteAsync();
     }
 
     public DepartmentReadDto? Get(long id)
@@ -47,6 +54,7 @@ public class DepartmentManager:IDepartmentManager
         if (department == null) return null;
         return new DepartmentReadDto()
         {
+            Id = department.DeptId,
             Name = department.Name,
             HeadOfDepartment = department.HeadOfDepartment,
             Code = department.Code,
@@ -58,6 +66,7 @@ public class DepartmentManager:IDepartmentManager
         var departments = _departmentRepo.GetAll();
         return departments.Select(department => new DepartmentReadDto()
         {
+            Id = department.DeptId,
             Name = department.Name,
             HeadOfDepartment = department.HeadOfDepartment,
             Code = department.Code,

@@ -1,4 +1,5 @@
 using CollegeSystem.DAL.Models;
+using CollegeSystem.DAL.UnitOfWork;
 using FCISystem.DAL;
 
 namespace CollegeSystem.DL;
@@ -6,10 +7,12 @@ namespace CollegeSystem.DL;
 public class MeetingManager:IMeetingManager
 {
     private readonly IMeetingRepo _meetingRepo;
+    private readonly IUnitOfWork _unitOfWork;
 
-    public MeetingManager(IMeetingRepo meetingRepo)
+    public MeetingManager(IMeetingRepo meetingRepo, IUnitOfWork unitOfWork)
     {
         _meetingRepo = meetingRepo;
+        _unitOfWork = unitOfWork;
     }
     
     public void Add(MeetingAddDto meetingAddDto)
@@ -21,6 +24,7 @@ public class MeetingManager:IMeetingManager
            Url = meetingAddDto.Url
         };
         _meetingRepo.Add(meeting);
+        _unitOfWork.CompleteAsync();
     }
 
     public void Update(MeetingUpdateDto meetingUpdateDto)
@@ -32,6 +36,7 @@ public class MeetingManager:IMeetingManager
         meeting.Url = meetingUpdateDto.Url;
         
         _meetingRepo.Update(meeting);
+        _unitOfWork.CompleteAsync();
     }
 
     public void Delete(MeetingDeleteDto meetingDeleteDto)
@@ -39,6 +44,7 @@ public class MeetingManager:IMeetingManager
         var meeting = _meetingRepo.GetById(meetingDeleteDto.Id);
         if (meeting == null) return;
         _meetingRepo.Delete(meeting);
+        _unitOfWork.CompleteAsync();
     }
 
     public MeetingReadDto? Get(long id)
@@ -47,6 +53,7 @@ public class MeetingManager:IMeetingManager
         if (meeting == null) return null;
         return new MeetingReadDto()
         {
+            Id = meeting.Id,
             Title = meeting.Title,
             StartDate = meeting.StartDate,
             Url = meeting.Url
@@ -58,6 +65,7 @@ public class MeetingManager:IMeetingManager
         var meetings = _meetingRepo.GetAll();
         return meetings.Select(meeting => new MeetingReadDto()
         {
+            Id = meeting.Id,
             Title = meeting.Title,
             StartDate = meeting.StartDate,
             Url = meeting.Url

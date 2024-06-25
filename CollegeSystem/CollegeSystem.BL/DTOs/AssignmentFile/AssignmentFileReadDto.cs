@@ -1,6 +1,7 @@
 ﻿namespace CollegeSystem.DL;
 public class AssignmentFileReadDto
 {
+    public long Id { get; set; }
     public long AssignmentId { get; set; }
     public string? Title { get; set; }
 

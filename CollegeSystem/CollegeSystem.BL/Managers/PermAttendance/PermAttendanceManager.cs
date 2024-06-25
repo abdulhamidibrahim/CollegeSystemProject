@@ -1,4 +1,5 @@
 using CollegeSystem.DAL.Models;
+using CollegeSystem.DAL.UnitOfWork;
 using FCISystem.DAL;
 
 namespace CollegeSystem.DL;
@@ -6,10 +7,12 @@ namespace CollegeSystem.DL;
 public class TempAttendanceManager:ITempAttendanceManager
 {
     private readonly ITempAttendanceRepo _tempAttendanceRepo;
+    private readonly IUnitOfWork _unitOfWork;
 
-    public TempAttendanceManager(ITempAttendanceRepo tempAttendanceRepo)
+    public TempAttendanceManager(ITempAttendanceRepo tempAttendanceRepo, IUnitOfWork unitOfWork)
     {
         _tempAttendanceRepo = tempAttendanceRepo;
+        _unitOfWork = unitOfWork;
     }
     
     public void Add(TempAttendanceAddDto tempAttendanceAddDto)
@@ -23,6 +26,7 @@ public class TempAttendanceManager:ITempAttendanceManager
             Y = tempAttendanceAddDto.Y,
         };
         _tempAttendanceRepo.Add(tempAttendance);
+        _unitOfWork.CompleteAsync();
     }
 
     public void Update(TempAttendanceUpdateDto tempAttendanceUpdateDto)
@@ -37,6 +41,7 @@ public class TempAttendanceManager:ITempAttendanceManager
         tempAttendance.X = tempAttendanceUpdateDto.Y;
         
         _tempAttendanceRepo.Update(tempAttendance);
+        _unitOfWork.CompleteAsync();
     }
 
     public void Delete(TempAttendanceDeleteDto tempAttendanceDeleteDto)
@@ -44,6 +49,7 @@ public class TempAttendanceManager:ITempAttendanceManager
         var tempAttendance = _tempAttendanceRepo.GetById(tempAttendanceDeleteDto.Id);
         if (tempAttendance == null) return;
         _tempAttendanceRepo.Delete(tempAttendance);
+        _unitOfWork.CompleteAsync();
     }
 
     public TempAttendanceReadDto? Get(long id)

@@ -1,4 +1,5 @@
 using CollegeSystem.DAL.Models;
+using CollegeSystem.DAL.UnitOfWork;
 using FCISystem.DAL;
 
 namespace CollegeSystem.DL;
@@ -6,10 +7,12 @@ namespace CollegeSystem.DL;
 public class QuizManager:IQuizManager
 {
     private readonly IQuizRepo _quizRepo;
+    private readonly IUnitOfWork _unitOfWork;
 
-    public QuizManager(IQuizRepo quizRepo)
+    public QuizManager(IQuizRepo quizRepo, IUnitOfWork unitOfWork)
     {
         _quizRepo = quizRepo;
+        _unitOfWork = unitOfWork;
     }
     
     public void Add(QuizAddDto quizAddDto)
@@ -25,6 +28,7 @@ public class QuizManager:IQuizManager
             CourseId = quizAddDto.CourseId,
         };
         _quizRepo.Add(quiz);
+        _unitOfWork.CompleteAsync();
     }
 
     public void Update(QuizUpdateDto quizUpdateDto)
@@ -41,6 +45,7 @@ public class QuizManager:IQuizManager
         quiz.QuizId = quizUpdateDto.QuizId;        
 
         _quizRepo.Update(quiz);
+        _unitOfWork.CompleteAsync();
     }
 
     public void Delete(QuizDeleteDto quizDeleteDto)
@@ -48,6 +53,7 @@ public class QuizManager:IQuizManager
         var quiz = _quizRepo.GetById(quizDeleteDto.Id);
         if (quiz == null) return;
         _quizRepo.Delete(quiz);
+        _unitOfWork.CompleteAsync();
     }
 
     public QuizReadDto? Get(long id)
@@ -56,6 +62,7 @@ public class QuizManager:IQuizManager
         if (quiz == null) return null;
         return new QuizReadDto()
         {
+            Id = quiz.QuizId,
             Name = quiz.Name,
             Instructor = quiz.Instructor,
             MaxDegree = quiz.MaxDegree,
@@ -71,6 +78,7 @@ public class QuizManager:IQuizManager
         var quizs = _quizRepo.GetAll(courseId);
         return quizs.Select(quiz => new QuizReadDto()
         {
+            Id = quiz.QuizId,
             Name = quiz.Name,
             Instructor = quiz.Instructor,
             MaxDegree = quiz.MaxDegree,

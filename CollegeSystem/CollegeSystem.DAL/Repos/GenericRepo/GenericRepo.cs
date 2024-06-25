@@ -24,19 +24,19 @@ public class GenericRepo<T> : IGenericRepo<T> where T : class
     public void Add(T entity)
     {
         _context.Set<T>().Add(entity);
-        _context.SaveChanges();        
+              
     }
 
     public void Update(T entity)
     {
         _context.Set<T>().Update(entity);
-        _context.SaveChanges();
+        
     }
 
     public void Delete(T entity)
     {
         _context.Remove(entity);
-        _context.SaveChanges();
+        
     }
 
     public void Delete(long id)
@@ -46,7 +46,7 @@ public class GenericRepo<T> : IGenericRepo<T> where T : class
         if (entity == null) return;
         
         _context.Remove(entity);
-        _context.SaveChanges();        
+       
     }
     
 }

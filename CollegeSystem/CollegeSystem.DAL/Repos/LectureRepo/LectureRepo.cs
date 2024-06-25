@@ -1,6 +1,7 @@
 
 using CollegeSystem.DAL.Context;
 using CollegeSystem.DAL.Models;
+using Microsoft.EntityFrameworkCore;
 
 namespace FCISystem.DAL;
 
@@ -11,6 +12,11 @@ public class LectureRepo :GenericRepo<Lecture>,ILectureRepo
     public LectureRepo(CollegeSystemDbContext context) : base(context)
     {
         _context = context;
+    }
+    
+    public async Task<List<Lecture>> GetAllLectures(long courseId)
+    {
+        return await _context.Lectures.Where(x => x.CourseId == courseId).ToListAsync();
     }
     
 }

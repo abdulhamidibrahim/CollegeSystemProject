@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Storage;
+using Microsoft.Extensions.Configuration;
 using File = CollegeSystem.DAL.Models.File;
 
 namespace CollegeSystem.DAL.Context;
@@ -89,7 +90,18 @@ public partial class CollegeSystemDbContext : IdentityDbContext<ApplicationUser,
     
     public virtual DbSet<Student>? Students { get; set; }
 
-    
+    // protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+    // {
+    //     var builder = new ConfigurationBuilder();
+    //     builder.SetBasePath(Directory.GetCurrentDirectory());
+    //     builder.AddJsonFile("appsettings.json");
+    //     IConfiguration Configuration = builder.Build();
+    //
+    //     optionsBuilder.UseSqlServer(
+    //         Configuration.GetConnectionString("DefaultConnection"));
+    //     base.OnConfiguring(optionsBuilder);
+    // }
+
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);
@@ -509,9 +521,9 @@ public partial class CollegeSystemDbContext : IdentityDbContext<ApplicationUser,
 
         modelBuilder.Entity<Section>(entity =>
         {
-            entity.HasKey(e => e.SectionsId);
+            entity.HasKey(e => e.SectionId);
 
-            entity.Property(e => e.SectionsId)
+            entity.Property(e => e.SectionId)
                 .HasColumnName("sections_id");
             entity.Property(e => e.CourseId).HasColumnName("course_id");
             entity.Property(e => e.Title)

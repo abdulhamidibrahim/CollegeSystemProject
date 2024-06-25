@@ -1,4 +1,5 @@
 ﻿using CollegeSystem.DAL.Models;
+using CollegeSystem.DAL.UnitOfWork;
 using FCISystem.DAL;
 
 namespace CollegeSystem.DL;
@@ -6,10 +7,11 @@ namespace CollegeSystem.DL;
 public class ActiveAllQuizManager : IActiveAllQuizManager
 {
     private readonly IActiveAllQuizRepo _activeAllQuizRepo;
-
-    public ActiveAllQuizManager(IActiveAllQuizRepo activeAllQuizRepo)
+    private readonly IUnitOfWork _unitOfWork;
+    public ActiveAllQuizManager(IActiveAllQuizRepo activeAllQuizRepo, IUnitOfWork unitOfWork)
     {
         _activeAllQuizRepo = activeAllQuizRepo;
+        _unitOfWork = unitOfWork;
     }
 
     public void Add(ActivAllQuizAddDto activeAllQuizAddDto)
@@ -22,6 +24,7 @@ public class ActiveAllQuizManager : IActiveAllQuizManager
             
         };
         _activeAllQuizRepo.Add(activeAllQuiz);
+        _unitOfWork.CompleteAsync();
     }
 
     public void Update(ActivAllQuizUpdateDto activeAllQuizUpdateDto)
@@ -35,6 +38,8 @@ public class ActiveAllQuizManager : IActiveAllQuizManager
 
 
         _activeAllQuizRepo.Update(activeAllQuiz);
+        _unitOfWork.CompleteAsync();
+
     }
 
     public void Delete(ActiveAllQuizDeleteDto activeAllQuizDeleteDto)
@@ -42,6 +47,8 @@ public class ActiveAllQuizManager : IActiveAllQuizManager
         var activeAllQuiz = _activeAllQuizRepo.GetById(activeAllQuizDeleteDto.Id);
         if (activeAllQuiz == null) return;
         _activeAllQuizRepo.Delete(activeAllQuiz);
+        _unitOfWork.CompleteAsync();
+
     }
 
     public ActivAllQuizReadDto? Get(long id)
@@ -50,6 +57,7 @@ public class ActiveAllQuizManager : IActiveAllQuizManager
         if (activeAllQuiz == null) return null;
         return new ActivAllQuizReadDto()
         {
+            ActiveAllQuizId = activeAllQuiz.ActiveAllQuizzesId,
             AllQuizzesId = activeAllQuiz.AllQuizzesId,
             StartDate = activeAllQuiz.StartDate,
             AllQuizzes = activeAllQuiz.AllQuizzes,
@@ -62,6 +70,8 @@ public class ActiveAllQuizManager : IActiveAllQuizManager
         var activeAllQuiz = _activeAllQuizRepo.GetAll();
         return activeAllQuiz.Select(allQuiz => new ActivAllQuizReadDto()
         {
+            
+            ActiveAllQuizId = allQuiz.ActiveAllQuizzesId,
             AllQuizzesId = allQuiz.AllQuizzesId,
             StartDate = allQuiz.StartDate,
             AllQuizzes = allQuiz.AllQuizzes,

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace CollegeSystem.DAL.Models;
 
@@ -18,6 +19,9 @@ public partial class Course
     public string? Code { get; set; }
 
     public string? Link { get; set; }
+    [ForeignKey(nameof(Department))]
+    public int? DeptId  { get; set; }
+    public virtual Department? Department { get; set; }
 
     public File? Img { get; set; }
 

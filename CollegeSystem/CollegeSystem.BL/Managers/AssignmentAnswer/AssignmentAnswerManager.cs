@@ -1,4 +1,5 @@
 ﻿using CollegeSystem.DAL.Models;
+using CollegeSystem.DAL.UnitOfWork;
 using FCISystem.DAL;
 using Microsoft.AspNetCore.Http;
 using File = CollegeSystem.DAL.Models.File;
@@ -8,10 +9,12 @@ namespace CollegeSystem.DL;
 public class AssignmentAnswerManager : IAssignmentAnswerManager
 {
     private readonly IAssignmentAnswerRepo _assignmentAnswerRepo;
+    private readonly IUnitOfWork _unitOfWork;
 
-    public AssignmentAnswerManager(IAssignmentAnswerRepo assignmentAnswerRepo)
+    public AssignmentAnswerManager(IAssignmentAnswerRepo assignmentAnswerRepo, IUnitOfWork unitOfWork)
     {
         _assignmentAnswerRepo = assignmentAnswerRepo;
+        _unitOfWork = unitOfWork;
     }
     
     
@@ -29,6 +32,7 @@ public class AssignmentAnswerManager : IAssignmentAnswerManager
         }
         
         _assignmentAnswerRepo.Update(fileModel);
+        _unitOfWork.CompleteAsync();
     }
 
     public void DeleteFile(long assignmentId, long studentId)
@@ -39,6 +43,7 @@ public class AssignmentAnswerManager : IAssignmentAnswerManager
         if (fileModel == null)
             throw new InvalidDataException("File Not Found");
         _assignmentAnswerRepo.Delete(fileModel);
+        _unitOfWork.CompleteAsync();
     }
 
     public UploadAssignmentFileDto? GetFile(long assignmentId, long studentId)
@@ -85,5 +90,6 @@ public class AssignmentAnswerManager : IAssignmentAnswerManager
         }
 
         _assignmentAnswerRepo.Add(fileModel);
+        _unitOfWork.CompleteAsync();
     }
 }

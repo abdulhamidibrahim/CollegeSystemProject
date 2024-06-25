@@ -1,5 +1,6 @@
 using System.Net;
 using CollegeSystem.DAL.Models;
+using CollegeSystem.DAL.UnitOfWork;
 using FCISystem.DAL;
 using Microsoft.AspNetCore.Http;
 using File = CollegeSystem.DAL.Models.File;
@@ -10,11 +11,13 @@ public class LectureManager:ILectureManager
 {
     private readonly ILectureRepo _lectureRepo;
     private readonly IFileRepo _fileRepo;
+    private readonly IUnitOfWork _unitOfWork;
 
-    public LectureManager(ILectureRepo lectureRepo, IFileRepo fileRepo)
+    public LectureManager(ILectureRepo lectureRepo, IFileRepo fileRepo, IUnitOfWork unitOfWork)
     {
         _lectureRepo = lectureRepo;
         _fileRepo = fileRepo;
+        _unitOfWork = unitOfWork;
     }
     
     public void Add(LectureAddDto lectureAddDto)
@@ -25,6 +28,7 @@ public class LectureManager:ILectureManager
             CourseId = lectureAddDto.CourseId,
         };
         _lectureRepo.Add(lecture);
+        _unitOfWork.CompleteAsync();
     }
 
     public void Update(LectureUpdateDto lectureUpdateDto)
@@ -35,6 +39,7 @@ public class LectureManager:ILectureManager
         lecture.CourseId = lectureUpdateDto.CourseId;
 
         _lectureRepo.Update(lecture);
+        _unitOfWork.CompleteAsync();
     }
 
     public void Delete(LectureDeleteDto lectureDeleteDto)
@@ -42,6 +47,7 @@ public class LectureManager:ILectureManager
         var lecture = _lectureRepo.GetById(lectureDeleteDto.Id);
         if (lecture == null) return;
         _lectureRepo.Delete(lecture);
+        _unitOfWork.CompleteAsync();
     }
 
     public LectureReadDto? Get(long id)
@@ -50,19 +56,20 @@ public class LectureManager:ILectureManager
         if (lecture == null) return null;
         return new LectureReadDto()
         {
+            Id = lecture.LectureId,
             Title = lecture.Title,
-            CourseId = lecture.CourseId,
+            Files = lecture.Files,
         };
     }
 
-    public List<LectureReadDto> GetAll()
+    public List<LectureReadDto> GetAll(long courseId)
     {
-        var lectures = _lectureRepo.GetAll();
-        return lectures.Select(lecture => new LectureReadDto()
+        var lectures = _lectureRepo.GetAllLectures(courseId);
+        return lectures.Result.Select(lecture => new LectureReadDto()
         {
+            Id = lecture.LectureId,
             Title = lecture.Title,
-            CourseId = lecture.CourseId,
-            
+            UploadedBy = lecture.UploadedBy,
         }).ToList();
     }
     
@@ -81,6 +88,7 @@ public class LectureManager:ILectureManager
         }
         
         _fileRepo.Update(fileModel);
+        _unitOfWork.CompleteAsync();
     }
 
     public void DeleteFile(int id)
@@ -90,6 +98,7 @@ public class LectureManager:ILectureManager
         if (fileModel == null || assignment==null)
             throw new InvalidDataException("File Not Found");
         _fileRepo.Delete(fileModel);
+        _unitOfWork.CompleteAsync();
     }
 
     public UploadLectureFileDto GetFile(int id)
@@ -138,5 +147,6 @@ public class LectureManager:ILectureManager
         }
 
         _fileRepo.Add(fileModel);
+        _unitOfWork.CompleteAsync();
     }
 }
