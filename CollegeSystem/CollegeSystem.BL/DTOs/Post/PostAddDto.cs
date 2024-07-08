@@ -8,7 +8,7 @@ public class PostAddDto
 
     public string? Content { get; set; }
 
-    public long? UserId { get; set; }
+    public long GroupId { get; set; }
 
 
 }

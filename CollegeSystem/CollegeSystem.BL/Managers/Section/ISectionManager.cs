@@ -6,7 +6,7 @@ public interface ISectionManager
 {
     public void Add(SectionAddDto sectionAddDto);
     public void Update(SectionUpdateDto sectionUpdateDto);
-    public void Delete(SectionDeleteDto sectionDeleteDto);
+    public void Delete(long id);
     public SectionReadDto? Get(long id);
     public List<SectionReadDto> GetAll(long courseId);
     public void UpdateFileAsync(int id, IFormFile file);

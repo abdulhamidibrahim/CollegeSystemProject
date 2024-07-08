@@ -6,12 +6,10 @@ namespace CollegeSystem.DL;
 
 public class StaffManager:IStaffManager
 {
-    private readonly IStaffRepo _staffRepo;
     private readonly IUnitOfWork _unitOfWork;
 
-    public StaffManager(IStaffRepo staffRepo, IUnitOfWork unitOfWork)
+    public StaffManager(IUnitOfWork unitOfWork)
     {
-        _staffRepo = staffRepo;
         _unitOfWork = unitOfWork;
     }
     
@@ -24,34 +22,34 @@ public class StaffManager:IStaffManager
             Password = staffAddDto.Password,
             Phone = staffAddDto.Phone,
         };
-        _staffRepo.Add(staff);
+        _unitOfWork.Staff.Add(staff);
         _unitOfWork.CompleteAsync();
     }
 
     public void Update(StaffUpdateDto staffUpdateDto)
     {
-        var staff = _staffRepo.GetById(staffUpdateDto.StaffId);
+        var staff = _unitOfWork.Staff.GetById(staffUpdateDto.StaffId);
         if (staff == null) return;
         staff.Name = staffUpdateDto.Name;
         staff.Email = staffUpdateDto.Email;
         staff.Password = staffUpdateDto.Password;
         staff.Phone = staffUpdateDto.Phone;
         
-        _staffRepo.Update(staff);
+        _unitOfWork.Staff.Update(staff);
         _unitOfWork.CompleteAsync();
     }
 
-    public void Delete(StaffDeleteDto staffDeleteDto)
+    public void Delete(long id)
     {
-        var staff = _staffRepo.GetById(staffDeleteDto.Id);
+        var staff = _unitOfWork.Staff.GetById(id);
         if (staff == null) return;
-        _staffRepo.Delete(staff);
+        _unitOfWork.Staff.Delete(staff);
         _unitOfWork.CompleteAsync();
     }
 
     public StaffReadDto? Get(long id)
     {
-        var staff = _staffRepo.GetById(id);
+        var staff = _unitOfWork.Staff.GetById(id);
         if (staff == null) return null;
         return new StaffReadDto()
         {
@@ -66,7 +64,7 @@ public class StaffManager:IStaffManager
 
     public List<StaffReadDto> GetAll()
     {
-        var staffs = _staffRepo.GetAll();
+        var staffs = _unitOfWork.Staff.GetAll();
         return staffs.Select(staff => new StaffReadDto()
         {          
             Id = staff.Id,

@@ -1,5 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations.Schema;
+using System.Reflection.Metadata.Ecma335;
+using CollegeSystem.BL.Enums;
 
 namespace CollegeSystem.DAL.Models;
 
@@ -10,6 +13,8 @@ public partial class Assignment
     public string? Title { get; set; }
 
     public string? Description { get; set; }
+    public bool IsSubmitted { get; set; }
+    public AssignmentType Type { get; set; } = AssignmentType.lecture;
 
     // public string FileName { get; set; } = string.Empty;
     // public byte[] FileContent { get; set; } = Array.Empty<byte>();
@@ -24,8 +29,10 @@ public partial class Assignment
 
     public Lecture? Lecture { get; set; } 
     public long? LectureId { get; set; }
-    public Course? Course { get; set; } 
-    public long? CourseId { get; set; }
+    public Group? Group { get; set; } 
     
+    [ForeignKey(nameof(Group))]
+    public long? GroupId { get; set; }
     public virtual ICollection<AssignmentFile> AssignmentFiles { get; set; } = new List<AssignmentFile>();
+   
 }

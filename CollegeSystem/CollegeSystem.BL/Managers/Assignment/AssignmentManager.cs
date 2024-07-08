@@ -1,4 +1,6 @@
-﻿using CollegeSystem.DAL.Models;
+﻿using CollegeSystem.BL.Enums;
+using CollegeSystem.BL.Utilities;
+using CollegeSystem.DAL.Models;
 using CollegeSystem.DAL.UnitOfWork;
 using FCISystem.DAL;
 using Microsoft.AspNetCore.Http;
@@ -7,72 +9,72 @@ namespace CollegeSystem.DL;
 
 public class AssignmentManager : IAssignmentManager
 {
-    private readonly IAssignmentRepo _assignmentRepo;
-    private readonly IAssignmentFileRepo _assignmentFileRepo;
+    private readonly UserUtility _userUtility;
     private readonly IUnitOfWork _unitOfWork;
 
 
-    public AssignmentManager(IAssignmentRepo assignmentRepo, IAssignmentFileRepo assignmentFileRepo, IUnitOfWork unitOfWork)
+    public AssignmentManager(
+                            IUnitOfWork unitOfWork, 
+                            UserUtility userUtility)
     {
-        _assignmentRepo = assignmentRepo;
-        _assignmentFileRepo = assignmentFileRepo;
         _unitOfWork = unitOfWork;
+        _userUtility = userUtility;
     }
     
-    public void UpdateAssignmentAsync(int id, IFormFile file, DateTime deadline)
-    {
-        var fileModel = _assignmentFileRepo.GetById(id);
-        // var assignment = _assignmentRepo.GetById(id);
-        if (fileModel == null ) //|| assignment == null
-            throw new InvalidDataException("File Not Found");
-        fileModel.Name  = file.FileName;
-        fileModel.Extension = file.ContentType;
-        fileModel.CreatedAt= DateTime.Now;
-        fileModel.Deadline = deadline;
-        using (var ms = new MemoryStream()) 
-        {
-            file.CopyToAsync(ms);
-            fileModel.Content = ms.ToArray();
-        }
-        
-        _assignmentFileRepo.Update(fileModel);
-        _unitOfWork.CompleteAsync();
-    }
+    // public void UpdateAssignmentAsync(int courseId, IFormFile file, DateTime deadline)
+    // {
+    //     var fileModel = _assignmentFileRepo.GetById(courseId);
+    //     // var assignment = _assignmentRepo.GetById(courseId);
+    //     if (fileModel == null ) //|| assignment == null
+    //         throw new InvalidDataException("File Not Found");
+    //     fileModel.Name  = file.FileName;
+    //     fileModel.Extension = file.ContentType;
+    //     fileModel.CreatedAt= DateTime.Now;
+    //     fileModel.Deadline = deadline;
+    //     using (var ms = new MemoryStream()) 
+    //     {
+    //         file.CopyToAsync(ms);
+    //         fileModel.Content = ms.ToArray();
+    //     }
+    //     
+    //     _assignmentFileRepo.Update(fileModel);
+    //     _unitOfWork.CompleteAsync();
+    // }
 
     
 
     public void DeleteAssignment(int id)
     {
-        var fileModel = _assignmentRepo.GetById(id);
+        var fileModel = _unitOfWork.Assignment.GetById(id);
         if (fileModel == null)
             throw new InvalidDataException("File Not Found");
-        _assignmentRepo.Delete(fileModel);
+        _unitOfWork.Assignment.Delete(fileModel);
         _unitOfWork.CompleteAsync();
     }
 
     public AssignmentReadDto GetAssignment(int id)
     {
-        var fileModel = _assignmentFileRepo.GetById(id);
-        var assignment = _assignmentRepo.GetById(id);
+        var fileModel = _unitOfWork.AssignmentFile.GetById(id);
+        var assignment = _unitOfWork.Assignment.GetById(id);
         if (fileModel == null || assignment == null)
             throw new InvalidDataException("File Not Found");
         return new AssignmentReadDto()
         {
-            Id = fileModel.AssignmentId,
-            FileName = fileModel.Name,
-            FileContent = fileModel.Content,
-            FileExtension = fileModel.Extension,
+            Id = fileModel.Id,
+            // FileName = fileModel.Name,
+            // FileContent = fileModel.Content,
+            // FileExtension = fileModel.Extension,
             CreatedAt =assignment.CreatedAt,
             Deadline = assignment.Deadline
         };
     }
     
-    public List<AssignmentReadDto>? GetAllSectionAssignments()
+    public List<AssignmentReadAllDto>? GetAllSectionAssignments(long groupId)
     {
-        var assignments = _assignmentRepo.GetAll()
-            .Where(x => x.SectionId != null);
+        var assignments = _unitOfWork.Assignment.GetAll()
+            .Where(x=>x.Type==AssignmentType.section && groupId == x.GroupId);
         
-        var file= assignments?.Select(x => new AssignmentReadDto()
+        var file= assignments?.Select(x => new AssignmentReadAllDto()
         {
            Id = x.AssignmentId,
            Title = x.Title,
@@ -84,107 +86,156 @@ public class AssignmentManager : IAssignmentManager
         return null;
     }
     
-    public List<AssignmentReadDto>? GetAllLectureAssignments()
+    public List<AssignmentReadAllDto>? GetAllLectureAssignments(long groupId)
     {
-        var assignments = _assignmentRepo.GetAll().Where(x=>x.LectureId!=null);
+        var assignments = _unitOfWork.Assignment.GetAll()
+            .Where(x=>x.Type==AssignmentType.lecture && groupId == x.GroupId);
 
         // var fileModel = _assignmentFileRepo.GetAllLectureAssignments();
-        return assignments?.Select(x => new AssignmentReadDto()
+        return assignments?.Select(x => new AssignmentReadAllDto()
         {
             Id = x.AssignmentId,
             Title = x.Title,
             Description = x.Description,
             Deadline = x.Deadline,
-            CreatedAt = x.CreatedAt
+            CreatedAt = x.CreatedAt,
+            IsSubmitted = x.IsSubmitted,
+            
         }).ToList();
 
         return null;
     }
 
-    public void AddSectionAssignmentFileAsync(IFormFile file, long assignmentId)
-    {
-    var fileModel = new AssignmentFile()
-    {
-        Name = file.FileName,
-        Extension = file.ContentType,
-        AssignmentId = assignmentId,
-    };
 
-    using (var ms = new MemoryStream())
-    {
-        file.CopyToAsync(ms);
-        fileModel.Content = ms.ToArray();
-    }
-    
+    // public List<AssignmentReadDto>? GetAllCourseAssignments(long courseId)
+    // {
+    //     var assignments = _assignmentRepo.GetAllCourseAssignments(courseId);
+    //
+    //     return assignments?.Where(s => s.GroupId == courseId).Select(x => new AssignmentReadDto()
+    //     {
+    //         GroupId = x.AssignmentId,
+    //         Title = x.Title,
+    //         Description = x.Description,
+    //         Deadline = x.Deadline,
+    //         CreatedAt = x.CreatedAt
+    //
+    //     }).ToList();
+    // }
 
-    _assignmentFileRepo.Add(fileModel);
-    _unitOfWork.CompleteAsync();
-    }
-
-    public void AddSectionAssignmentAsync( SectionAssignmentAddDto assignmentAddDto)
-    {
-        var assignment = new Assignment()
+    /////////////////////
+   
+   public async Task<IEnumerable<AssignmentReadDto>?> GetAssignmentsByCourseAsync(long courseId)
         {
-            SectionId = assignmentAddDto.SectionId,
-            Title = assignmentAddDto.Title,
-            Description = assignmentAddDto.Description,
-            Deadline = assignmentAddDto.Deadline,
-            CreatedAt = DateTime.Now,
-        };
-        
-        _assignmentRepo.Add(assignment);
-        _unitOfWork.CompleteAsync();
-    }
+            var assignments = await _unitOfWork.Assignment.GetAssignmentsByCourseAsync(courseId);
 
-    public void AddLectureAssignmentFileAsync(IFormFile file, long assignmentId)
-    {
-    var fileModel = new AssignmentFile()
-    {
-        Name = file.FileName,
-        Extension = file.ContentType,
-        AssignmentId = assignmentId
-    };
+            return assignments?.Select(x => new AssignmentReadDto
+            {
+                Id = x.AssignmentId,
+                Title = x.Title,
+                Description = x.Description,
+                Deadline = x.Deadline,
+                CreatedAt = x.CreatedAt,
+                IsSubmitted = x.IsSubmitted,
+            }).ToList();
+        }
 
-    using (var ms = new MemoryStream())
-    {
-        file.CopyToAsync(ms);
-        fileModel.Content = ms.ToArray();
-    }
-    
-    _assignmentFileRepo.Add(fileModel);
-    _unitOfWork.CompleteAsync();
-    }
-    
-
-    public void AddLectureAssignmentAsync(LectureAssignmentAddDto assignmentAddDto)
-    {
-        var assignment = new Assignment()
+        public async Task<AssignmentReadDto> GetAssignmentByIdAsync(long assignmentId)
         {
-            
-            Title = assignmentAddDto.Title,
-            Description = assignmentAddDto.Description,
-            Deadline = assignmentAddDto.Deadline,
-            LectureId = assignmentAddDto.LectureId
-        };
-        
-        _assignmentRepo.Add(assignment);
-        _unitOfWork.CompleteAsync();
-    }
+            var assignment = await _unitOfWork.Assignment.GetAssignmentByIdAsync(assignmentId);
 
-    public List<AssignmentReadDto>? GetAllCourseAssignments(long courseId)
-    {
-        var assignments = _assignmentRepo.GetAllCourseAssignments(courseId);
-        
-        return assignments?.Where(s=>s.CourseId == courseId).Select(x => new AssignmentReadDto()
+            return new AssignmentReadDto
+            {
+                Id = assignment.AssignmentId,
+                Title = assignment.Title,
+                Description = assignment.Description,
+                Deadline = assignment.Deadline,
+                CreatedAt = assignment.CreatedAt,
+                IsSubmitted = assignment.IsSubmitted,
+                FileName = assignment.AssignmentFiles.FirstOrDefault()?.Name ?? string.Empty,
+                FileExtension = assignment.AssignmentFiles.FirstOrDefault()?.Extension ?? string.Empty,
+                FileContent = assignment.AssignmentFiles.FirstOrDefault()?.Content ?? Array.Empty<byte>()
+            };
+        }
+
+        public async Task AddAssignmentAsync(AssignmentAddDto assignment)
         {
-            Id = x.AssignmentId,
-            Title = x.Title,
-            Description = x.Description,
-            Deadline = x.Deadline,
-            CreatedAt = x.CreatedAt
-            
-        }).ToList();
+            if (assignment.Files != null)
+            {
+                var assignmentModel = new Assignment
+                {
+                    Title = assignment.Title,
+                    Description = assignment.Description,
+                    // GroupId = assignment.GroupId,
+                    GroupId = assignment.GroupId,
+                    Deadline = assignment.Deadline,
+                    CreatedAt = DateTime.Now,
+                    IsSubmitted = false,
+                    
+                    AssignmentFiles = assignment.Files.Select(x =>
+                    {
+                        using var memoryStream = new MemoryStream();
+                        x.CopyTo(memoryStream);
+                        return new AssignmentFile
+                        {
+                            Name = x.FileName,
+                            Extension = Path.GetExtension(x.FileName),
+                            Content = memoryStream.ToArray()
+                        };
+                    }).ToList()
+                };
+                await _unitOfWork.Assignment.AddAssignmentAsync(assignmentModel);
+            }
+        }
 
-        
-    }
+        public async Task UpdateAssignmentAsync(AssignmentUpdateDto assignment)
+        {
+            var assignmentModel = new Assignment
+            {
+                AssignmentId = assignment.AssignmentId,
+                Title = assignment.Title,
+                Description = assignment.Description,
+                
+                AssignmentFiles = new List<AssignmentFile>
+                {
+                    new AssignmentFile
+                    {
+                        Name = assignment.FileName,
+                        Extension = assignment.FileExtension,
+                        Content = assignment.FileContent
+                    }
+                }
+            };
+            await _unitOfWork.Assignment.UpdateAssignmentAsync(assignmentModel);
+        }
+
+        public async Task DeleteAssignmentAsync(long assignmentId)
+        {
+            await _unitOfWork.Assignment.DeleteAssignmentAsync(assignmentId);
+        }
+
+        public async Task SubmitAssignmentAnswerAsync(IFormFile answer, long assignmentId, long studentId)
+        {
+            using var memoryStream = new MemoryStream();
+            await answer.CopyToAsync(memoryStream);
+            var answerModel = new AssignmentAnswer
+            {
+                AssignmentId = assignmentId,
+                StudentId = studentId, // Assuming this property exists
+                FileName = answer.FileName,
+                FileExtension = answer.ContentType,
+                FileContent = memoryStream.ToArray()
+            };
+            await _unitOfWork.Assignment.SubmitAssignmentAnswerAsync(answerModel);
+        }
+
+        public Task<IEnumerable<AssignmentFileReadDto>?> GetAssignmentFilesAsync(long assignmentId)
+        {
+            var assignment=  _unitOfWork.Assignment.GetAssignmentFilesAsync(assignmentId);
+            return Task.FromResult<IEnumerable<AssignmentFileReadDto>?>(assignment?.Result.Select(x => new AssignmentFileReadDto
+            {
+                Id = x.Id,
+                FileName = x.Name,
+                FileExtension = x.Extension,
+            }).ToList());
+        }
 }

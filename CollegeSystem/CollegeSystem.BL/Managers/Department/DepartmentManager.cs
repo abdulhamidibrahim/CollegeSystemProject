@@ -6,12 +6,10 @@ namespace CollegeSystem.DL;
 
 public class DepartmentManager:IDepartmentManager
 {
-    private readonly IDepartmentRepo _departmentRepo;
     private readonly IUnitOfWork _unitOfWork;
 
-    public DepartmentManager(IDepartmentRepo departmentRepo, IUnitOfWork unitOfWork)
+    public DepartmentManager(IUnitOfWork unitOfWork)
     {
-        _departmentRepo = departmentRepo;
         _unitOfWork = unitOfWork;
     }
     
@@ -23,34 +21,34 @@ public class DepartmentManager:IDepartmentManager
             HeadOfDepartment = departmentAddDto.HeadOfDepartment,
             Code = departmentAddDto.Code,
         };
-        _departmentRepo.Add(department);
+        _unitOfWork.Department.Add(department);
         _unitOfWork.CompleteAsync();
 
     }
 
     public void Update(DepartmentUpdateDto departmentUpdateDto)
     {
-        var department = _departmentRepo.GetById(departmentUpdateDto.DeptId);
+        var department = _unitOfWork.Department.GetById(departmentUpdateDto.DeptId);
         if (department == null) return;
         department.Name = departmentUpdateDto.Name;
         department.HeadOfDepartment = departmentUpdateDto.HeadOfDepartment;
         department.Code = departmentUpdateDto.Code;
         
-        _departmentRepo.Update(department);
+        _unitOfWork.Department.Update(department);
         _unitOfWork.CompleteAsync();
     }
 
-    public void Delete(DepartmentDeleteDto departmentDeleteDto)
+    public void Delete(long id)
     {
-        var department = _departmentRepo.GetById(departmentDeleteDto.DeptId);
+        var department = _unitOfWork.Department.GetById(id);
         if (department == null) return;
-        _departmentRepo.Delete(department);
+        _unitOfWork.Department.Delete(department);
         _unitOfWork.CompleteAsync();
     }
 
     public DepartmentReadDto? Get(long id)
     {
-        var department = _departmentRepo.GetById(id);
+        var department = _unitOfWork.Department.GetById(id);
         if (department == null) return null;
         return new DepartmentReadDto()
         {
@@ -63,7 +61,7 @@ public class DepartmentManager:IDepartmentManager
 
     public List<DepartmentReadDto> GetAll()
     {
-        var departments = _departmentRepo.GetAll();
+        var departments = _unitOfWork.Department.GetAll();
         return departments.Select(department => new DepartmentReadDto()
         {
             Id = department.DeptId,

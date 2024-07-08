@@ -5,6 +5,6 @@ public class SectionAddDto
 
     public string? Title { get; set; }
     
-    public long? CourseId { get; set; }
+    public long GroupId { get; set; }
     
 }

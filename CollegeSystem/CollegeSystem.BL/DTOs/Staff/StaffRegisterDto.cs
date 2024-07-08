@@ -12,11 +12,13 @@ public class StaffRegisterDto
     public string Name { get; set; } = string.Empty;
     [Required]
     public string Password { get; set; } = string.Empty;
+    [Compare(nameof(Password)), Required]
+    public string ConfirmPassword { get; set; } = string.Empty;
     
     public string Phone { get; set; } = string.Empty;
-    public string Role { get; set; } = "Staff";
-    public string RoleAssistant { get; set; } = "Assistant";
-    public string RoleTeacher { get; set; } = "Teacher";
+    // public string Role { get; set; } = "Staff";
+    // public string RoleAssistant { get; set; } = "Assistant";
+    // public string RoleTeacher { get; set; } = "Teacher";
     
     [Required]
     public bool IsAssistant { get; set; } = false;

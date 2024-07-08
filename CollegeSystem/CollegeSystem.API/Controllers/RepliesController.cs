@@ -14,40 +14,41 @@ public class RepliesController: ControllerBase
         _replyManager = replyManager;
     }
     [HttpGet]
-    public ActionResult<List<ReplyReadDto>> GetAll()
-    {
-        return _replyManager.GetAll();
-    }
-    [HttpGet("{id}")]
-    public ActionResult<ReplyReadDto?> Get(long id)
-    {
-        var user = _replyManager.Get(id);
-        if (user == null) return NotFound();
-        return user;
-    }
+    // public ActionResult<List<ReplyReadDto>> GetAll()
+    // {
+    //     return _replyManager.GetAll();
+    // }
+    // [HttpGet("{courseId}")]
+    // public ActionResult<ReplyReadDto?> Get(long courseId)
+    // {
+    //     var reply = _replyManager.Get(courseId);
+    //     if (reply == null) return NotFound(new { message = "Reply not found"});
+    //     return reply;
+    // }
     [HttpPost]
     public ActionResult Add(ReplyAddDto replyAddDto)
     {
         _replyManager.Add(replyAddDto);
-        return Ok();
+        return Ok(new { message = "Reply added"});
     }
     [HttpPut]
     public ActionResult Update(ReplyUpdateDto replyUpdateDto)
     {
         _replyManager.Update(replyUpdateDto);
-        return Ok();
+        return Ok(new { message = "Reply updated"});
     }
-    [HttpDelete]
-    public ActionResult Delete(ReplyDeleteDto replyDeleteDto)
+
+    [HttpDelete("{courseId}")]
+    public ActionResult Delete(long id)
     {
-        _replyManager.Delete(replyDeleteDto);
-        return Ok();
-    }
+        _replyManager.Delete(id);
+        return Ok(new { message = "Reply deleted"});
+}
     
-    [HttpGet("GetByPostId/{id}")]
-    public ActionResult<List<ReplyReadDto>> GetByPostId(long id)
+    [HttpGet("GetByPostId/{postId}")]
+    public ActionResult<List<ReplyReadDto>> GetByPostId(long postId)
     {
-        return _replyManager.GetByPostId(id)!;
+        return _replyManager.GetByPostId(postId)!;
     }
     
 }

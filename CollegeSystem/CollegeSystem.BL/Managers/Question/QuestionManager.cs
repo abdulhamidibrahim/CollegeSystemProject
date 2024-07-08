@@ -1,95 +1,100 @@
 using CollegeSystem.DAL.Models;
 using CollegeSystem.DAL.UnitOfWork;
 using FCISystem.DAL;
+using Microsoft.Extensions.Options;
 
 namespace CollegeSystem.DL;
 
 public class QuestionManager:IQuestionManager
 {
-    private readonly IQuestionRepo _questionRepo;
     private readonly IUnitOfWork _unitOfWork;
 
-    public QuestionManager(IQuestionRepo questionRepo, IUnitOfWork unitOfWork)
+    public QuestionManager(IUnitOfWork unitOfWork)
     {
-        _questionRepo = questionRepo;
         _unitOfWork = unitOfWork;
     }
-    
+
     public void Add(QuestionAddDto questionAddDto)
     {
-        var question = new Question()
+        var options = questionAddDto.Options.Select(o => new Option()
         {
-            Question1 = questionAddDto.Question1,
-            Answer = questionAddDto.Answer,
-            Choice1 = questionAddDto.Choice1,
-            Choice2 = questionAddDto.Choice2,
-            Choice3 = questionAddDto.Choice3,
-            Choice4 = questionAddDto.Choice4,
-            Choice5 = questionAddDto.Choice5,
-            QuizId = questionAddDto.QuizId
+            Text = o.OptionText,
+            QuestionID = o.QuestionId,
+            IsCorrect = o.IsCorrect,
+        }).ToList();
+
+    var question = new Question()
+        {
+            QuestionText = questionAddDto.QuestionText,
+            // QuizId = questionAddDto.QuizId,
+            Options = options,
         };
-        _questionRepo.Add(question);
+        _unitOfWork.Question.Add(question);
         _unitOfWork.CompleteAsync();
     }
 
     public void Update(QuestionUpdateDto questionUpdateDto)
     {
-        var question = _questionRepo.GetById(questionUpdateDto.QuestionId);
+        var question = _unitOfWork.Question.GetById(questionUpdateDto.QuestionId);
         if (question == null) return;
-        question.Question1 = questionUpdateDto.Question1;
-        question.Answer = questionUpdateDto.Answer;
-        question.Choice1 = questionUpdateDto.Choice1;
-        question.Choice2 = questionUpdateDto.Choice2;
-        question.Choice3 = questionUpdateDto.Choice3;
-        question.Choice4 = questionUpdateDto.Choice4;
-        question.Choice5 = questionUpdateDto.Choice5;
-        question.QuizId = questionUpdateDto.QuizId;        
+        
+        question.QuestionText = questionUpdateDto.QuestionText;
+        question.QuizId = questionUpdateDto.QuizId;
 
-        _questionRepo.Update(question);
+        question.Options = questionUpdateDto.Options.Select(o => new Option()
+        {
+            Text = o.OptionText,
+            QuestionID = o.QuestionId,
+            IsCorrect = o.IsCorrect
+        }).ToList();
+        
+        
+        _unitOfWork.Question.Update(question);
         _unitOfWork.CompleteAsync();
     }
 
     public void Delete(QuestionDeleteDto questionDeleteDto)
     {
-        var question = _questionRepo.GetById(questionDeleteDto.Id);
+        var question = _unitOfWork.Question.GetById(questionDeleteDto.Id);
         if (question == null) return;
-        _questionRepo.Delete(question);
+        _unitOfWork.Question.Delete(question);
         _unitOfWork.CompleteAsync();
     }
 
     public QuestionReadDto? Get(long id)
     {
-        var question = _questionRepo.GetById(id);
+        var question = _unitOfWork.Question.GetById(id);
         if (question == null) return null;
         return new QuestionReadDto()
         {
             Id = question.Id,
-           Question1 = question.Question1,
-           Answer = question.Answer,
-           Choice1 = question.Choice1,
-           Choice2 = question.Choice2,
-           Choice3 = question.Choice3,
-           Choice4 = question.Choice4,
-           Choice5 = question.Choice5,
+            QuestionText = question.QuestionText,
            QuizId = question.QuizId,
-
+           
+           Options = question.Options.Select(o=> new OptionDto()
+           {
+               IsCorrect = o.IsCorrect,
+               OptionText = o.Text,
+               QuestionId = o.QuestionID,
+           }).ToList()
+           
         };
     }
 
     public List<QuestionReadDto> GetAll(long quizId)
     {
-        var questions = _questionRepo.GetByQuizId(quizId);
+        var questions = _unitOfWork.Question.GetByQuizId(quizId);
         return questions.Select(question => new QuestionReadDto()
         {
             Id = question.Id,
-            Question1 = question.Question1,
-            Answer = question.Answer,
-            Choice1 = question.Choice1,
-            Choice2 = question.Choice2,
-            Choice3 = question.Choice3,
-            Choice4 = question.Choice4,
-            Choice5 = question.Choice5,
+            QuestionText = question.QuestionText,
             QuizId = question.QuizId,
+            Options = question.Options.Select(o=> new OptionDto()
+            {
+                OptionText = o.Text,
+                QuestionId = o.QuestionID,
+                IsCorrect = o.IsCorrect
+            }).ToList()
             
         }).ToList();
     }

@@ -14,9 +14,9 @@ public class LectureRepo :GenericRepo<Lecture>,ILectureRepo
         _context = context;
     }
     
-    public async Task<List<Lecture>> GetAllLectures(long courseId)
+    public async Task<List<Lecture>> GetAllLectures(long groupId)
     {
-        return await _context.Lectures.Where(x => x.CourseId == courseId).ToListAsync();
+        return await _context.Lectures!.Where(x => x.GroupId == groupId).ToListAsync();
     }
     
 }

@@ -6,12 +6,10 @@ namespace CollegeSystem.DL;
 
 public class ParentManager:IParentManager
 {
-    private readonly IParentRepo _parentRepo;
     private readonly IUnitOfWork _unitOfWork;
 
-    public ParentManager(IParentRepo parentRepo, IUnitOfWork unitOfWork)
+    public ParentManager(IUnitOfWork unitOfWork)
     {
-        _parentRepo = parentRepo;
         _unitOfWork = unitOfWork;
     }
     
@@ -23,35 +21,35 @@ public class ParentManager:IParentManager
             Email = parentAddDto.Email,
             Phone = parentAddDto.Phone,
         };
-        _parentRepo.Add(parent);
+        _unitOfWork.Parent.Add(parent);
         _unitOfWork.CompleteAsync();
     }
 
     public void Update(ParentUpdateDto parentUpdateDto)
     {
-        var parent = _parentRepo.GetById(parentUpdateDto.ParentId);
+        var parent = _unitOfWork.Parent.GetById(parentUpdateDto.ParentId);
         if (parent == null) return;
         parent.Name = parentUpdateDto.Name;
         parent.Email = parentUpdateDto.Email;
         parent.Phone = parentUpdateDto.Phone;
         
-        _parentRepo.Update(parent);
+        _unitOfWork.Parent.Update(parent);
         _unitOfWork.CompleteAsync();
         
     }
 
-    public void Delete(ParentDeleteDto parentDeleteDto)
+    public void Delete(long id)
     {
-        var parent = _parentRepo.GetById(parentDeleteDto.Id);
+        var parent = _unitOfWork.Parent.GetById(id);
         if (parent == null) return;
-        _parentRepo.Delete(parent);
+        _unitOfWork.Parent.Delete(parent);
         _unitOfWork.CompleteAsync();
         
     }
 
     public ParentReadDto? Get(long id)
     {
-        var parent = _parentRepo.GetById(id);
+        var parent = _unitOfWork.Parent.GetById(id);
         if (parent == null) return null;
         return new ParentReadDto()
         {
@@ -64,7 +62,7 @@ public class ParentManager:IParentManager
 
     public List<ParentReadDto> GetAll()
     {
-        var parents = _parentRepo.GetAll();
+        var parents = _unitOfWork.Parent.GetAll();
         return parents.Select(parent => new ParentReadDto()
         {
             Id = parent.Id,

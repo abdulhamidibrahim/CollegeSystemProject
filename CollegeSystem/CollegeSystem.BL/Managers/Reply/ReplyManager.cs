@@ -6,12 +6,10 @@ namespace CollegeSystem.DL;
 
 public class ReplyManager:IReplyManager
 {
-    private readonly IReplyRepo _replyRepo;
     private readonly IUnitOfWork _unitOfWork;
 
-    public ReplyManager(IReplyRepo replyRepo, IUnitOfWork unitOfWork)
+    public ReplyManager(IUnitOfWork unitOfWork)
     {
-        _replyRepo = replyRepo;
         _unitOfWork = unitOfWork;
     }
     
@@ -22,33 +20,33 @@ public class ReplyManager:IReplyManager
            Content = replyAddDto.Content,
            PostId = replyAddDto.PostId,
         };
-        _replyRepo.Add(reply);
+        _unitOfWork.Reply.Add(reply);
         _unitOfWork.CompleteAsync();
     }
 
     public void Update(ReplyUpdateDto replyUpdateDto)
     {
-        var reply = _replyRepo.GetById(replyUpdateDto.ReplyId);
+        var reply = _unitOfWork.Reply.GetById(replyUpdateDto.ReplyId);
         if (reply == null) return;
         reply.ReplyId = replyUpdateDto.ReplyId;
         reply.Content = replyUpdateDto.Content;
         reply.PostId = replyUpdateDto.PostId;
 
-        _replyRepo.Update(reply);
+        _unitOfWork.Reply.Update(reply);
         _unitOfWork.CompleteAsync();
     }
 
-    public void Delete(ReplyDeleteDto replyDeleteDto)
+    public void Delete(long id)
     {
-        var reply = _replyRepo.GetById(replyDeleteDto.Id);
+        var reply = _unitOfWork.Reply.GetById(id);
         if (reply == null) return;
-        _replyRepo.Delete(reply);
+        _unitOfWork.Reply.Delete(reply);
         _unitOfWork.CompleteAsync();
     }
 
     public ReplyReadDto? Get(long id)
     {
-        var reply = _replyRepo.GetById(id);
+        var reply = _unitOfWork.Reply.GetById(id);
         if (reply == null) return null;
         return new ReplyReadDto()
         {
@@ -60,7 +58,7 @@ public class ReplyManager:IReplyManager
 
     public List<ReplyReadDto> GetAll()
     {
-        var replys = _replyRepo.GetAll();
+        var replys = _unitOfWork.Reply.GetAll();
         return replys.Select(reply => new ReplyReadDto()
         {
             Id = reply.ReplyId,
@@ -72,11 +70,12 @@ public class ReplyManager:IReplyManager
     
     public List<ReplyReadDto>? GetByPostId(long id)
     {
-        var replies = _replyRepo.GetByPostId(id);
+        var replies = _unitOfWork.Reply.GetByPostId(id);
         return replies?.Select(reply => new ReplyReadDto()
         {
             Content = reply.Content,
-            PostId = reply.PostId
+            PostId = reply.PostId,
+            User = reply.Student != null ? reply.Student.UserName ?? reply.Staff?.UserName : "unknown"
             
         }).ToList();
     }

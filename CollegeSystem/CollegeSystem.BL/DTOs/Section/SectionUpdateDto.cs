@@ -4,9 +4,9 @@ public class SectionUpdateDto
 {
     public long SectionsId { get; set; }
 
-    public string? Title { get; set; }
+    public string Title { get; set; }
     
-    public long? CourseId { get; set; }
+    public long GroupId { get; set; }
 
 
 }       

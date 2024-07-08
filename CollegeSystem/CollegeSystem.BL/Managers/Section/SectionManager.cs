@@ -8,14 +8,10 @@ namespace CollegeSystem.DL;
 
 public class SectionManager:ISectionManager
 {
-    private readonly ISectionRepo _sectionRepo;
-    private readonly IFileRepo _fileRepo;
     private readonly IUnitOfWork _unitOfWork;
 
-    public SectionManager(ISectionRepo sectionRepo, IFileRepo fileRepo, IUnitOfWork unitOfWork)
+    public SectionManager(IUnitOfWork unitOfWork)
     {
-        _sectionRepo = sectionRepo;
-        _fileRepo = fileRepo;
         _unitOfWork = unitOfWork;
     }
     
@@ -24,48 +20,47 @@ public class SectionManager:ISectionManager
         var section = new Section()
         {
             Title = sectionAddDto.Title,
-            CourseId = sectionAddDto.CourseId
+            GroupId = sectionAddDto.GroupId,
         };
-        _sectionRepo.Add(section);
+        _unitOfWork.Section.Add(section);
         _unitOfWork.CompleteAsync();
     }
 
     public void Update(SectionUpdateDto sectionUpdateDto)
     {
-        var section = _sectionRepo.GetById(sectionUpdateDto.SectionsId);
+        var section = _unitOfWork.Section.GetById(sectionUpdateDto.SectionsId);
         if (section == null) return;
         
         section.Title = sectionUpdateDto.Title;
-        section.CourseId = sectionUpdateDto.CourseId;
+        section.GroupId = sectionUpdateDto.GroupId;
         
-        _sectionRepo.Update(section);
+        _unitOfWork.Section.Update(section);
         _unitOfWork.CompleteAsync();
     }
 
-    public void Delete(SectionDeleteDto sectionDeleteDto)
+    public void Delete(long id)
     {
-        var section = _sectionRepo.GetById(sectionDeleteDto.Id);
+        var section = _unitOfWork.Section.GetById(id);
         if (section == null) return;
-        _sectionRepo.Delete(section);
-        _unitOfWork.CompleteAsync();
+        _unitOfWork.Section.Delete(section);
         _unitOfWork.CompleteAsync();
     }
 
     public SectionReadDto? Get(long id)
     {
-        var section = _sectionRepo.GetById(id);
+        var section = _unitOfWork.Section.GetById(id);
         if (section == null) return null;
         return new SectionReadDto()
         {
             Id = section.SectionId,
             Title = section.Title,
-            CourseId = section.CourseId
+            // GroupId = section.GroupId
         };
     }
 
     public List<SectionReadDto> GetAll(long courseId)
     {
-        var sections = _sectionRepo.GetAllSections(courseId);
+        var sections = _unitOfWork.Section.GetAllSections(courseId);
         return sections.Result.Select(section => new SectionReadDto()
         {
             Id = section.SectionId,
@@ -76,7 +71,7 @@ public class SectionManager:ISectionManager
 
     public void UpdateFileAsync(int id, IFormFile file)
     {
-        var fileModel = _fileRepo.GetById(id);
+        var fileModel = _unitOfWork.File.GetById(id);
         if (fileModel == null)
             throw new InvalidDataException("File Not Found");
         fileModel.Name = file.FileName;
@@ -86,23 +81,23 @@ public class SectionManager:ISectionManager
             fileModel.Content = ms.ToArray();
         }
         
-        _fileRepo.Update(fileModel);
+        _unitOfWork.File.Update(fileModel);
         _unitOfWork.CompleteAsync();
     }
 
     public void DeleteFile(int id)
     {
-        var fileModel = _fileRepo.GetById(id);
-        var section = _sectionRepo.GetById(id);
+        var fileModel = _unitOfWork.File.GetById(id);
+        var section = _unitOfWork.Section.GetById(id);
         if (fileModel == null || section==null)
             throw new InvalidDataException("File Not Found");
-        _fileRepo.Delete(fileModel);
+        _unitOfWork.File.Delete(fileModel);
         _unitOfWork.CompleteAsync();
     }
 
     public UploadSectionFileDto? GetFile(int id)
     {
-        var fileModel = _fileRepo.GetById(id);
+        var fileModel = _unitOfWork.File.GetById(id);
         if (fileModel == null)
             return null;
         return new UploadSectionFileDto()
@@ -129,12 +124,12 @@ public class SectionManager:ISectionManager
             fileModel.Content = ms.ToArray();
         }
 
-        _fileRepo.Add(fileModel);
+        _unitOfWork.File.Add(fileModel);
         _unitOfWork.CompleteAsync();
     }
     public List<UploadSectionFileDto> GetAllFiles()
     {
-        var fileModel = _fileRepo.GetAll().Where(x => x.SectionId != null);
+        var fileModel = _unitOfWork.File.GetAll().Where(x => x.SectionId != null);
         
         return fileModel.Select(x => new UploadSectionFileDto()
         {

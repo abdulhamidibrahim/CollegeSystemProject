@@ -9,14 +9,10 @@ namespace CollegeSystem.DL;
 
 public class LectureManager:ILectureManager
 {
-    private readonly ILectureRepo _lectureRepo;
-    private readonly IFileRepo _fileRepo;
     private readonly IUnitOfWork _unitOfWork;
 
-    public LectureManager(ILectureRepo lectureRepo, IFileRepo fileRepo, IUnitOfWork unitOfWork)
+    public LectureManager(IUnitOfWork unitOfWork)
     {
-        _lectureRepo = lectureRepo;
-        _fileRepo = fileRepo;
         _unitOfWork = unitOfWork;
     }
     
@@ -25,46 +21,47 @@ public class LectureManager:ILectureManager
         var lecture = new Lecture()
         {
             Title = lectureAddDto.Title,
-            CourseId = lectureAddDto.CourseId,
+            GroupId = lectureAddDto.GroupId,
         };
-        _lectureRepo.Add(lecture);
+        _unitOfWork.Lecture.Add(lecture);
         _unitOfWork.CompleteAsync();
     }
 
     public void Update(LectureUpdateDto lectureUpdateDto)
     {
-        var lecture = _lectureRepo.GetById(lectureUpdateDto.LectureId);
+        var lecture = _unitOfWork.Lecture.GetById(lectureUpdateDto.LectureId);
         if (lecture == null) return;
         lecture.Title = lectureUpdateDto.Title;
-        lecture.CourseId = lectureUpdateDto.CourseId;
+        lecture.GroupId = lectureUpdateDto.GroupId;
 
-        _lectureRepo.Update(lecture);
+        _unitOfWork.Lecture.Update(lecture);
         _unitOfWork.CompleteAsync();
     }
 
-    public void Delete(LectureDeleteDto lectureDeleteDto)
+    public void Delete(long id)
     {
-        var lecture = _lectureRepo.GetById(lectureDeleteDto.Id);
+        var lecture = _unitOfWork.Lecture.GetById(id);
         if (lecture == null) return;
-        _lectureRepo.Delete(lecture);
+        _unitOfWork.Lecture.Delete(lecture);
         _unitOfWork.CompleteAsync();
     }
 
     public LectureReadDto? Get(long id)
     {
-        var lecture = _lectureRepo.GetById(id);
+        var lecture = _unitOfWork.Lecture.GetById(id);
         if (lecture == null) return null;
         return new LectureReadDto()
         {
             Id = lecture.LectureId,
             Title = lecture.Title,
-            Files = lecture.Files,
+            UploadedBy = lecture.UploadedBy,
+            // Files = lecture.Files,
         };
     }
 
     public List<LectureReadDto> GetAll(long courseId)
     {
-        var lectures = _lectureRepo.GetAllLectures(courseId);
+        var lectures = _unitOfWork.Lecture.GetAllLectures(courseId);
         return lectures.Result.Select(lecture => new LectureReadDto()
         {
             Id = lecture.LectureId,
@@ -76,8 +73,8 @@ public class LectureManager:ILectureManager
     
      public void UpdateFileAsync(int id, IFormFile file)
     {
-        var fileModel = _fileRepo.GetById(id);
-        var assignment = _lectureRepo.GetById(id);
+        var fileModel = _unitOfWork.File.GetById(id);
+        var assignment = _unitOfWork.Lecture.GetById(id);
         if (fileModel == null || assignment==null)
             throw new InvalidDataException("File Not Found");
         fileModel.Name = file.FileName;
@@ -87,24 +84,24 @@ public class LectureManager:ILectureManager
             fileModel.Content = ms.ToArray();
         }
         
-        _fileRepo.Update(fileModel);
+        _unitOfWork.File.Update(fileModel);
         _unitOfWork.CompleteAsync();
     }
 
     public void DeleteFile(int id)
     {
-        var fileModel = _fileRepo.GetById(id);
-        var assignment = _lectureRepo.GetById(id);
+        var fileModel = _unitOfWork.File.GetById(id);
+        var assignment = _unitOfWork.Lecture.GetById(id);
         if (fileModel == null || assignment==null)
             throw new InvalidDataException("File Not Found");
-        _fileRepo.Delete(fileModel);
+        _unitOfWork.File.Delete(fileModel);
         _unitOfWork.CompleteAsync();
     }
 
     public UploadLectureFileDto GetFile(int id)
     {
-        var fileModel = _fileRepo.GetById(id);
-        var assignment = _lectureRepo.GetById(id);
+        var fileModel = _unitOfWork.File.GetById(id);
+        var assignment = _unitOfWork.Lecture.GetById(id);
         if (fileModel == null || assignment==null)
             throw new InvalidDataException("File Not Found");
         return new UploadLectureFileDto()
@@ -118,7 +115,7 @@ public class LectureManager:ILectureManager
     
     public List<UploadLectureFileDto> GetAllFiles()
     {
-        var fileModel = _fileRepo.GetAll().Where(x => x.LectureId != null);
+        var fileModel = _unitOfWork.File.GetAll().Where(x => x.LectureId != null);
         
         return fileModel.Select(x => new UploadLectureFileDto()
         {
@@ -146,7 +143,7 @@ public class LectureManager:ILectureManager
             fileModel.Content = ms.ToArray();
         }
 
-        _fileRepo.Add(fileModel);
+        _unitOfWork.File.Add(fileModel);
         _unitOfWork.CompleteAsync();
     }
 }

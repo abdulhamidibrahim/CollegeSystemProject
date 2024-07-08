@@ -1,4 +1,5 @@
 using System.ComponentModel.DataAnnotations;
+using CollegeSystem.BL.Enums;
 using CollegeSystem.DAL.Models;
 using CollegeSystem.DL;
 using FileUploadingWebAPI.Filter;
@@ -23,7 +24,7 @@ public class CoursesController: ControllerBase
     {
         return _courseManager.GetAll();
     }
-    [HttpGet("getCourse/{id}")]
+    [HttpGet("getCourse/{courseId}")]
     public ActionResult<CourseReadDto?> Get(long id)
     {
         var user = _courseManager.Get(id);
@@ -34,31 +35,31 @@ public class CoursesController: ControllerBase
     public ActionResult Add(CourseAddDto courseAddDto)
     {
         _courseManager.Add(courseAddDto);
-        return Ok(new {message="Course Added Successfully", status = "success"});
+        return Ok(new {message="Group Added Successfully", status = "success"});
     }
     [HttpPut]
     public ActionResult Update(CourseUpdateDto courseUpdateDto)
     {
         _courseManager.Update(courseUpdateDto);
-        return Ok(new {message="Course Updated Successfully", status = "success"});
+        return Ok(new {message="Group Updated Successfully", status = "success"});
     }
-    [HttpDelete]
-    public ActionResult Delete(CourseDeleteDto courseDeleteDto)
+    [HttpDelete("delete/{courseId}")]
+    public ActionResult Delete(long id)
     {
-        _courseManager.Delete(courseDeleteDto);
-        return Ok(new {message="Course Deleted Successfully", status = "success"});
+        _courseManager.Delete(id);
+        return Ok(new {message="Group Deleted Successfully", status = "success"});
     }
     
     
-    [HttpPost("uploadImage/{id}")]
-    [ImageValidator]
-    public IActionResult UploadImage(IFormFile image,long id)
+    [HttpPost("uploadImage/{courseId}")]
+    // [ImageValidator]
+    public IActionResult UploadImage([FromForm] IFormFile image,[FromQuery] long courseId)
     {
-        _courseManager.AddImageAsync(image,id);
+        _courseManager.AddImageAsync(image,courseId);
         return Ok(new {message="Image Uploaded Successfully", status = "success"});
     }
     
-    [HttpGet("{id}")]
+    [HttpGet("{courseId}")]
     public IActionResult GetImage(int id)
     {
         _courseManager.GetImage(id);
@@ -66,7 +67,7 @@ public class CoursesController: ControllerBase
         return Ok(new {message="Image Downloaded Successfully", status = "success"});
     }
     
-    [HttpDelete("{id}")]
+    [HttpDelete("deleteImage/{courseId}")]
     public IActionResult DeleteImage(int id)
     {
         _courseManager.DeleteImage(id);
@@ -74,17 +75,26 @@ public class CoursesController: ControllerBase
         return Ok(new {message="Image Deleted Successfully", status = "success"});
     }
      
-    [HttpPut("{id}")]
+    [HttpPut("{courseId}")]
     public IActionResult UpdateImage(int id, IFormFile file)
     {
          _courseManager.UpdateImageAsync(id, file);
         return Ok(new {message="Image Updated Successfully", status = "success"});
     }
     //getbylevelandterm
-    [HttpGet("GetByLevelAndTerm/{level}/{term}")]
-    public ActionResult<List<CourseReadDto>> GetByLevelAndTerm(string level, string term)
+    [HttpGet("GetByLevelAndTerm/{studentId}/{level}/{term}")]
+    public ActionResult<List<CourseReadDto>> GetByLevelAndTerm(long studentId, Level level, Term term)
     {
-        return _courseManager.GetCoursesByLevelAndTerm(level, term);
+        return _courseManager.GetCoursesByLevelAndTerm(studentId, level, term);
+    }
+    // register courses
+
+    [HttpPost("RegisterCourses")]
+    public async Task<ActionResult> RegisterCourses(long[] courseIds, long studentId)
+    {
+         if (await _courseManager.RegisterCourses(studentId, courseIds) > 0)
+              return Ok(new {message="Courses Registered Successfully", status = "success"});
+         return BadRequest(new { message = "Courses Registration Failed", status = "failed" });
     }
     
 }

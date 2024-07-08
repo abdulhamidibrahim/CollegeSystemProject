@@ -77,6 +77,14 @@
               "target": "Package",
               "version": "[2.1.0, )"
             },
+            "SkiaSharp": {
+              "target": "Package",
+              "version": "[2.88.8, )"
+            },
+            "SkiaSharp.QrCode": {
+              "target": "Package",
+              "version": "[0.7.0, )"
+            },
             "Swashbuckle.AspNetCore": {
               "target": "Package",
               "version": "[6.5.0, )"
@@ -150,6 +158,14 @@
             "Microsoft.AspNetCore.Identity.EntityFrameworkCore": {
               "target": "Package",
               "version": "[8.0.1, )"
+            },
+            "SkiaSharp": {
+              "target": "Package",
+              "version": "[2.88.8, )"
+            },
+            "SkiaSharp.QrCode": {
+              "target": "Package",
+              "version": "[0.7.0, )"
             }
           },
           "imports": [
@@ -229,6 +245,18 @@
               "suppressParent": "All",
               "target": "Package",
               "version": "[8.0.1, )"
+            },
+            "SkiaSharp": {
+              "target": "Package",
+              "version": "[2.88.8, )"
+            },
+            "SkiaSharp.QrCode": {
+              "target": "Package",
+              "version": "[0.7.0, )"
+            },
+            "System.Drawing.Common": {
+              "target": "Package",
+              "version": "[8.0.6, )"
             }
           },
           "imports": [

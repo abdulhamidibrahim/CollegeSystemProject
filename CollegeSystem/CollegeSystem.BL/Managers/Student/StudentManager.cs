@@ -11,15 +11,11 @@ namespace CollegeSystem.DL;
 
 public class StudentManager:IStudentManager
 {
-    private readonly IStudentRepo _studentRepo;
-    private readonly IFileRepo _fileRepo;
     private readonly IWebHostEnvironment _webHostEnvironment;
     private readonly IUnitOfWork _unitOfWork;
 
-    public StudentManager(IStudentRepo studentRepo,IFileRepo fileRepo, IWebHostEnvironment webHostEnvironment, IUnitOfWork unitOfWork)
+    public StudentManager(IWebHostEnvironment webHostEnvironment, IUnitOfWork unitOfWork)
     {
-        _studentRepo = studentRepo;
-        _fileRepo = fileRepo;
         _webHostEnvironment = webHostEnvironment;
         _unitOfWork = unitOfWork;
     }
@@ -28,7 +24,7 @@ public class StudentManager:IStudentManager
     {
         var user = new Student()
         {
-             Id = studentAddDto.StudentCode,
+             // GroupId = studentAddDto.StudentCode,
              ArabicName = studentAddDto.Name,
              Email = studentAddDto.Email,
              UniversityEmail = studentAddDto.UniversityEmail,
@@ -41,13 +37,13 @@ public class StudentManager:IStudentManager
              ParentEmail = studentAddDto.ParentEmail,
              ParentPhone = studentAddDto.ParentPhone,
         };
-        _studentRepo.Add(user);
+        _unitOfWork.Student.Add(user);
         _unitOfWork.CompleteAsync();
     }
 
-    public void Update(StudentUpdateDto studentUpdateDto)
+    public void Update(long id,StudentUpdateDto studentUpdateDto)
     {
-        var user = _studentRepo.GetById(studentUpdateDto.Id);
+        var user = _unitOfWork.Student.GetById(id);
         if (user == null) return;
         user.ArabicName = studentUpdateDto.Name;
         user.Email = studentUpdateDto.Email;
@@ -60,21 +56,21 @@ public class StudentManager:IStudentManager
         user.Level = studentUpdateDto.Level;
         user.Term = studentUpdateDto.Term;
         user.Gender = studentUpdateDto.Gender;
-        _studentRepo.Update(user);
+        _unitOfWork.Student.Update(user);
         _unitOfWork.CompleteAsync();
     }
 
-    public void Delete(StudentDeleteDto studentDeleteDto)
+    public void Delete(long id)
     {
-        var user = _studentRepo.GetById(studentDeleteDto.Id);
+        var user = _unitOfWork.Student.GetById(id);
         if (user == null) return;
-        _studentRepo.Delete(user);
+        _unitOfWork.Student.Delete(user);
         _unitOfWork.CompleteAsync();
     }
 
     public StudentReadDto? Get(long id)
     {
-        var user = _studentRepo.GetById(id);
+        var user = _unitOfWork.Student.GetById(id);
         if (user == null) return null;
         return new StudentReadDto()
         {
@@ -94,7 +90,7 @@ public class StudentManager:IStudentManager
 
     public List<StudentReadDto> GetAll()
     {
-        var users = _studentRepo.GetAll();
+        var users = _unitOfWork.Student.GetAll();
         return users.Select(user => new StudentReadDto()
         {
             Id = user.Id,
@@ -113,8 +109,8 @@ public class StudentManager:IStudentManager
 
     public void UpdateImageAsync(int id, IFormFile file)
     {
-        var fileModel = _fileRepo.GetById(id);
-        var student = _studentRepo.GetById(id);
+        var fileModel = _unitOfWork.File.GetById(id);
+        var student = _unitOfWork.Student.GetById(id);
         if (fileModel == null || student==null)
             throw new InvalidDataException("File Not Found");
         fileModel.Name = file.FileName;
@@ -124,23 +120,23 @@ public class StudentManager:IStudentManager
             fileModel.Content = ms.ToArray();
         }
         
-        _fileRepo.Update(fileModel);
+        _unitOfWork.File.Update(fileModel);
         _unitOfWork.CompleteAsync();
     }
 
     public void DeleteImage(int id)
     {
-        var fileModel = _fileRepo.GetById(id);
+        var fileModel = _unitOfWork.File.GetById(id);
         if (fileModel == null)
             throw new InvalidDataException("File Not Found");
-        _fileRepo.Delete(fileModel);
+        _unitOfWork.File.Delete(fileModel);
         _unitOfWork.CompleteAsync();
     }
 
     public UploadStudentImageDto? GetImage(int id)
     {
-        var fileModel = _fileRepo.GetById(id);
-        var student = _studentRepo.GetById(id);
+        var fileModel = _unitOfWork.File.GetById(id);
+        var student = _unitOfWork.Student.GetById(id);
         if (fileModel == null || student==null)
             return null;
         return new UploadStudentImageDto()
@@ -166,7 +162,7 @@ public class StudentManager:IStudentManager
             fileModel.Content = ms.ToArray();
         }
 
-        _fileRepo.Add(fileModel);
+        _unitOfWork.File.Add(fileModel);
         _unitOfWork.CompleteAsync();
     }
     public void UploadImage(IFormFile file, long id)
@@ -184,13 +180,13 @@ public class StudentManager:IStudentManager
         file.CopyTo(fileStream);
             
 
-        _fileRepo.Add(fileModel);
+        _unitOfWork.File.Add(fileModel);
         _unitOfWork.CompleteAsync();
     }
 
-    // public IFormFile DownloadImage(int id)
+    // public IFormFile DownloadImage(int courseId)
     // {
-    //     var uploadedFile = _fileRepo.GetById(id);
+    //     var uploadedFile = _fileRepo.GetById(courseId);
     //
     //     if (uploadedFile is null) return null;
     //

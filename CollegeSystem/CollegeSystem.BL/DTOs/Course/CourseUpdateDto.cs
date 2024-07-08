@@ -1,3 +1,5 @@
+using CollegeSystem.BL.Enums;
+
 namespace CollegeSystem.DL;
 
 public class CourseUpdateDto
@@ -6,13 +8,15 @@ public class CourseUpdateDto
 
     public string? Name { get; set; }
 
-    public string? Level { get; set; }
+    public Level? Level { get; set; }
 
-    public string? Term { get; set; }
+    public Term? Term { get; set; }
 
-    public string? Hours { get; set; }
+    public Hours? Hours { get; set; }
 
     public string? Code { get; set; }
+    
+    public int? DeptId { get; set; }
 
     public string? Link { get; set; }
     

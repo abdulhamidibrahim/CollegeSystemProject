@@ -6,72 +6,73 @@ namespace CollegeSystem.DL;
 
 public class PostManager:IPostManager
 {
-    private readonly IPostRepo _postRepo;
     private readonly IUnitOfWork _unitOfWork;
 
-    public PostManager(IPostRepo postRepo, IUnitOfWork unitOfWork)
+    public PostManager(IUnitOfWork unitOfWork)
     {
-        _postRepo = postRepo;
         _unitOfWork = unitOfWork;
     }
     
-    public void Add(PostAddDto postAddDto)
+    public Task<int> Add(PostAddDto postAddDto)
     {
         var post = new Post()
         {
            Title = postAddDto.Title,
            Content = postAddDto.Content,
            Img = postAddDto.Img,
+           GroupId = postAddDto.GroupId,
         };
-        _postRepo.Add(post);
-        _unitOfWork.CompleteAsync();
+        _unitOfWork.Post.Add(post);
+        return _unitOfWork.CompleteAsync();
     }
 
-    public void Update(PostUpdateDto postUpdateDto)
+    public Task<int> Update(PostUpdateDto postUpdateDto)
     {
-        var post = _postRepo.GetById(postUpdateDto.PostId);
-        if (post == null) return;
+        var post = _unitOfWork.Post.GetById(postUpdateDto.PostId);
+        if (post == null) return Task.FromResult(0);
         
         post.Title = postUpdateDto.Title;
         post.Content = postUpdateDto.Content;
         post.Img = postUpdateDto.Img;
+        post.GroupId = postUpdateDto.GroupId;
         
-        _postRepo.Update(post);
-        _unitOfWork.CompleteAsync();
+        _unitOfWork.Post.Update(post);
+        return _unitOfWork.CompleteAsync();
     }
 
-    public void Delete(PostDeleteDto postDeleteDto)
+    public Task<int> Delete(long id)
     {
-        var post = _postRepo.GetById(postDeleteDto.Id);
-        if (post == null) return;
-        _postRepo.Delete(post);
-        _unitOfWork.CompleteAsync();
-        _unitOfWork.CompleteAsync();
+        var post = _unitOfWork.Post.GetById(id);
+        if (post == null) return Task.FromResult(0);
+        _unitOfWork.Post.Delete(post);
+        return _unitOfWork.CompleteAsync();
     }
 
     public PostReadDto? Get(long id)
     {
-        var post = _postRepo.GetById(id);
+        var post = _unitOfWork.Post.GetById(id);
         if (post == null) return null;
         return new PostReadDto()
         {
             Id = post.PostId,
             Title = post.Title,
             Content = post.Content,
-            // Img = post.Img,
+            GroupId = post.GroupId,
         };
     }
 
-    public List<PostReadDto> GetAll()
+    public List<PostReadDto> GetAll(long courseId)
     {
-        var posts = _postRepo.GetAll();
-        return posts.Select(post => new PostReadDto()
-        {
-            Id = post.PostId,
-            Title = post.Title,
-            Content = post.Content,
-            // Img = post.Img,
-            
-        }).ToList();
+        var posts = _unitOfWork.Post.GetCourseGroupPosts(courseId);
+        if (posts != null)
+            return posts.Select(post => new PostReadDto()
+            {
+                Id = post.PostId,
+                Title = post.Title,
+                Content = post.Content,
+                GroupId = post.GroupId,
+            }).ToList();
+
+        return null;
     }
 }

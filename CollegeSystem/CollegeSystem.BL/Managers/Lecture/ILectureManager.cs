@@ -6,7 +6,7 @@ public interface ILectureManager
 {
     public void Add(LectureAddDto lectureAddDto);
     public void Update(LectureUpdateDto lectureUpdateDto);
-    public void Delete(LectureDeleteDto lectureDeleteDto);
+    public void Delete(long id);
     public LectureReadDto? Get(long id);
     public List<LectureReadDto> GetAll(long courseId);
     

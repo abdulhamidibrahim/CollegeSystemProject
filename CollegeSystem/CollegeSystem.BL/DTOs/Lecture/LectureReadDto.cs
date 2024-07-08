@@ -7,6 +7,6 @@ public class LectureReadDto
     public long Id { get; set; }
     public string? Title { get; set; }
     public string? UploadedBy { get; set; }
-    public ICollection<File>? Files { get; set; }
+    // public ICollection<File>? Files { get; set; }
 
 }

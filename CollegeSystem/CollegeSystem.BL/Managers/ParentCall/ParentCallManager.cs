@@ -6,12 +6,10 @@ namespace CollegeSystem.DL;
 
 public class ParentCallManager :IParentCallManager
 {
-    private readonly IParentCallRepo _parentRepo;
     private readonly IUnitOfWork _unitOfWork;
 
-    public ParentCallManager(IParentCallRepo parentRepo, IUnitOfWork unitOfWork)
+    public ParentCallManager(IUnitOfWork unitOfWork)
     {
-        _parentRepo = parentRepo;
         _unitOfWork = unitOfWork;
     }
     
@@ -23,32 +21,32 @@ public class ParentCallManager :IParentCallManager
            Message = parentAddDto.Message,
            ParentEmail = parentAddDto.ParentEmail
         };
-        _parentRepo.Add(parent);
+        _unitOfWork.ParentCall.Add(parent);
         _unitOfWork.CompleteAsync();
     }
 
     public void Update(ParentCallUpdateDto parentUpdateDto)
     {
-        var parent = _parentRepo.GetById(parentUpdateDto.MessageId);
+        var parent = _unitOfWork.ParentCall.GetById(parentUpdateDto.MessageId);
         if (parent == null) return;
         parent.MessageId = parentUpdateDto.MessageId;
         parent.Message = parentUpdateDto.Message;
         parent.File = parentUpdateDto.File;
         parent.ParentEmail = parentUpdateDto.ParentEmail;
         
-        _parentRepo.Update(parent);
+        _unitOfWork.ParentCall.Update(parent);
     }
 
-    public void Delete(ParentCallDeleteDto parentDeleteDto)
+    public void Delete(long id)
     {
-        var parent = _parentRepo.GetById(parentDeleteDto.Id);
+        var parent = _unitOfWork.ParentCall.GetById(id);
         if (parent == null) return;
-        _parentRepo.Delete(parent);
+        _unitOfWork.ParentCall.Delete(parent);
     }
 
     public ParentCallReadDto? Get(long id)
     {
-        var parent = _parentRepo.GetById(id);
+        var parent = _unitOfWork.ParentCall.GetById(id);
         if (parent == null) return null;
         return new ParentCallReadDto()
         {
@@ -61,7 +59,7 @@ public class ParentCallManager :IParentCallManager
 
     public List<ParentCallReadDto> GetAll()
     {
-        var parents = _parentRepo.GetAll();
+        var parents = _unitOfWork.ParentCall.GetAll();
         return parents.Select(parent => new ParentCallReadDto()
         {
             Id = parent.MessageId,

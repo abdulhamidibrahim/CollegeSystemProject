@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations.Schema;
+using CollegeSystem.BL.Enums;
 
 namespace CollegeSystem.DAL.Models;
 
@@ -10,15 +11,18 @@ public partial class Course
 
     public string? Name { get; set; }
 
-    public string? Level { get; set; }
+    public Level? Level { get; set; }
 
-    public string? Term { get; set; }
+    public Term? Term { get; set; }
 
-    public string? Hours { get; set; }
+    public Hours? Hours { get; set; }
 
     public string? Code { get; set; }
 
     public string? Link { get; set; }
+
+    public ICollection<Post>? Posts { get; set; }
+    
     [ForeignKey(nameof(Department))]
     public int? DeptId  { get; set; }
     public virtual Department? Department { get; set; }
@@ -46,4 +50,6 @@ public partial class Course
     public virtual ICollection<Section> Sections { get; set; } = new List<Section>();
 
     public virtual ICollection<TempAttendance> TempAttendances { get; set; } = new List<TempAttendance>();
+    
+    public virtual ICollection<Group> Groups { get; set; } = new List<Group>();
 }

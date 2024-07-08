@@ -1,4 +1,5 @@
 using System.ComponentModel.DataAnnotations;
+using CollegeSystem.BL.Enums;
 
 namespace CollegeSystem.DL;
 
@@ -16,11 +17,11 @@ public class StudentRegisterDto
     [Compare("Password")]
     public string ConfirmPassword { get; set; } = string.Empty;
 
-    public string Role { get; set; } = "Student";
+    // public string Role { get; set; } = "Student";
 
     public string? Phone { get; set; }  
-    public string? Level { get; set; }
-    public string? Term { get; set; }
+    public Level? Level { get; set; }
+    public Term? Term { get; set; }
     public string? Gender { get; set; }
     public string? Ssn { get; set; }
 

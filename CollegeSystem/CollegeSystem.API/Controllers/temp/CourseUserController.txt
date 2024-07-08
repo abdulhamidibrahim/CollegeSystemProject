@@ -1,0 +1,47 @@
+﻿using CollegeSystem.DL;
+using Microsoft.AspNetCore.Mvc;
+
+namespace CollegeSystem.API.Controllers;
+
+[ApiController]
+[Route("api/[controller]")]
+public class CourseUserController : ControllerBase
+{
+    private readonly ICourseUserManager _courseUserManager;
+
+    public CourseUserController(ICourseUserManager courseUserManager)
+    {
+        _courseUserManager = courseUserManager;
+    }
+    [HttpGet]
+    public ActionResult<List<CourseUserReadDto>> GetAll()
+    {
+        return _courseUserManager.GetAll();
+    }
+    [HttpGet("{id}")]
+    public ActionResult<CourseUserReadDto?> Get(long id)
+    {
+        var course = _courseUserManager.Get(id);
+        if (course == null) return NotFound(new { message = "Course not found"});
+        return course;
+    }
+    [HttpPost]
+    public ActionResult Add(CourseUserAddDto courseUserAddDto)
+    {
+        _courseUserManager.Add(courseUserAddDto);
+        return Ok(new { message = "Course added"});
+    }
+    [HttpPut]
+    public ActionResult Update(CourseUserUpdateDto courseUserUpdateDto)
+    {
+        _courseUserManager.Update(courseUserUpdateDto);
+        return Ok(new { message = "Course updated"});
+    }
+    [HttpDelete]
+    public ActionResult Delete(CourseUserDeleteDto courseUserDeleteDto)
+    {
+        _courseUserManager.Delete(courseUserDeleteDto);
+        return Ok(new { message = "Course deleted"});
+    }
+
+}

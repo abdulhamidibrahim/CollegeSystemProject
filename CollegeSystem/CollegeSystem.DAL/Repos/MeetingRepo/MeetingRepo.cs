@@ -12,6 +12,12 @@ public class MeetingRepo :GenericRepo<Meeting>,IMeetingRepo
     {
         _context = context;
     }
-    
 
+
+    public List<Meeting> GetMeetingsByGroupId(long groupId)
+    {
+        return _context.Meetings
+            .Where(m => m.GroupId == groupId)
+            .ToList();
+    }
 }

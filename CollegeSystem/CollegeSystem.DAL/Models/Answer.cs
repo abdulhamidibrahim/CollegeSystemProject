@@ -6,14 +6,12 @@ namespace CollegeSystem.DAL.Models;
 public partial class Answer
 {
     public int AnswerId { get; set; }
-
-    public string? StudentMark { get; set; }
-
-    public long? QuizId { get; set; }
     
-    public long? StudentId { get; set; }
-    public virtual Quiz? Quiz { get; set; }
-    
-    public virtual Student? Student { get; set; }
+    public int SubmissionId { get; set; }
+    public int QuestionId{ get; set; }
+    public int SelectedOptionId { get; set; }
+    public Submission Submission { get; set; }
+    public Question Question { get; set; }
+    public Option SelectedOption { get; set; }
     
 }

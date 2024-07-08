@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using CollegeSystem.BL.Enums;
 
 namespace CollegeSystem.DAL.Models;
 
@@ -31,8 +32,8 @@ public partial class Student : ApplicationUser
     public string? ParentEmail { get; set; }
 
     public int? DeptId { get; set; }
-    public string? Level { get; set; }
-    public string? Term { get; set; }
+    public Level? Level { get; set; }
+    public Term? Term { get; set; }
 
     public virtual ICollection<AnswerAllQuiz> AnswerAllQuizzes { get; set; } = new List<AnswerAllQuiz>();
     

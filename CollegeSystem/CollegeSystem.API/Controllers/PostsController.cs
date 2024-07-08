@@ -14,39 +14,44 @@ public class PostsController: ControllerBase
         _postManager = postManager;
     }
     
-    [HttpGet]
-    public ActionResult<List<PostReadDto>> GetAll()
+    [HttpGet("{groupId}")]
+    public ActionResult<List<PostReadDto>> GetAll(long groupId)
     {
-        return _postManager.GetAll();
+        
+            var result =_postManager.GetAll(groupId);   
+            if (result == null) return NotFound(new { message = "Group not found, or there is no posts in this group"});
+            return Ok(result);
+            
     }
     
-    [HttpGet("{id}")]
+    [HttpGet("/{courseId}")]
     public ActionResult<PostReadDto?> Get(long id)
     {
-        var user = _postManager.Get(id);
-        if (user == null) return NotFound();
-        return user;
+        var post = _postManager.Get(id);
+        if (post == null) return NotFound(new { message = "post not found"});
+        return post;
     }
     
     [HttpPost]
     public ActionResult Add(PostAddDto postAddDto)
     {
-        _postManager.Add(postAddDto);
-        return Ok();
+        var result = _postManager.Add(postAddDto);
+        if (result == Task.FromResult(0)) return BadRequest(new { message = "Failed to add post"});
+        return Ok(new { message = "post added"});
     }
     
     [HttpPut]
     public ActionResult Update(PostUpdateDto postUpdateDto)
     {
         _postManager.Update(postUpdateDto);
-        return Ok();
+        return Ok(new { message = "post updated"});
     }
     
-    [HttpDelete]
-    public ActionResult Delete(PostDeleteDto postDeleteDto)
+    [HttpDelete("{courseId}")]
+    public ActionResult Delete(long id)
     {
-        _postManager.Delete(postDeleteDto);
-        return Ok();
+        _postManager.Delete(id);
+        return Ok(new { message = "post deleted"});
     }
     
 }

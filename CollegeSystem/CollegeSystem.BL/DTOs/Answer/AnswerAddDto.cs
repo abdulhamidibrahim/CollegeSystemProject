@@ -2,11 +2,7 @@
 
 public class AnswerAddDto
 {
-    public string? StudentMark { get; set; } 
-
-    public long? StudentId { get; set; }
-
-    public long? QuizId { get; set; }
-
+    public int QuestionId{ get; set; }
+    public int SelectedOptionId { get; set; }
 
 }

@@ -6,7 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace CollegeSystem.API.Controllers;
 
 
-[Authorize(Roles = "Assistant")]
+// [Authorize(Roles = "Assistant")]
 [ApiController]
 [Route("api/[controller]")]
 public class SectionsController: ControllerBase
@@ -18,74 +18,74 @@ public class SectionsController: ControllerBase
         _sectionManager = sectionManager;
     }
     
-    [HttpGet]
-    public ActionResult<List<SectionReadDto>> GetAll(long courseId)
+    [HttpGet("getAll/{groupId}")]
+    public ActionResult<List<SectionReadDto>> GetAll(long groupId)
     {
-        return _sectionManager.GetAll(courseId);
+        return _sectionManager.GetAll(groupId);
     }
     
-    [HttpGet("{id}")]
-    public ActionResult<SectionReadDto?> Get(long id)
-    {
-        var user = _sectionManager.Get(id);
-        if (user == null) return NotFound();
-        return user;
-    }
+    // [HttpGet("{courseId}")]
+    // public ActionResult<SectionReadDto?> Get(long courseId)
+    // {
+    //     var user = _sectionManager.Get(courseId);
+    //     if (user == null) return NotFound(new {message = "Section Not Found", status = "error"});
+    //     return user;
+    // }
     
     [HttpPost]
     public ActionResult Add(SectionAddDto sectionAddDto)
     {
         _sectionManager.Add(sectionAddDto);
-        return Ok();
+        return Ok(new {message = "Section Added Successfully", status = "success"});
     }
     
     [HttpPut]
     public ActionResult Update(SectionUpdateDto sectionUpdateDto)
     {
         _sectionManager.Update(sectionUpdateDto);
-        return Ok();
+        return Ok(new {message = "Section Updated Successfully", status = "success"});
     }
     
-    [HttpDelete]
-    public ActionResult Delete(SectionDeleteDto sectionDeleteDto)
+    [HttpDelete("{courseId}")]
+    public ActionResult Delete(long id)
     {
-        _sectionManager.Delete(sectionDeleteDto);
-        return Ok();
+        _sectionManager.Delete(id);
+        return Ok(new {message = "Section Deleted Successfully", status = "success"});
     }
     
     
-    [HttpPost("uploadFile/{id}")]
+    [HttpPost("uploadFile/{courseId}")]
     [FileValidator]
     public IActionResult UploadFile(IFormFile file,long id)
     {
         _sectionManager.AddFileAsync(file,id);
-        return Ok();
+        return Ok(new {message ="File Uploaded Successfully", status = "success"});
     }
     
     [Authorize(Roles = "Student")]
-    [HttpGet("getFile/{id}")]
+    [HttpGet("getFile/{courseId}")]
     public IActionResult GetFile(int id)
     {
         var file = _sectionManager.GetFile(id);
-        if (file == null) return NotFound();
+        if (file == null) return NotFound(new { message = "File Not Found", status = "error"});
         return File(file.Content,file.Extension);
     }
     
     [FileValidator]
-    [HttpPut("{id}")]
+    [HttpPut("{courseId}")]
     public IActionResult UpdateFile(int sectionId, IFormFile file)
     {
         _sectionManager.UpdateFileAsync(sectionId, file);
 
-        return Ok("File Updated Successfully");
+        return Ok(new { message = "File Updated Successfully", status = "success"});
     }
     
-    [HttpDelete("{id}")]
+    [HttpDelete("deleteFile/{courseId}")]
     public IActionResult DeleteFile(int id)
     {
         _sectionManager.DeleteFile(id);
 
-        return Ok("File Deleted Successfully");
+        return Ok(new { message = "File Deleted Successfully", status = "success" });
     }
     
     [Authorize(Roles = "Student")]

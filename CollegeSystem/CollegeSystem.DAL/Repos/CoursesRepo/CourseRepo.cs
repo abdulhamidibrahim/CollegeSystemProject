@@ -1,6 +1,9 @@
 
+using System.Collections;
+using CollegeSystem.BL.Enums;
 using CollegeSystem.DAL.Context;
 using CollegeSystem.DAL.Models;
+using Microsoft.EntityFrameworkCore;
 
 namespace FCISystem.DAL;
 
@@ -22,10 +25,24 @@ public class CourseRepo :GenericRepo<Course>,ICourseRepo
         return new List<Course>();
     }
 
-    public List<Course> GetCoursesByLevelAndTerm(string level, string term)
+    public List<CourseUser> GetCoursesByLevelAndTerm(long studentId, Level level, Term term)
+    {
+        if (_context.Courses == null || _context.CourseUsers == null)
+        {
+            return new List<CourseUser>();
+        }
+    
+        return _context.CourseUsers
+            .Include(x=>x.Course)
+            .Where(c => c.StudentId == studentId && c.Course.Level == level && c.Course.Term == term)
+            .AsQueryable()
+            .ToList();
+    }
+
+    public IEnumerable<Course> GetCoursesByIds(long[] courseId)
     {
         if (_context.Courses != null) return _context.Courses
-            .Where(c => c.Level == level && c.Term == term)
+            .Where(c => courseId.Contains(c.CourseId))
             .AsQueryable()
             .ToList();
         return new List<Course>();
