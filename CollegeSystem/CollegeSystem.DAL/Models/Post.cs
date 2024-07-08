@@ -12,7 +12,14 @@ public partial class Post
     public string? Img { get; set; }
 
     public string? Content { get; set; }
+    
+    public Group Group { get; set; }
+    
+    public long GroupId { get; set; }
 
+    // public Group Group { get; set; }
+    
+    // public long GroupId { get; set; }
     public virtual ICollection<Reply> Replies { get; set; } = new List<Reply>();
 
     public virtual ICollection<PostUser> PostUsers { get; set; } = new List<PostUser>();

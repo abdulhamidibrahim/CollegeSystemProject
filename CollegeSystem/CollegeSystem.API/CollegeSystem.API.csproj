@@ -24,6 +24,8 @@
           <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
         </PackageReference>
         <PackageReference Include="NETCore.MailKit" Version="2.1.0" />
+        <PackageReference Include="SkiaSharp" Version="2.88.8" />
+        <PackageReference Include="SkiaSharp.QrCode" Version="0.7.0" />
         <PackageReference Include="Swashbuckle.AspNetCore" Version="6.5.0" />
     </ItemGroup>
 

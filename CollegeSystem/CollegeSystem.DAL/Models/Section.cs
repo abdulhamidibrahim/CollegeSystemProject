@@ -9,10 +9,12 @@ public partial class Section
 
     public string? Title { get; set; }
 
-    public long? CourseId { get; set; }
+    public long GroupId { get; set; }
+    public Group Group { get; set; }
+    // public long? GroupId { get; set; }
 
     public string? UploadedBy { get; set; }
-    public virtual Course? Course { get; set; }
+    // public virtual CourseIe? Group { get; set; }
     
     public virtual Assignment? Assignment { get; set; }
 

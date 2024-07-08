@@ -18,7 +18,7 @@ public class AssignmentFileRepo :GenericRepo<AssignmentFile>,IAssignmentFileRepo
     // public List<AssignmentFile>? GetAllCourseAssignments(long courseId)
     // {
     //     return _context.AssignmentFile?
-    //         .Where(x => x.AssignmentId != null && x.Assignment!.CourseId == courseId)
+    //         .Where(x => x.AssignmentId != null && x.Assignment!.GroupId == courseId)
     //         .ToList();
     // }
     //

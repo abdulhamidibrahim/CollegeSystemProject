@@ -6,12 +6,10 @@ namespace CollegeSystem.DL;
 
 public class MeetingManager:IMeetingManager
 {
-    private readonly IMeetingRepo _meetingRepo;
     private readonly IUnitOfWork _unitOfWork;
 
-    public MeetingManager(IMeetingRepo meetingRepo, IUnitOfWork unitOfWork)
+    public MeetingManager(IUnitOfWork unitOfWork)
     {
-        _meetingRepo = meetingRepo;
         _unitOfWork = unitOfWork;
     }
     
@@ -21,54 +19,71 @@ public class MeetingManager:IMeetingManager
         {
            Title = meetingAddDto.Title,
            StartDate = meetingAddDto.StartDate,
-           Url = meetingAddDto.Url
+           Url = meetingAddDto.Url,
+           GroupId = meetingAddDto.GroupId,
         };
-        _meetingRepo.Add(meeting);
+        _unitOfWork.Meeting.Add(meeting);
         _unitOfWork.CompleteAsync();
     }
 
     public void Update(MeetingUpdateDto meetingUpdateDto)
     {
-        var meeting = _meetingRepo.GetById(meetingUpdateDto.Id);
+        var meeting = _unitOfWork.Meeting.GetById(meetingUpdateDto.Id);
         if (meeting == null) return;
         meeting.Title = meetingUpdateDto.Title;
         meeting.StartDate = meetingUpdateDto.StartDate;
         meeting.Url = meetingUpdateDto.Url;
+        meeting.GroupId = meetingUpdateDto.GroupId;
         
-        _meetingRepo.Update(meeting);
+        _unitOfWork.Meeting.Update(meeting);
         _unitOfWork.CompleteAsync();
     }
 
-    public void Delete(MeetingDeleteDto meetingDeleteDto)
+    public void Delete(long id)
     {
-        var meeting = _meetingRepo.GetById(meetingDeleteDto.Id);
+        var meeting = _unitOfWork.Meeting.GetById(id);
         if (meeting == null) return;
-        _meetingRepo.Delete(meeting);
+        _unitOfWork.Meeting.Delete(meeting);
         _unitOfWork.CompleteAsync();
     }
 
     public MeetingReadDto? Get(long id)
     {
-        var meeting = _meetingRepo.GetById(id);
+        var meeting = _unitOfWork.Meeting.GetById(id);
         if (meeting == null) return null;
         return new MeetingReadDto()
         {
             Id = meeting.Id,
             Title = meeting.Title,
             StartDate = meeting.StartDate,
-            Url = meeting.Url
+            Url = meeting.Url,
+            GroupId = meeting.GroupId
         };
     }
 
     public List<MeetingReadDto> GetAll()
     {
-        var meetings = _meetingRepo.GetAll();
+        var meetings = _unitOfWork.Meeting.GetAll();
         return meetings.Select(meeting => new MeetingReadDto()
         {
             Id = meeting.Id,
             Title = meeting.Title,
             StartDate = meeting.StartDate,
-            Url = meeting.Url
+            Url = meeting.Url,
+            GroupId = meeting.GroupId,
+        }).ToList();
+    }
+
+    public List<MeetingReadDto> GetAllByGroupId(long groupId)
+    {
+        var meetings = _unitOfWork.Meeting.GetMeetingsByGroupId(groupId);
+        return meetings.Select(meeting => new MeetingReadDto()
+        {
+            Id = meeting.Id,
+            Title = meeting.Title,
+            StartDate = meeting.StartDate,
+            Url = meeting.Url,
+            GroupId = meeting.GroupId,
         }).ToList();
     }
 }

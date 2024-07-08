@@ -5,8 +5,8 @@ namespace CollegeSystem.DL;
 public interface IStudentManager
 {
     public void Add(StudentAddDto studentAddDto);
-    public void Update(StudentUpdateDto studentUpdateDto);
-    public void Delete(StudentDeleteDto studentDeleteDto);
+    public void Update(long id,StudentUpdateDto studentUpdateDto);
+    public void Delete(long id);
     public StudentReadDto? Get(long id);
     public List<StudentReadDto> GetAll();
     public void UpdateImageAsync(int id, IFormFile file);

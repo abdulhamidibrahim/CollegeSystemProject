@@ -20,33 +20,33 @@ public class ParentCallsController: ControllerBase
         return _parentCallManager.GetAll();
     }
     
-    [HttpGet("{id}")]
+    [HttpGet("{courseId}")]
     public ActionResult<ParentCallReadDto?> Get(long id)
     {
-        var user = _parentCallManager.Get(id);
-        if (user == null) return NotFound();
-        return user;
+        var parentCall = _parentCallManager.Get(id);
+        if (parentCall == null) return NotFound(new { Message = "Parent Call not found"});
+        return parentCall;
     }
     
     [HttpPost]
     public ActionResult Add(ParentCallAddDto parentCallAddDto)
     {
         _parentCallManager.Add(parentCallAddDto);
-        return Ok();
+        return Ok(new { Message = "Parent Call added"});
     }
     
     [HttpPut]
     public ActionResult Update(ParentCallUpdateDto parentCallUpdateDto)
     {
         _parentCallManager.Update(parentCallUpdateDto);
-        return Ok();
+        return Ok(new { Message = "Parent Call updated"});
     }
     
-    [HttpDelete]
-    public ActionResult Delete(ParentCallDeleteDto parentCallDeleteDto)
+    [HttpDelete("{courseId}")]
+    public ActionResult Delete(long id)
     {
-        _parentCallManager.Delete(parentCallDeleteDto);
-        return Ok();
+        _parentCallManager.Delete(id);
+        return Ok(new { Message = "Parent Call deleted"});
     }
     
 }

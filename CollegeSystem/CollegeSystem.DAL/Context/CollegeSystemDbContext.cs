@@ -52,6 +52,7 @@ public partial class CollegeSystemDbContext : IdentityDbContext<ApplicationUser,
     public virtual DbSet<AssignmentAnswer>? AssignmentAnswers { get; set; }
     
     public virtual DbSet<AssignmentFile>? AssignmentFile { get; set; }
+    public virtual DbSet<Attendance>? Attendances { get; set; }
 
     public virtual DbSet<Course>? Courses { get; set; }
 
@@ -62,8 +63,10 @@ public partial class CollegeSystemDbContext : IdentityDbContext<ApplicationUser,
     public virtual DbSet<Department>? Departments { get; set; }
     
     public virtual DbSet<File>? Files { get; set; }
+    public virtual DbSet<Group>? Groups { get; set; }
     
     public virtual DbSet<Lecture>? Lectures { get; set; }
+    public virtual DbSet<LectureFile>? LectureFiles { get; set; }
     public virtual DbSet<Meeting>? Meetings { get; set; }
 
     public virtual DbSet<PostUser>? PostUsers { get; set; }
@@ -83,6 +86,9 @@ public partial class CollegeSystemDbContext : IdentityDbContext<ApplicationUser,
     public virtual DbSet<Reply>? Replies { get; set; }
 
     public virtual DbSet<Section>? Sections { get; set; }
+    public virtual DbSet<Submission>? Submissions { get; set; }
+    public virtual DbSet<Option>? Options { get; set; }
+    public virtual DbSet<SectionFile>? SectionFiles { get; set; }
 
     public virtual DbSet<Staff>? Staff { get; set; }
 
@@ -191,20 +197,20 @@ public partial class CollegeSystemDbContext : IdentityDbContext<ApplicationUser,
         modelBuilder.Entity<Answer>(entity =>
         {
             entity.Property(e => e.AnswerId).HasColumnName("answer_id");
-            // entity.Property(e => e.CourseId).HasColumnName("course_id");
-            entity.Property(e => e.QuizId).HasColumnName("quiz_id");
-            entity.Property(e => e.StudentMark)
-                .HasMaxLength(50)
-                .HasColumnName("student_mark");
+            // entity.Property(e => e.GroupId).HasColumnName("course_id");
+            // entity.Property(e => e.QuizId).HasColumnName("quiz_id");
+            // entity.Property(e => e.StudentMark)
+            //     .HasMaxLength(50)
+            //     .HasColumnName("student_mark");
            
 
-            // entity.HasOne(d => d.Course).WithMany(p => p.Answers)
-            //     .HasForeignKey(d => d.CourseId)
+            // entity.HasOne(d => d.Question).WithMany(p => p.Answers)
+            //     .HasForeignKey(d => d.GroupId)
             //     .HasConstraintName("FK_Answers_Courses");
 
-            entity.HasOne(d => d.Quiz).WithMany(p => p.Answers)
-                .HasForeignKey(d => d.QuizId)
-                .HasConstraintName("FK_Answers_Quizzes_1");
+            // entity.HasOne(d => d.Quiz).WithMany(p => p.Answers)
+            //     .HasForeignKey(d => d.QuizId)
+            //     .HasConstraintName("FK_Answers_Quizzes_1");
             
         });
 
@@ -241,9 +247,10 @@ public partial class CollegeSystemDbContext : IdentityDbContext<ApplicationUser,
                 .HasMaxLength(50)
                 .HasColumnName("title");
             //
-            // entity.HasOne(d => d.Course).WithMany(p => p.Assignments)
-            //     .HasForeignKey(d => d.CourseId)
-            //     .HasConstraintName("FK_Assignments_Courses");
+            entity.HasOne(d => d.Group)
+                .WithMany(p => p.Assignments)
+                .HasForeignKey(d => d.GroupId)
+                .HasConstraintName("FK_Assignments_Groups");
             //
            // entity.HasMany(d=>d.File).WithOne(p=>p.Assignment)
            //     .HasForeignKey(d=>d.AssignmentId)
@@ -254,10 +261,13 @@ public partial class CollegeSystemDbContext : IdentityDbContext<ApplicationUser,
         {
             entity.ToTable("Assignment_Answers");
 
+            entity.HasKey(aa => new { aa.AssignmentId, aa.StudentId });
+            
             entity.Property(e => e.AssignmentAnswerId).HasColumnName("assignment_answer_id");
             entity.Property(e => e.AssignmentId).HasColumnName("assignment_id");
 
-            entity.HasOne(d => d.Assignment).WithMany(p => p.AssignmentAnswers)
+            entity.HasOne(d => d.Assignment)
+                .WithMany(p => p.AssignmentAnswers)
                 .HasForeignKey(d => d.AssignmentId)
                 .HasConstraintName("FK_Assignment_Answers_Assignments");
             
@@ -265,8 +275,9 @@ public partial class CollegeSystemDbContext : IdentityDbContext<ApplicationUser,
             //     .HasForeignKey(d => d.AssignmentAnswerId)
             //     .HasConstraintName("FK_Assignment_Answers_Files");
             
-            entity.HasOne(d => d.Student).WithMany(p => p.AssignmentAnswers)
-                .HasForeignKey(d => d.AssignmentAnswerId)
+            entity.HasOne(d => d.Student).
+                WithMany(p => p.AssignmentAnswers)
+                .HasForeignKey(d => d.StudentId)
                 .HasConstraintName("FK_Assignment_Answers_Student");
         });
 
@@ -350,13 +361,13 @@ public partial class CollegeSystemDbContext : IdentityDbContext<ApplicationUser,
             entity.HasKey(e => e.LectureId).HasName("PK_Lecture");
 
             entity.Property(e => e.LectureId).HasColumnName("lecture_id");
-            entity.Property(e => e.CourseId).HasColumnName("course_id");
+            entity.Property(e => e.GroupId).HasColumnName("group_id");
             entity.Property(e => e.Title)
                 .HasMaxLength(50)
                 .HasColumnName("title");
 
-            entity.HasOne(d => d.Course).WithMany(p => p.Lectures)
-                .HasForeignKey(d => d.CourseId)
+            entity.HasOne(d => d.Group).WithMany(p => p.Lectures)
+                .HasForeignKey(d => d.GroupId)
                 .HasConstraintName("FK_Lecture_Courses");
             //
             // entity.HasMany(d => d.File).WithOne(p => p.Lecture)
@@ -453,30 +464,7 @@ public partial class CollegeSystemDbContext : IdentityDbContext<ApplicationUser,
         modelBuilder.Entity<Question>(entity =>
         {
             entity.Property(e => e.Id).HasColumnName("id");
-            entity.Property(e => e.Answer)
-                .HasMaxLength(50)
-                .HasColumnName("answer");
-            entity.Property(e => e.Degree)
-                .HasMaxLength(50)
-                .HasColumnName("degree");
-            entity.Property(e => e.Choice1)
-                .HasMaxLength(50)
-                .HasColumnName("choice1");
-            entity.Property(e => e.Choice2)
-                .HasMaxLength(50)
-                .HasColumnName("choice2");
-            entity.Property(e => e.Choice3)
-                .HasMaxLength(50)
-                .HasColumnName("choice3");
-            entity.Property(e => e.Choice4)
-                .HasMaxLength(50)
-                .HasColumnName("choice4");
-            entity.Property(e => e.Choice5)
-                .HasMaxLength(50)
-                .HasColumnName("choice5");
-            entity.Property(e => e.Question1)
-                .HasMaxLength(50)
-                .HasColumnName("question");
+            entity.Property(e=>e.QuestionText).HasColumnName("question_text");
             entity.Property(e => e.QuizId).HasColumnName("quiz_id");
 
             entity.HasOne(d => d.Quiz).WithMany(p => p.Questions)
@@ -487,12 +475,13 @@ public partial class CollegeSystemDbContext : IdentityDbContext<ApplicationUser,
         modelBuilder.Entity<Quiz>(entity =>
         {
             entity.Property(e => e.QuizId).HasColumnName("quiz_id");
-            // entity.Property(e => e.CourseId).HasColumnName("course_id");
+            // entity.Property(e => e.GroupId).HasColumnName("course_id");
             entity.Property(e => e.Instructor)
                 .HasMaxLength(50)
                 .HasColumnName("instructor");
             entity.Property(e => e.MaxDegree)
                 .HasMaxLength(50)
+                .HasPrecision(2)
                 .HasColumnName("max_degree");
             entity.Property(e => e.MaxTime)
                 .HasMaxLength(50)
@@ -501,8 +490,8 @@ public partial class CollegeSystemDbContext : IdentityDbContext<ApplicationUser,
                 .HasMaxLength(50)
                 .HasColumnName("name");
 
-            // entity.HasOne(d => d.Course).WithMany(p => p.Quizzes)
-            //     .HasForeignKey(d => d.CourseId)
+            // entity.HasOne(d => d.Group).WithMany(p => p.Quizzes)
+            //     .HasForeignKey(d => d.GroupId)
             //     .OnDelete(DeleteBehavior.Cascade)
             //     .HasConstraintName("FK_Quizzes_Courses");
         });
@@ -525,14 +514,14 @@ public partial class CollegeSystemDbContext : IdentityDbContext<ApplicationUser,
 
             entity.Property(e => e.SectionId)
                 .HasColumnName("sections_id");
-            entity.Property(e => e.CourseId).HasColumnName("course_id");
+            entity.Property(e => e.GroupId).HasColumnName("group_id");
             entity.Property(e => e.Title)
                 .HasMaxLength(50)
                 .HasColumnName("title");
 
-            entity.HasOne(d => d.Course).WithMany(p => p.Sections)
-                .HasForeignKey(d => d.CourseId)
-                .HasConstraintName("FK_Sections_Courses");
+            entity.HasOne(d => d.Group).WithMany(p => p.Sections)
+                .HasForeignKey(d => d.GroupId)
+                .HasConstraintName("FK_Sections_Group");
             
             // entity.HasMany(d => d.File).WithOne(p => p.Section)
             //     .HasForeignKey(d => d.SectionId)
@@ -623,8 +612,33 @@ public partial class CollegeSystemDbContext : IdentityDbContext<ApplicationUser,
             .HasConstraintName("FK_Users_Departments");
         
          });
+        modelBuilder.Entity<Quiz>(entity =>
+        {
+            entity.Property(e => e.MaxDegree).HasPrecision(2);
+        });
+        
+        modelBuilder.Entity<Question>(entity =>
+        {
+            entity.Property(e => e.Degree).HasPrecision(2);
+        });
+        
+        modelBuilder.Entity<Submission>(entity =>
+        {
+            entity.Property(e => e.Score).HasPrecision(2);
+        });
+        
+        modelBuilder.Entity<Group>(entity =>
+        {
+            // entity.Property(e => e.Score).HasPrecision(2);
+            modelBuilder.Entity<Group>()
+                .HasMany(g => g.Assignments)
+                .WithOne(a => a.Group)
+                .HasForeignKey(a => a.GroupId);
+        });
 
+  
         OnModelCreatingPartial(modelBuilder);
+        
     }
 
     partial void OnModelCreatingPartial(ModelBuilder modelBuilder);

@@ -970,7 +970,7 @@ namespace CollegeSystem.DAL.Migrations
             migrationBuilder.CreateIndex(
                 name: "IX_Assignments_CourseId",
                 table: "Assignments",
-                column: "CourseId");
+                column: "GroupId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Assignments_LectureId",
@@ -1007,9 +1007,9 @@ namespace CollegeSystem.DAL.Migrations
             migrationBuilder.CreateIndex(
                 name: "IX_Files_CourseId",
                 table: "Files",
-                column: "CourseId",
+                column: "GroupId",
                 unique: true,
-                filter: "[CourseId] IS NOT NULL");
+                filter: "[GroupId] IS NOT NULL");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Files_LectureId",
@@ -1076,7 +1076,7 @@ namespace CollegeSystem.DAL.Migrations
             migrationBuilder.CreateIndex(
                 name: "IX_Quizzes_CourseId",
                 table: "Quizzes",
-                column: "CourseId");
+                column: "GroupId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Quizzes_LectureId",

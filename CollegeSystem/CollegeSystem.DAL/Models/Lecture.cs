@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace CollegeSystem.DAL.Models;
 
@@ -9,11 +10,14 @@ public partial class Lecture
 
     public string? Title { get; set; }
 
-    public long? CourseId { get; set; }
+    // public long? GroupId { get; set; }
     public string? UploadedBy { get; set; }
-
     
-    public virtual Course? Course { get; set; }
+    [ForeignKey(nameof(Group))]
+    public long? GroupId { get; set; }
+
+    public Group? Group { get; set; }
+    // public virtual Group? Group { get; set; }
 
     public virtual ICollection<File> Files { get; set; } = new List<File>();
 

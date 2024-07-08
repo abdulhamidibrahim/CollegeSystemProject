@@ -20,33 +20,33 @@ public class DepartmentsController: ControllerBase
         return _departmentManager.GetAll();
     }
     
-    [HttpGet("{id}")]
+    [HttpGet("{courseId}")]
     public ActionResult<DepartmentReadDto?> Get(long id)
     {
-        var user = _departmentManager.Get(id);
-        if (user == null) return NotFound();
-        return user;
+        var dept = _departmentManager.Get(id);
+        if (dept == null) return NotFound(new {message="Department Not Found"});
+        return dept;
     }
     
     [HttpPost]
     public ActionResult Add(DepartmentAddDto departmentAddDto)
     {
         _departmentManager.Add(departmentAddDto);
-        return Ok();
+        return Ok(new {message= "Added successfully"});
     }
     
     [HttpPut]
     public ActionResult Update(DepartmentUpdateDto departmentUpdateDto)
     {
         _departmentManager.Update(departmentUpdateDto);
-        return Ok();
+        return Ok(new {message = "Updated successfully"});
     }
     
-    [HttpDelete]
-    public ActionResult Delete(DepartmentDeleteDto departmentDeleteDto)
+    [HttpDelete("{courseId}")]
+    public ActionResult Delete(long id)
     {
-        _departmentManager.Delete(departmentDeleteDto);
-        return Ok();
+        _departmentManager.Delete(id);
+        return Ok(new {message = "deleted successfully"});
     }
     
 }

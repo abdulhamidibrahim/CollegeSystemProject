@@ -10,6 +10,10 @@ public class AddSectionQuizDto
 
     public string? MaxTime { get; set; }
 
-    public long? CourseId { get; set; }
     public long? SectionId { get; set; }
+    public bool IsActive { get; set; }
+    public DateTime? StartDate { get; set; }
+    public DateTime? EndDate { get; set; }
+    public int NumberOfQuestions { get; set; }
+    public string? Description { get; set; }
 }

@@ -6,6 +6,7 @@ using CollegeSystem.BL.DTOs;
 using CollegeSystem.BL.DTOs.User;
 using CollegeSystem.DAL.Models;
 using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
@@ -14,6 +15,7 @@ using IEmailService = User.Management.Services.Services.IEmailService;
 
 namespace CollegeSystem.API.Controllers;
 
+[Authorize(nameof(Admin))]
 [ApiController]
 [Route("api/[controller]")]
 public class AdminController : ControllerBase
@@ -53,7 +55,7 @@ public class AdminController : ControllerBase
                 return BadRequest(result.Errors);
             }
 
-            await _userManager.AddToRoleAsync(user, adminRegisterDto.Role);
+            await _userManager.AddToRoleAsync(user, nameof(Admin));
             // send email verification to the user
             var token = await _userManager.GenerateEmailConfirmationTokenAsync(user);
             var confirmationLink = Url.Action(nameof(ConfirmEmail), "Admin", new { token, email = user.Email },
@@ -61,8 +63,8 @@ public class AdminController : ControllerBase
             var message = new Message(new[] { user.Email }, "Confirmation email link", confirmationLink!);
 
             _emailService.SendEmail(message);
-            return Ok(
-                "Account created successfully, we have sent a confirmation email, please click the link to confirm your email");
+            return Ok(new { message =
+                "Account created successfully, we have sent a confirmation email, please click the link to confirm your email"});
         }
 
         var errors = ModelState.Where(n => n.Value!.Errors.Count > 0).ToList();
@@ -128,15 +130,15 @@ public class AdminController : ControllerBase
     public async Task<ActionResult> ConfirmEmail([Required]string email)
     {
         var user = await _userManager.FindByEmailAsync(email);
-        if (user == null) return NotFound("User not found");
+        if (user == null) return NotFound(new {message ="User not found"});
         var token = await _userManager.GenerateEmailConfirmationTokenAsync(user);
         var confirmationLink = Url.Action(nameof(ConfirmEmail), "Admin", new { token, email = user.Email },
             Request.Scheme);
         var message = new Message(new[] { user.Email }!, "Confirmation email link", confirmationLink!);
 
         _emailService.SendEmail(message);
-        return Ok(
-            "Account created successfully, we have sent a confirmation email, please click the link to confirm your email");
+        return Ok( new { message =
+            "Account created successfully, we have sent a confirmation email, please click the link to confirm your email"});
     }
     
     [HttpGet]
@@ -145,31 +147,31 @@ public class AdminController : ControllerBase
     {
         if (string.IsNullOrWhiteSpace(token) || string.IsNullOrWhiteSpace(email))
         {
-            return NotFound("Invalid token or Email");
+            return NotFound(new { message ="Invalid token or Email"});
         }
 
         var user = await _userManager.FindByEmailAsync(email);
-        if (user == null) return NotFound("User not found");
+        if (user == null) return NotFound(new {message ="User not found"});
 
         var result = await _userManager.ConfirmEmailAsync(user, token);
         if (!result.Succeeded)
         {
-            return BadRequest("Invalid token");
+            return BadRequest(new {message ="Invalid token"});
         }
 
-        return Ok("Email confirmed successfully");
+        return Ok(new {message ="Email confirmed successfully"});
     }
     
     [HttpPost("forgotPassword")]
     public async Task<ActionResult> ForgotPassword(string email)
     {
         var user = await _userManager.FindByEmailAsync(email);
-        if (user == null) return BadRequest("User not found");
+        if (user == null) return BadRequest(new {message ="User not found"});
         var token = await _userManager.GenerateUserTokenAsync(user, "Default","ResetFactor");
         var passwordResetLink = Url.Action(nameof(ResetPassword), "Admin", new { token, email = user.Email },Request.Scheme);
         var message = new Message(new[] { user.Email }!, "Reset password link", passwordResetLink!);
         _emailService.SendEmail(message);
-        return Ok("Password reset link sent successfully");
+        return Ok(new {message ="Password reset link sent successfully"});
     }
     
     [HttpGet("resetPassword")]
@@ -177,7 +179,7 @@ public class AdminController : ControllerBase
     {
         if (string.IsNullOrWhiteSpace(token) || string.IsNullOrWhiteSpace(email))
         {
-            return NotFound("Invalid token or Email");
+            return NotFound(new {message ="Invalid token or Email"});
         }
 
         return Ok(new ResetPasswordDto { Token = token, Email = email });
@@ -190,23 +192,23 @@ public class AdminController : ControllerBase
         if (ModelState.IsValid)
         {
             var user = await _userManager.FindByEmailAsync(resetPasswordDto.Email);
-            if (user == null) return NotFound("User not found");
+            if (user == null) return NotFound(new {message ="User not found"});
             var validateOtp = await _userManager.VerifyUserTokenAsync(user,"Default","ResetFactor", resetPasswordDto.Token);
             if (!validateOtp)
             {
-                return BadRequest("Invalid OTP");
+                return BadRequest(new {message ="Invalid token"});
             }
             var token = await _userManager.GeneratePasswordResetTokenAsync(user);
             var result = await _userManager.ResetPasswordAsync(user ,token,resetPasswordDto.Password);
             if (!result.Succeeded)
             {
-                return BadRequest("Invalid token or password");
+                return BadRequest(new {message ="Invalid payload"});
             }
 
-            return Ok("Password reset successfully");
+            return Ok(new {message ="Password reset successfully"});
         }
 
-        return BadRequest("Invalid payload");
+        return BadRequest(new {message ="Invalid payload"});
     }
     
     //sign out
@@ -214,6 +216,6 @@ public class AdminController : ControllerBase
     public new async Task<ActionResult> SignOut()
     {
         await HttpContext.SignOutAsync(IdentityConstants.ApplicationScheme);
-        return Ok("logged out successfully");
+        return Ok(new {message ="Logged out successfully"});
     }
  }

@@ -6,8 +6,8 @@ public class CourseUserUpdateDto
 
     public string? Degree { get; set; }
 
-    public long? CourseId { get; set; }
+    public long CourseId { get; set; }
 
-    public long? UserId { get; set; }
+    // public long? UserId { get; set; }
 }
 

@@ -14,8 +14,8 @@ public class SectionRepo :GenericRepo<Section>,ISectionRepo
         _context = context;
     }
 
-    public Task<List<Section>> GetAllSections(long courseId)
+    public Task<List<Section>> GetAllSections(long groupId)
     {
-        return _context.Sections.Where(x => x.CourseId == courseId).ToListAsync();
+        return _context.Sections!.Where(x => x.GroupId == groupId).ToListAsync();
     }
 }

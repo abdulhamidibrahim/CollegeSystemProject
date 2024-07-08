@@ -12,4 +12,9 @@ public class PostRepo :GenericRepo<Post>,IPostRepo
         _context = context;
     }
 
+    public IEnumerable<Post>? GetCourseGroupPosts(long groupId)
+    {
+        return _context.Posts?.Where(p => p.GroupId == groupId).ToList();
+    }
+    
 }

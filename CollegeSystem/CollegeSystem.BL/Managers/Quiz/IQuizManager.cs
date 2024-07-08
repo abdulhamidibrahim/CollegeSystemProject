@@ -1,18 +1,17 @@
+using CollegeSystem.BL.DTOs.Submission;
+using CollegeSystem.DAL.Models;
+
 namespace CollegeSystem.DL;
 
 public interface IQuizManager
 {
-    public void Add(QuizAddDto quizAddDto);
-    public void Update(QuizUpdateDto quizUpdateDto);
-    public void Delete(QuizDeleteDto quizDeleteDto);
-    public QuizReadDto? Get(long id);
-    public List<QuizReadDto> GetAll(long courseId);
-    public List<QuizReadDto> GetAllSectionQuizzes(long courseId);
-    public List<QuizReadDto> GetAllLectureQuizzes(long courseId);
-    public QuizReadDto? GetByLectureId(long lectureId);
-    public QuizReadDto? GetBySectionId(long sectionId);
-    
-    public void AddSectionQuiz(AddSectionQuizDto quizAddDto);
-    public void AddLectureQuiz(AddLectureQuizDto quizAddDto);
-
+    List<QuizReadDto> GetAllSectionQuizzes(long groupId); 
+    List<QuizReadDto> GetAllLectureQuizzes(long courseId);
+    Task<Quiz> CreateQuizAsync(QuizAddDto quiz);
+    Task<Quiz> GetQuizByIdAsync(long quizId);
+    Task<List<Quiz>> GetActiveQuizzesAsync(long courseId);
+    Task<Quiz> UpdateQuizAsync(QuizUpdateDto quiz);
+    Task<bool> DeleteQuizAsync(long quizId);
+    Task<Submission> SubmitQuizAsync(SubmissionDto submission);
+    // Task<int> CalculateScoreAsync(SubmissionDto submission);
 }

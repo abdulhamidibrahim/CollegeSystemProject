@@ -1,5 +1,7 @@
 using System.Text;
 using CollegeSystem.BL.Managers.File;
+using CollegeSystem.BL.Utilities;
+using CollegeSystem.BL.Utilities.ConnectionStrings;
 using CollegeSystem.DAL.Configuration;
 using CollegeSystem.DAL.Context;
 using CollegeSystem.DAL.Models;
@@ -50,8 +52,9 @@ builder.Services.AddSwaggerGen(options =>
 
 //add connection string
 builder.Services.AddDbContext<CollegeSystemDbContext>(options =>
-    options.UseSqlServer(builder.Configuration.GetConnectionString("CollegeSystemDbConnection"),
-    option => option.CommandTimeout(300)));
+    options.UseSqlServer(builder.Configuration.GetConnectionString(nameof(ServerConnection))));
+        // option => option.CommandTimeout(300)));
+
 
 
 
@@ -149,6 +152,7 @@ builder.Services.Configure<DataProtectionTokenProviderOptions>(options =>
 
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 
+builder.Services.AddScoped<UserUtility>();
 
 #region Resolving Managers Services
 
@@ -162,61 +166,31 @@ builder.Services.AddScoped<IPostUsersManager, PostUsersManager>();
 builder.Services.AddScoped<ISectionManager, SectionManager>();
 builder.Services.AddScoped<IStaffManager, StaffManager>();
 builder.Services.AddScoped<IQuestionManager, QuestionManager>();
-builder.Services.AddScoped<IAllQuestionManager, AllQuestionManager>();
+// builder.Services.AddScoped<IAllQuestionManager, AllQuestionManager>();
 builder.Services.AddScoped<IReplyManager, ReplyManager>();
-builder.Services.AddScoped<IActiveAllQuizManager, ActiveAllQuizManager>();
-builder.Services.AddScoped<IActiveQuizManager, ActiveQuizManager>();
-builder.Services.AddScoped<IAllQuizManager, AllQuizManager>();
-builder.Services.AddScoped<IAnswerAllQuizManager, AnswerAllQuizManager>();
-builder.Services.AddScoped<IAnswerManager, AnswerManager>();
+// builder.Services.AddScoped<IActiveAllQuizManager, ActiveAllQuizManager>();
+// builder.Services.AddScoped<IActiveQuizManager, ActiveQuizManager>();
+// builder.Services.AddScoped<IAllQuizManager, AllQuizManager>();
+// builder.Services.AddScoped<IAnswerAllQuizManager, AnswerAllQuizManager>();
+// builder.Services.AddScoped<IAnswerManager, AnswerManager>();
 builder.Services.AddScoped<IAssignmentManager, AssignmentManager>();
-builder.Services.AddScoped<IAssignmentAnswerManager, AssignmentAnswerManager>();
+builder.Services.AddScoped<IAttendanceManager, AttendanceManager>();
+// builder.Services.AddScoped<IAssignmentAnswerManager, AssignmentAnswerManager>();
 builder.Services.AddScoped<ICourseManager, CourseManager>();
 builder.Services.AddScoped<ICourseManager, CourseManager>();
 builder.Services.AddScoped<ICourseStaffManager, CourseStaffManager>();
-builder.Services.AddScoped<ICourseUserManager, CourseUserManager>();
+// builder.Services.AddScoped<ICourseUserManager, CourseUserManager>();
 builder.Services.AddScoped<IParentCallManager, ParentCallManager>();
-builder.Services.AddScoped<IPermAttendanceManager, PermAttendanceManager>();
+// builder.Services.AddScoped<IPermAttendanceManager, PermAttendanceManager>();
 builder.Services.AddScoped<IQuizManager, QuizManager>();
+builder.Services.AddScoped<IQRCodeManager, QRCodeManager>();
 builder.Services.AddScoped<IMeetingManager, MeetingManager>();
 builder.Services.AddScoped<IFileManager, FileManager>();
-builder.Services.AddScoped<ITempAttendanceManager, TempAttendanceManager>();
-
-
-#endregion
-
-#region Resolving Repo Services
-
-builder.Services.AddScoped<IStudentRepo, StudentRepo>();
-builder.Services.AddScoped<ICourseRepo, CourseRepo>();
-builder.Services.AddScoped<IParentRepo, ParentRepo>();
-builder.Services.AddScoped<IDepartmentRepo, DepartmentRepo>();
-builder.Services.AddScoped<ILectureRepo, LectureRepo>();
-builder.Services.AddScoped<IPostRepo, PostRepo>();
-builder.Services.AddScoped<IPostUsersRepo, PostUsersRepo>();
-builder.Services.AddScoped<ISectionRepo, SectionRepo>();
-builder.Services.AddScoped<IStaffRepo, StaffRepo>();
-builder.Services.AddScoped<IQuestionRepo, QuestionsRepo>();
-builder.Services.AddScoped<IAllQuestionRepo, AllQuestionsRepo>();
-builder.Services.AddScoped<IActiveAllQuizRepo, ActiveAllQuizRepo>();
-builder.Services.AddScoped<IActiveQuizRepo, ActiveQuizRepo>();
-builder.Services.AddScoped<IAllQuizRepo, AllQuizRepo>();
-builder.Services.AddScoped<IAnswerAllQuizRepo, AnswerAllQuizRepo>();
-builder.Services.AddScoped<IAssignmentRepo,AssignmentRepo >();
-builder.Services.AddScoped<IAnswerRepo, AnswerRepo>();
-builder.Services.AddScoped<IAssignmentAnswerRepo, AssignmentAnswerRepo>();
-builder.Services.AddScoped<IReplyRepo, ReplyRepo>();
-builder.Services.AddScoped<ICourseStaffRepo, CourseStaffRepo>();
-builder.Services.AddScoped<ICourseUserRepo, CourseUserRepo>();
-builder.Services.AddScoped<IParentCallRepo, ParentCallRepo>();
-builder.Services.AddScoped<IPermAttendanceRepo, PermAttendanceRepo>();
-builder.Services.AddScoped<IQuizRepo, QuizRepo>();
-builder.Services.AddScoped<ITempAttendanceRepo, TempAttendanceRepo>();
 builder.Services.AddScoped<IFileRepo, FileRepo>();
-builder.Services.AddScoped<IAssignmentFileRepo, AssignmentFileRepo>();
-builder.Services.AddScoped<IMeetingRepo, MeetingRepo>();
+builder.Services.AddScoped<IGroupManager, GroupManager>();
+// builder.Services.AddScoped<ITempAttendanceManager, TempAttendanceManager>();
 
-
+// builder.Services.AddScoped<QRCodeGenerator>();
 #endregion
 
 //add Email Configuration from appsettings.json to EmailConfiguration class
@@ -270,6 +244,11 @@ var app = builder.Build();
 // {
     app.UseSwagger();
     app.UseSwaggerUI();
+    // (c =>
+    // {
+    //     c.SwaggerEndpoint("/swagger/v1/swagger.json", "CollegeSystem.API v1");
+    //     c.RoutePrefix = string.Empty;
+    // });
 // }
 
 // app.UseHttpsRedirection();
@@ -279,5 +258,13 @@ app.UseAuthentication();
 app.UseAuthorization();
 app.UseCors("CorsPolicy");
 app.MapControllers();
+
+app.UseSwagger();
+app.UseSwaggerUI
+    (c =>
+    {
+        c.SwaggerEndpoint("/swagger/v1/swagger.json", "CollegeSystem.API v1");
+        c.RoutePrefix = string.Empty;
+    });
 
 app.Run();

@@ -54,6 +54,15 @@ public class ParentsController: ControllerBase
                 return BadRequest(result.Errors);  
             }
             
+            try
+            {
+                await _userManager.AddToRoleAsync(parent, nameof(parent));
+            }catch (Exception e)
+            {
+                await _userManager.DeleteAsync(parent);
+                return BadRequest(new { message = "Unable to add to role", status = "error",error = e.Message});
+            }
+            
             // send email verification to the user
             var token = await _userManager.GenerateEmailConfirmationTokenAsync(parent);
             var confirmationLink = Url.Action(nameof(ConfirmEmail), "Parents", new { token, email = parent.Email },
@@ -129,7 +138,7 @@ public class ParentsController: ControllerBase
         return _parentManager.GetAll();
     }
     
-    [HttpGet("{id}")]
+    [HttpGet("{courseId}")]
     public ActionResult<ParentReadDto?> Get(long id)
     {
         var user = _parentManager.Get(id);
@@ -151,10 +160,10 @@ public class ParentsController: ControllerBase
         return Ok();
     }
     
-    [HttpDelete]
-    public ActionResult Delete(ParentDeleteDto parentDeleteDto)
+    [HttpDelete("{courseId}")]
+    public ActionResult Delete(long id)
     {
-        _parentManager.Delete(parentDeleteDto);
+        _parentManager.Delete(id);
         return Ok();
     }
     

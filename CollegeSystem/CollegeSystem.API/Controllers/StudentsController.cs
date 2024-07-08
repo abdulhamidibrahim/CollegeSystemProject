@@ -62,6 +62,10 @@ public class StudentsController: ControllerBase
                 EmailConfirmed = false,
             };
             
+            // check if the user is already registered
+            // var user = await _userManager.FindByEmailAsync(student.Email);
+            // if (user != null) return BadRequest(new { message = "User already registered", status = "error"});
+            
             IdentityResult result = await _userManager.CreateAsync(student, studentRegisterDto.Password);
             if (!result.Succeeded)
             {
@@ -70,7 +74,7 @@ public class StudentsController: ControllerBase
 
             try
             {
-                await _userManager.AddToRoleAsync(student, studentRegisterDto.Role);
+                await _userManager.AddToRoleAsync(student, nameof(student));
             }catch (Exception e)
             {
                 await _userManager.DeleteAsync(student);
@@ -119,14 +123,14 @@ public class StudentsController: ControllerBase
     
     [HttpPost]
     [Route("login")]
-    public async Task<ActionResult> Login(StudentLoginDto studentLoginDto)
+    public async Task<ActionResult> Login(LoginDto loginDto)
     {
         if (ModelState.IsValid)
         {
-           Student? student=await _userManager.FindByNameAsync(studentLoginDto.UserName);
+           Student? student=await _userManager.FindByNameAsync(loginDto.UserName);
            if (student != null)
            {
-              bool found= await _userManager.CheckPasswordAsync(student, studentLoginDto.Password);
+              bool found= await _userManager.CheckPasswordAsync(student, loginDto.Password);
               if (found)
               {
                   // create tokens 
@@ -251,7 +255,7 @@ public class StudentsController: ControllerBase
     }
     
     
-    [HttpPost("uploadImage/{id}")]
+    [HttpPost("uploadImage/{courseId}")]
     [ImageValidator]
     public IActionResult UploadImage(IFormFile image,long id)
     {
@@ -271,7 +275,7 @@ public class StudentsController: ControllerBase
     }
     
     
-    [HttpPut("{id}")]
+    [HttpPut("updateImage/{courseId}")]
     public IActionResult UpdateImage(int id, IFormFile file)
     {
        _studentManager.UpdateImageAsync(id, file);
@@ -279,7 +283,7 @@ public class StudentsController: ControllerBase
         return Ok(new { message = "Image updated successfully", status = "success"});
     }
     
-    [HttpGet("getImage/{id}")]
+    [HttpGet("getImage/{courseId}")]
     public  IActionResult  GetImage(int id)
     {
        var uploadedFile = _fileRepo.GetById(id);
@@ -290,7 +294,7 @@ public class StudentsController: ControllerBase
        
     }
     
-    [HttpDelete("{id}")]
+    [HttpDelete("{courseId}")]
     public IActionResult DeleteImage(int id)
     {
        _studentManager.DeleteImage(id);
@@ -305,7 +309,7 @@ public class StudentsController: ControllerBase
         return _studentManager.GetAll();
     }
     
-    [HttpGet("{id}")]
+    [HttpGet("{courseId}")]
     public ActionResult<StudentReadDto?> Get(long id)
     {
         var user = _studentManager.Get(id);
@@ -320,18 +324,19 @@ public class StudentsController: ControllerBase
         return Ok(new { message = "Student added successfully", status = "success"});
     }
     
-    [HttpPut]
-    public ActionResult Update(StudentUpdateDto studentUpdateDto)
-    {
-        _studentManager.Update(studentUpdateDto);
-        return Ok(new { message = "Student updated successfully", status = "success"});
-    }
     
-    [HttpDelete]
-    public ActionResult Delete(StudentDeleteDto studentDeleteDto)
+    [HttpDelete("/deleteStudent/{courseId}")]
+    public ActionResult Delete(long id)
     {
-        _studentManager.Delete(studentDeleteDto);
+        _studentManager.Delete(id);
         return Ok(new { message = "Student deleted successfully", status = "success"});
+    }
+    //update student
+    [HttpPut("update/{courseId}")]
+    public IActionResult UpdateStudent(long id, StudentUpdateDto studentUpdateDto)
+    {
+        _studentManager.Update(id,studentUpdateDto);
+        return Ok(new { message = "Student updated successfully", status = "success"});
     }
     
 }

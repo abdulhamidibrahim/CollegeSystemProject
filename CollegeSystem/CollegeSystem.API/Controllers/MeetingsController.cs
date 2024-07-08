@@ -18,31 +18,36 @@ public class MeetingsController: ControllerBase
     {
         return _meetingManager.GetAll();
     }
-    [HttpGet("{id}")]
+    [HttpGet("{courseId}")]
     public ActionResult<MeetingReadDto?> Get(long id)
     {
-        var user = _meetingManager.Get(id);
-        if (user == null) return NotFound();
-        return user;
+        var meeting = _meetingManager.Get(id);
+        if (meeting == null) return NotFound(new {message="Meeting not found"});
+        return meeting;
     }
     [HttpPost]
     public ActionResult Add(MeetingAddDto meetingAddDto)
     {
         _meetingManager.Add(meetingAddDto);
-        return Ok();
+        return Ok(new {message="Meeting added successfully"});
     }
     [HttpPut]
     public ActionResult Update(MeetingUpdateDto meetingUpdateDto)
     {
         _meetingManager.Update(meetingUpdateDto);
-        return Ok();
+        return Ok(new {message="Meeting updated successfully"});
     }
-    [HttpDelete]
-    public ActionResult Delete(MeetingDeleteDto meetingDeleteDto)
+    [HttpDelete("{courseId}")]
+    public ActionResult Delete(long id)
     {
-        _meetingManager.Delete(meetingDeleteDto);
-        return Ok();
+        _meetingManager.Delete(id);
+        return Ok(new {message="Meeting deleted successfully"});
     }
     
+    [HttpGet("GetAllByGroupId/{groupId}")]
+    public ActionResult<List<MeetingReadDto>> GetAllByGroupId(long groupId)
+    {
+        return _meetingManager.GetAllByGroupId(groupId);
+    }
     
 }

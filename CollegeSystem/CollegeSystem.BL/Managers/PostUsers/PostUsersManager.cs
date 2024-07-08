@@ -6,12 +6,10 @@ namespace CollegeSystem.DL;
 
 public class PostUsersManager:IPostUsersManager
 {
-    private readonly IPostUsersRepo _postUsersRepo;
     private readonly IUnitOfWork _unitOfWork;
 
-    public PostUsersManager(IPostUsersRepo postUsersRepo, IUnitOfWork unitOfWork)
+    public PostUsersManager(IUnitOfWork unitOfWork)
     {
-        _postUsersRepo = postUsersRepo;
         _unitOfWork = unitOfWork;
     }
     
@@ -23,34 +21,34 @@ public class PostUsersManager:IPostUsersManager
             StaffId = postUsersAddDto.StaffId,
             PostId = postUsersAddDto.PostId,
         };
-        _postUsersRepo.Add(postUsers);
+        _unitOfWork.PostUser.Add(postUsers);
         _unitOfWork.CompleteAsync();
     }
 
     public void Update(PostUsersUpdateDto postUsersUpdateDto)
     {
-        var postUsers = _postUsersRepo.GetById(postUsersUpdateDto.PostUserId);
+        var postUsers = _unitOfWork.PostUser.GetById(postUsersUpdateDto.PostUserId);
         if (postUsers == null) return;
         
         postUsers.PostId = postUsersUpdateDto.PostId;
         postUsers.StudentId = postUsersUpdateDto.StudentId;
         postUsers.StaffId = postUsersUpdateDto.StaffId;
 
-        _postUsersRepo.Update(postUsers);
+        _unitOfWork.PostUser.Update(postUsers);
         _unitOfWork.CompleteAsync();
     }
 
     public void Delete(PostUsersDeleteDto postUsersDeleteDto)
     {
-        var postUsers = _postUsersRepo.GetById(postUsersDeleteDto.Id);
+        var postUsers = _unitOfWork.PostUser.GetById(postUsersDeleteDto.Id);
         if (postUsers == null) return;
-        _postUsersRepo.Delete(postUsers);
+        _unitOfWork.PostUser.Delete(postUsers);
         _unitOfWork.CompleteAsync();
     }
 
     public PostUsersReadDto? Get(long id)
     {
-        var postUsers = _postUsersRepo.GetById(id);
+        var postUsers = _unitOfWork.PostUser.GetById(id);
         if (postUsers == null) return null;
         return new PostUsersReadDto()
         {
@@ -62,7 +60,7 @@ public class PostUsersManager:IPostUsersManager
 
     public List<PostUsersReadDto> GetAll()
     {
-        var postUserss = _postUsersRepo.GetAll();
+        var postUserss = _unitOfWork.PostUser.GetAll();
         return postUserss.Select(postUsers => new PostUsersReadDto()
         {
             StaffId = postUsers.StaffId,

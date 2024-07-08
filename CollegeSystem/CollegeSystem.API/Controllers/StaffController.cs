@@ -47,29 +47,30 @@ public class StaffsController: ControllerBase
                 Phone = staffRegisterDto.Phone,
                 IsAssistant = staffRegisterDto.IsAssistant,
                 EmailConfirmed = false,
-                TwoFactorEnabled = true
+                TwoFactorEnabled = true,
+                
             };
             
             IdentityResult result = await _userManager.CreateAsync(staff, staffRegisterDto.Password);
             if (!result.Succeeded)
             {
-                return BadRequest("Error while creating the user");
+                return BadRequest(new {message ="Error while creating the user", error = result.Errors.ToList()});
             }
             
-            await _userManager.AddToRoleAsync(staff, staffRegisterDto.Role);
-            if (staffRegisterDto.IsAssistant)
-                await _userManager.AddToRoleAsync(staff, staffRegisterDto.RoleAssistant);
+            await _userManager.AddToRoleAsync(staff, nameof(staff));
+            // if (staffRegisterDto.IsAssistant)
+                // await _userManager.AddToRoleAsync(staff, "Assistant");
             
-            await _userManager.AddToRoleAsync(staff, staffRegisterDto.RoleTeacher);
+            // await _userManager.AddToRoleAsync(staff, "Teacher");
             // send email verification to the user
             var token = await _userManager.GenerateEmailConfirmationTokenAsync(staff);
-            var confirmationLink = Url.Action(nameof(ConfirmEmail), "Staffs", new { token, email = staff.Email },
+            var confirmationLink = Url.Action(nameof(ConfirmEmail), "Staffs", new { userId=staff.Id, token, email = staff.Email },
                 Request.Scheme);
             var message = new Message(new[] { staff.Email }, "Confirmation email link", confirmationLink!);
 
             _emailService.SendEmail(message);
-            return Ok(
-                "Account created successfully, we have sent a confirmation email, please click the link to confirm your email");
+            return Ok(new { message =
+                "Account created successfully, we have sent a confirmation email, please click the link to confirm your email"});
 
 
         }
@@ -80,7 +81,7 @@ public class StaffsController: ControllerBase
     
     [HttpPost]
     [Route("login")]
-    public async Task<ActionResult> Login(StaffRegisterDto staffRegisterDto)
+    public async Task<ActionResult> Login(LoginDto staffRegisterDto)
     {
         if (ModelState.IsValid)
         {
@@ -136,35 +137,35 @@ public class StaffsController: ControllerBase
     
       [HttpGet]
     [Route("confirmEmail")]
-    public async Task<ActionResult> ConfirmEmail(string token, string email)
+    public async Task<ActionResult> ConfirmEmail(long userId, string token, string email)
     {
         if (string.IsNullOrWhiteSpace(token) || string.IsNullOrWhiteSpace(email))
         {
-            return NotFound("Invalid token or Email");
+            return NotFound(new {message ="Invalid token or Email"});
         }
 
-        var user = await _userManager.FindByEmailAsync(email);
-        if (user == null) return NotFound("User not found");
+        var user = await _userManager.FindByIdAsync(userId.ToString());
+        if (user == null) return NotFound(new {message = "User not found"});
 
         var result = await _userManager.ConfirmEmailAsync(user, token);
         if (!result.Succeeded)
         {
-            return BadRequest("Invalid token");
+            return BadRequest(new {message ="Invalid token"});
         }
 
-        return Ok("Email confirmed successfully");
+        return Ok(new {message = "Email confirmed successfully"});
     }
     
     [HttpPost("forgotPassword")]
     public async Task<ActionResult> ForgotPassword(string email)
     {
         var user = await _userManager.FindByEmailAsync(email);
-        if (user == null) return BadRequest("User not found");
+        if (user == null) return BadRequest(new {message ="User not found"});
         var token = await _userManager.GenerateUserTokenAsync(user, "Email","ResetFactor");
         var passwordResetLink = Url.Action(nameof(ResetPassword), "Staffs", new { token, email = user.Email },Request.Scheme);
         var message = new Message(new[] { user.Email }!, "Reset password link", passwordResetLink!);
         _emailService.SendEmail(message);
-        return Ok("Password reset link sent successfully");
+        return Ok(new {message = "Password reset link sent successfully"});
     }
     
     [HttpGet("resetPassword")]
@@ -172,7 +173,7 @@ public class StaffsController: ControllerBase
     {
         if (string.IsNullOrWhiteSpace(token) || string.IsNullOrWhiteSpace(email))
         {
-            return NotFound("Invalid token or Email");
+            return NotFound(new {message = "Invalid token or Email"});
         }
 
         return Ok(new  { Token = token, Email = email });
@@ -185,24 +186,24 @@ public class StaffsController: ControllerBase
         if (ModelState.IsValid)
         {
             var user = await _userManager.FindByEmailAsync(resetPasswordDto.Email);
-            if (user == null) return NotFound("User not found");
+            if (user == null) return NotFound(new {message = "User not found"});
             var validateOTP = await _userManager.VerifyUserTokenAsync(user,"Email","ResetFactor", resetPasswordDto.Token);
             if (!validateOTP)
             {
-                return BadRequest("Invalid OTP");
+                return BadRequest(new {messaege = "Invalid OTP"});
             }
             var token = await _userManager.GeneratePasswordResetTokenAsync(user);
             var result = await _userManager.ResetPasswordAsync(user ,token,resetPasswordDto.Password);
             if (!result.Succeeded)
             {
-                return BadRequest("Invalid token or password");
+                return BadRequest(new {message = "Invalid token or password"});
             }
 
-            return Ok("Password reset successfully");
+            return Ok(new {message = "Password reset successfully"});
         }
 
 
-        return BadRequest("Invalid payload");
+        return BadRequest(new {message = "Invalid payload"});
     }
     
     
@@ -211,7 +212,7 @@ public class StaffsController: ControllerBase
     public async Task<ActionResult> Logout()
     {
         await HttpContext.SignOutAsync(IdentityConstants.ApplicationScheme);
-        return Ok("Logout successfully");
+        return Ok(new {message = "Logout successfully"});
     }
     
     [HttpGet]
@@ -220,11 +221,11 @@ public class StaffsController: ControllerBase
         return _staffManager.GetAll();
     }
     
-    [HttpGet("{id}")]
+    [HttpGet("{courseId}")]
     public ActionResult<StaffReadDto?> Get(long id)
     {
         var user = _staffManager.Get(id);
-        if (user == null) return NotFound();
+        if (user == null) return NotFound(new {message ="User Not Found"});
         return user;
     }
     
@@ -232,21 +233,21 @@ public class StaffsController: ControllerBase
     public ActionResult Add(StaffAddDto staffAddDto)
     {
         _staffManager.Add(staffAddDto);
-        return Ok();
+        return Ok(new {message = "added successfully"});
     }
     
     [HttpPut]
     public ActionResult Update(StaffUpdateDto staffUpdateDto)
     {
         _staffManager.Update(staffUpdateDto);
-        return Ok();
+        return Ok(new {message = "Updated successfully"});
     }
     
-    [HttpDelete]
-    public ActionResult Delete(StaffDeleteDto staffDeleteDto)
+    [HttpDelete("{courseId}")]
+    public ActionResult Delete(long id)
     {
-        _staffManager.Delete(staffDeleteDto);
-        return Ok();
+        _staffManager.Delete(id);
+        return Ok(new {message = "deleted successfully"});
     }
     
 }
